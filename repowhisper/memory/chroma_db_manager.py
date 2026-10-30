@@ -6,7 +6,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 class ChromaDBManager:
 
     def __init__(self, docs: list[Document], embedding_model_name: str = "all-MiniLM-L6-v2"):
-        self.db_dir = "./excode_db"
+        self.db_dir = "./db"
         self.embeddings = HuggingFaceEmbeddings(model_name=embedding_model_name)
         self.docs = docs
         self.db = self._create_vec_db()
