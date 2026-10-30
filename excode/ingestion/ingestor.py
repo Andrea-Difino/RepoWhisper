@@ -2,9 +2,10 @@ import os
 import tempfile
 
 from git import Repo
-from langchain_core.documents import Document
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders.parsers import LanguageParser
+from langchain_core.documents import Document
+from langchain_text_splitters import Language, RecursiveCharacterTextSplitter
 
 SUFFEXES = {
     "python" : ".py",
@@ -13,29 +14,23 @@ SUFFEXES = {
 }
 
 class Ingestor:
-    
+    """
+        Responsible for parsing and splitting source code into structured, semantically meaningful documents.
+    """
 
-    def __init__(self, target_path_or_url: str):
-        self.target = target_path_or_url
-        self.temp_dir = None
-        self.repo_path = self._prepare_repo()
-
-    def _prepare_repo(self) -> str:
-        if self.target.startswith("http://") or self.target.startswith("https://"):
-            print("Cloning repository...")
-            self.temp_dir = tempfile.TemporaryDirectory()
-            Repo.clone_from(self.target, self.temp_dir.name)
-            print(self.temp_dir.name)
-            return self.temp_dir.name
-
-        if os.path.exists(self.target):
-            return self.target
-
-        raise ValueError("URL or path is not valid")
+    def __init__(self, source_path: str):
+        self.source_path = source_path
 
     def ingest(self, languages: list[str] | None = None) -> list[Document]:
         """
-            Analize sintax and divide code in blocks
+        Analyzes syntax and divides the code into logical blocks.
+        
+        Args:
+            languages (list[str] | None): A list of programming languages to parse.
+                                          Defaults to ["python"].
+                                          
+        Returns:
+            list[Document]: A list of chunked documents ready for vectorization.
         """
         if not languages:
             languages = ["python"]
@@ -43,16 +38,24 @@ class Ingestor:
         suffixes = [SUFFEXES[lang] for lang in languages]
 
         loader = GenericLoader.from_filesystem(
-            self.repo_path,
+            self.source_path,
             glob="**/*",
             suffixes=suffixes,
-            parser=LanguageParser(language="python", parser_threshold=500)
+            parser=LanguageParser(language="python", parser_threshold=500),
+            parser_kwargs={
+                "autodetect_encoding": True
+            }
         )
 
-        documents = loader.load()
-        print(f"Found {len(documents)} blocks of code")
+        raw_docs = loader.load()
 
-        if self.temp_dir:
-            self.temp_dir.cleanup()
+        python_splitter = RecursiveCharacterTextSplitter.from_language(
+            language=Language.PYTHON,
+            chunk_size=1000,
+            chunk_overlap=150
+        )
+        structured_docs = python_splitter.split_documents(raw_docs)
 
-        return documents
+        print(f"Found {len(structured_docs)} fragmented blocks of code")
+
+        return structured_docs
