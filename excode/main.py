@@ -16,12 +16,12 @@ def main():
 
         if docs:
             memory_man = ChromaDBManager(docs)
-            results = memory_man.search_code("How is the model initialized?", top_k=1)
+            results = memory_man.search_code("How is the database connection established?", top_k=1)
 
-            print("\n📝 Extracted Block Example:")
-            print(f"Metadata: {docs[0].metadata}") 
-            print(f"Code Preview:\n{docs[0].page_content[:250]}...")
-            print(f"Query result preview:\n{results[0]}...")
+            if results:
+                print(f"\n📝 Extracted Block Example for query: '{"How is the database connection established?"}'")
+                print(f"Metadata: {results[0].metadata}") 
+                print(f"Code Preview:\n{results[0].page_content[:300]}...")
     
     except Exception as e:
         print(f"\n❌ Application Error: {e}")
