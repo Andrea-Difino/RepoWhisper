@@ -6,9 +6,10 @@ from ingestion.ingestor import Ingestor
 from ingestion.source_manager import SourceManager
 from langchain_core.language_models.chat_models import BaseChatModel
 from memory.chroma_db_manager import ChromaDBManager
-from orchestration.workflow import AgentsWorkflow
-from utils.tree_generator import ProjectTreeGenerator
 from orchestration.state import ProjectState
+from orchestration.workflow import AgentsWorkflow
+from utils.config import UserLevel
+
 
 class RepoWhisper:
     """
@@ -20,23 +21,27 @@ class RepoWhisper:
     model that adheres to the BaseChatModel interface.
     """
 
-    def __init__(self, source_target: str, llm: BaseChatModel):
+    def __init__(self, source_target: str, llm: BaseChatModel, user_level: UserLevel = UserLevel.JUNIOR):
         """
         Initializes the Excode engine.
         
         Args:
             source_target (str): The URL of the git repository or local path.
             llm (BaseChatModel): The initialized LangChain chat model.
+            user_level (UserLevel): Default JUNIOR. The user level used to tell the llm how the explanation should be
+                                    JUNIOR: large explanation 
+                                    MID: mid level explanation
+                                    SENIOR: very short explanation
         """
         self.source_target = source_target
+        self.user_level = user_level
         self.llm = llm
 
         self._source_manager = SourceManager(self.source_target)
         self._memory_manager = None
         self._repo_path = None
-        self._is_ingested = False
 
-        self._navigator = CodeNavigator(self.llm)
+        self._navigator = CodeNavigator(self.llm, self.user_level.value)
         self._architect = Architect(self.llm)
         self._reviewer = Reviewer(self.llm)
         self._storyteller = Storyteller(self.llm)

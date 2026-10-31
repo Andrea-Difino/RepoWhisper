@@ -21,14 +21,16 @@ class AgentsWorkflow:
 
     def __init__(
             self, 
-            root_dir: str, 
+            root_dir: str,
             memory_manager: ChromaDBManager,
             architect: Architect, 
             navigator: CodeNavigator, 
             reviewer: Reviewer, 
             storyteller: Storyteller):
         self.root_dir = root_dir
+
         self.memory_manager = memory_manager
+
         self.architect = architect
         self.navigator = navigator
         self.reviewer = reviewer

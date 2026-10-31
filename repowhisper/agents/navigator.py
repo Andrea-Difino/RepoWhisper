@@ -11,7 +11,7 @@ class CodeNavigator(BaseAgent):
         code fragments retrieved from the vector database.
     """
 
-    def __init__(self, llm: BaseChatModel):
+    def __init__(self, llm: BaseChatModel, user_level: str):
         """
         Initializes the CodeNavigatorAgent.
         
@@ -19,17 +19,22 @@ class CodeNavigator(BaseAgent):
             llm (BaseChatModel): The language model to be used.
         """
         self.llm = llm
+        self.user_level = user_level
         self.prompt_template = ChatPromptTemplate.from_messages([
             ( 
                 "system", 
-                """You are an elite Senior Software Engineer. Your task is to provide a concise,
-                high-level logical summary of the provided code file using a clean and structured markdown. \n\n
+                """You are an elite Senior Software Engineer. Your task is to provide a summary of the provided code file using a clean and structured markdown, based on the user level. \n\n
                 STRICT CONSTRAINTS:\n
-                - Maximum length: 5 or 7 short sentences.\n
+                - Maximum length is based on the User level:\n 
+                    -if "junior" do 10 or 12 short sentences.\n
+                    -if "mid" 8 or 10 short sentences.\n
+                    -if "senior" 5 or 7 short sentences.\n
                 - DO NOT explain imports, arguments, or basic boilerplate.\n
                 - DO NOT reproduce or quote any code blocks.\n
+                - DO NOT insert user level citations inside the explanation\n
                 - The explanation should be enough to understand the code.\n
                 - Use a direct, educational tone.\n\n
+                User level: {user_level}\n\n
                 Context Data:\n{context}"""
             ),
             ("user", "{query}")
@@ -43,7 +48,8 @@ class CodeNavigator(BaseAgent):
 
         response = chain.invoke({
             "context": context,
-            "query": query
+            "query": query,
+            "user_level": self.user_level
         })
 
         return str(response.content)

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from pydantic import SecretStr
 
-from repowhisper import RepoWhisper
+from repowhisper import RepoWhisper, UserLevel
 
 load_dotenv()
 
@@ -17,7 +17,8 @@ def main():
     
     engine = RepoWhisper(
         source_target="https://github.com/Andrea-Difino/WaveRedact",
-        llm=my_llm
+        llm=my_llm,
+        user_level=UserLevel.JUNIOR
     )
     
     try:
