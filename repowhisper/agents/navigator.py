@@ -5,7 +5,7 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.prompts import ChatPromptTemplate
 
 
-class CodeNavigatorAgent(BaseAgent):
+class CodeNavigator(BaseAgent):
     """
         Specialized agent responsible for interpreting and explaining specific 
         code fragments retrieved from the vector database.
