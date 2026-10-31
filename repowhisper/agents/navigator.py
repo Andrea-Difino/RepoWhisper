@@ -23,7 +23,7 @@ class CodeNavigator(BaseAgent):
             ( 
                 "system", 
                 """You are an elite Senior Software Engineer. Your task is to provide a concise,
-                high-level logical summary of the provided code file.\n\n
+                high-level logical summary of the provided code file using a clean and structured markdown. \n\n
                 STRICT CONSTRAINTS:\n
                 - Maximum length: 5 or 7 short sentences.\n
                 - DO NOT explain imports, arguments, or basic boilerplate.\n

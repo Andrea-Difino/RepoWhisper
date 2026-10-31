@@ -1,6 +1,5 @@
-import os
 import ast
-from typing import Dict, List, Set
+import os
 
 USELESS_FILES: list[str] = [
     "__init__.py"
@@ -14,7 +13,7 @@ class DependencyTracer:
     def __init__(self, root_dir: str):
         self.root_dir = root_dir
 
-    def build_graph(self) -> Dict[str, List[str]]:
+    def build_graph(self) -> dict[str, list[str]]:
         graph = {}
         ignore_dirs = {'tests', 'test', '__tests__', 'venv', '.venv', 'node_modules', '.git'}
         
@@ -36,15 +35,13 @@ class DependencyTracer:
                 if resolved_file:
                     resolved_deps.append(resolved_file)
             resolved_graph[file] = resolved_deps
-
-        print(resolved_graph)
             
         return resolved_graph
 
-    def _extract_python_dependencies(self, file_path: str) -> List[str]:
+    def _extract_python_dependencies(self, file_path: str) -> list[str]:
         """
-        Legge il codice sfruttando la comprensione grammaticale di Python (AST), 
-        ignorando stringhe, commenti e rumore di fondo.
+        Extract python dependencies using (AST), 
+        Ignore strings, comments and noise.
         """
         deps = []
         try:
@@ -55,16 +52,15 @@ class DependencyTracer:
                 if isinstance(node, ast.Import):
                     for alias in node.names:
                         deps.append(alias.name)
-                elif isinstance(node, ast.ImportFrom):
-                    if node.module:
-                        deps.append(node.module)
+                elif isinstance(node, ast.ImportFrom) and node.module:
+                    deps.append(node.module)
         except Exception:
             pass
         return deps
 
-    def _resolve_module_to_file(self, module_name: str, valid_files: List[str]) -> str | None:
+    def _resolve_module_to_file(self, module_name: str, valid_files: list[str]) -> str | None:
         """
-        Converte un namespace (es. 'utils.console') nel file reale ('utils/console.py').
+        Convert a namespace (es. 'utils.console') in the real ('utils/console.py').
         """
         path_suffix = module_name.replace('.', '/')
         possible_matches = [
@@ -73,18 +69,16 @@ class DependencyTracer:
         
         for valid_file in valid_files:
             for match in possible_matches:
-                # Controlliamo se il file fisico nel progetto termina con il pattern richiesto
                 if valid_file.endswith(match):
                     return valid_file
         return None
 
-    def get_ordered_processing_list(self, graph: Dict[str, List[str]]) -> List[str]:
+    def get_ordered_processing_list(self, graph: dict[str, list[str]]) -> list[str]:
         """
-        Esegue la Depth-First Search (DFS) per garantire che i file 
-        privi di dipendenze vengano elaborati per primi dall'Intelligenza Artificiale.
+        Execute Depth-First Search (DFS) to guaranteed zero dependencies file to be executed first.
         """
-        visited: Set[str] = set()
-        ordered_list: List[str] = []
+        visited: set[str] = set()
+        ordered_list: list[str] = []
 
         def dfs(node: str):
             if node in visited:
