@@ -21,13 +21,14 @@ def main():
     )
     
     try:
-        engine.build_knowledge_base()
+        json_file = engine.generate_documentation()
+        output_filepath = "repowhisper_analysis.json"
 
-        architecture = engine.get_architect_overview()
-        print("\nANSWER:\n", architecture)
-        
-    finally:
-        engine.cleanup()
+        with open(output_filepath, "w", encoding="utf-8") as file:
+            file.write(json_file)
+
+    except Exception as e:
+        print(f"❌ Si è verificato un errore durante l'analisi: {e}")
 
 if __name__ == "__main__":
     main()
