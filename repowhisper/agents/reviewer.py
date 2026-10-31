@@ -22,7 +22,7 @@ class Reviewer(BaseAgent):
                 respond EXACTLY with the word 'VIOLATION' followed by a short instruction on what to remove.\n
                 If the text is a pure, educational explanation, respond EXACTLY with the word 'APPROVED'."""
             ),
-            ("user","{context}")
+            ("user","Evaluate this explanation:\n\n{context}")
         ])
 
     def analyze(self, query: str, context: Any) -> str:
@@ -30,8 +30,8 @@ class Reviewer(BaseAgent):
         chain = self.prompt_template | self.llm
 
         result = chain.invoke({
-            "query": query,
-            "context": context
+            "context": context, 
+            "query": query
         })
 
         return str(result.content)
