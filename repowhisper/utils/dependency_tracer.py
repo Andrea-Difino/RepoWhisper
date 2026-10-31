@@ -35,7 +35,6 @@ class DependencyTracer:
                     file_path = os.path.join(root,file)
                     rel_path = os.path.relpath(file_path, self.root_dir)
                     graph[rel_path] = self._extract_dependencies(file_path)
-        print(graph)
         return graph
 
     def _extract_dependencies(self, file_path: str) -> list[str]:
