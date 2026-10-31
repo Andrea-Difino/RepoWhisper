@@ -1,81 +1,101 @@
 import os
-import re
+import ast
+from typing import Dict, List, Set
 
-#TODO use import patterns based on the actual languages the user wants explanations about
-LANGUAGES_IMPORT_PATERNS: dict[str, list[str]] = {
-    "python": [r'^import\s+([\w\.]+)', r'^from\s+([\w\.]+)\s+import'],
-    "javascript": [r'import\s+.*from\s+[\'"]([^\'"]+)[\'"]',r'require\([\'"]([^\'"]+)[\'"]\)']
-}
+USELESS_FILES: list[str] = [
+    "__init__.py"
+]
 
 class DependencyTracer:
     """
-    Analyzes source code files to build a dependency graph and determines 
-    the optimal chronological order for AI analysis using topological sorting.
+    Build a dependencies graph using the Abstract Syntax Tree (AST).
     """
 
     def __init__(self, root_dir: str):
         self.root_dir = root_dir
 
-        self.import_patterns = [
-            re.compile(path) for imports in LANGUAGES_IMPORT_PATERNS.values() for path in imports   
-        ]
-
-    def build_graph(self) -> dict[str, list[str]]:
-        """
-        Scans all valid source files and maps which files depend on which modules.
-        
-        Returns:
-            Dict[str, List[str]]: A dictionary where keys are file paths and 
-                                  values are lists of imported module names.
-        """
+    def build_graph(self) -> Dict[str, List[str]]:
         graph = {}
-        for root, _ , files in os.walk(self.root_dir):
+        ignore_dirs = {'tests', 'test', '__tests__', 'venv', '.venv', 'node_modules', '.git'}
+        
+        for root, dirs, files in os.walk(self.root_dir):
+            dirs[:] = [d for d in dirs if d not in ignore_dirs]
             for file in files:
-                if file.endswith(('.py', '.js', '.ts')):
-                    file_path = os.path.join(root,file)
-                    rel_path = os.path.relpath(file_path, self.root_dir)
-                    graph[rel_path] = self._extract_dependencies(file_path)
-        return graph
+                if file.endswith('.py') and file not in USELESS_FILES:
+                    file_path = os.path.join(root, file)
+                    rel_path = os.path.relpath(file_path, self.root_dir).replace("\\", "/")
+                    graph[rel_path] = self._extract_python_dependencies(file_path)
 
-    def _extract_dependencies(self, file_path: str) -> list[str]:
-        """Reads a file and uses regex to find all import statements."""
+        resolved_graph = {}
+        valid_files = list(graph.keys())
+        
+        for file, deps in graph.items():
+            resolved_deps = []
+            for dep in deps:
+                resolved_file = self._resolve_module_to_file(dep, valid_files)
+                if resolved_file:
+                    resolved_deps.append(resolved_file)
+            resolved_graph[file] = resolved_deps
+
+        print(resolved_graph)
+            
+        return resolved_graph
+
+    def _extract_python_dependencies(self, file_path: str) -> List[str]:
+        """
+        Legge il codice sfruttando la comprensione grammaticale di Python (AST), 
+        ignorando stringhe, commenti e rumore di fondo.
+        """
         deps = []
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
-                for line in f:
-                    for pattern in self.import_patterns:
-                        match = pattern.search(line.strip())
-                        if match:
-                            deps.append(match.group(1))
-        except UnicodeDecodeError:
+                tree = ast.parse(f.read(), filename=file_path)
+            
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Import):
+                    for alias in node.names:
+                        deps.append(alias.name)
+                elif isinstance(node, ast.ImportFrom):
+                    if node.module:
+                        deps.append(node.module)
+        except Exception:
             pass
         return deps
 
-    def get_ordered_processing_list(self, graph: dict[str, list[str]]) -> list[str]:
+    def _resolve_module_to_file(self, module_name: str, valid_files: List[str]) -> str | None:
         """
-        Performs a Topological Sort to determine the order of execution.
-        Files with zero internal dependencies (leaf nodes) are processed first.
+        Converte un namespace (es. 'utils.console') nel file reale ('utils/console.py').
         """
-        visited: set[str] = set()
-        ordered_list: list[str] = []
+        path_suffix = module_name.replace('.', '/')
+        possible_matches = [
+            f"{path_suffix}.py",
+        ]
+        
+        for valid_file in valid_files:
+            for match in possible_matches:
+                # Controlliamo se il file fisico nel progetto termina con il pattern richiesto
+                if valid_file.endswith(match):
+                    return valid_file
+        return None
 
-        def dfs(node:str):
+    def get_ordered_processing_list(self, graph: Dict[str, List[str]]) -> List[str]:
+        """
+        Esegue la Depth-First Search (DFS) per garantire che i file 
+        privi di dipendenze vengano elaborati per primi dall'Intelligenza Artificiale.
+        """
+        visited: Set[str] = set()
+        ordered_list: List[str] = []
+
+        def dfs(node: str):
             if node in visited:
                 return
-
             visited.add(node)
-
-            for internal_file in graph:
-                if (node.replace('.', '/') in internal_file or node in internal_file) and internal_file not in visited:
-                        dfs(internal_file)
-
+            for dependency in graph.get(node, []):
+                if dependency not in visited:
+                    dfs(dependency)
             ordered_list.append(node)
 
         for file_node in graph:
             dfs(file_node)
 
-        local_ordered_files = [
-            f for f in ordered_list if f in graph.keys()
-        ]
-
-        return local_ordered_files
+        return ordered_list

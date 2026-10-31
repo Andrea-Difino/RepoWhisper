@@ -11,7 +11,8 @@ class ProjectTreeGenerator:
     
     DEFAULT_IGNORE: ClassVar[set[str]] = {
         ".git", "__pycache__", "node_modules", "venv", ".venv", 
-        ".idea", ".vscode", "dist", "build", "imgs", "tests"
+        ".idea", ".vscode", "dist", "build",
+        "tests", "test", "__tests__"
     }
 
     @staticmethod
