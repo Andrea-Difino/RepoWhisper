@@ -10,15 +10,13 @@ class ProjectState(TypedDict):
     """
 
     architecture_summary: str
-
     dependency_graph: dict[str, list[str]]
 
-    files_to_process: list[str]
+    unprocessed_files: list[str]
+    current_file: str | None
 
     explanations: Annotated[dict[str, str], operator.ior]
-
     reviewer_feedback: str
-
     final_output_json: str
 
     
