@@ -16,7 +16,7 @@ class ProjectState(TypedDict):
     current_file: str | None
 
     explanations: Annotated[dict[str, str], operator.ior]
-    reviewer_feedback: str
+    reviewer_feedback: str | None
     final_output_json: str
 
     
