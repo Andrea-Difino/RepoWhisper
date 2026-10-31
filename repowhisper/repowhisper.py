@@ -73,6 +73,8 @@ class RepoWhisper:
                 "dependency_graph": {},
                 "unprocessed_files": [],
                 "current_file": None,
+                "current_draft": "",
+                "file_error": False,
                 "explanations": {},
                 "reviewer_feedback": None,
                 "final_output_json": ""
