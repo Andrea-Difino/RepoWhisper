@@ -1,15 +1,14 @@
-import json
 from typing import Literal
 
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
+from agents.reviewer import Reviewer
+from agents.storyteller import Storyteller
 from langgraph.graph import END, START, StateGraph
 from memory.chroma_db_manager import ChromaDBManager
 from orchestration.state import ProjectState
-
-#TODO from agents.reviewer import Reviewer
-#TODO from agents.storyteller import Storyteller
 from utils.dependency_tracer import DependencyTracer
+from utils.tree_generator import ProjectTreeGenerator
 
 
 class AgentsWorkflow:
@@ -78,8 +77,10 @@ class AgentsWorkflow:
 
     def _node_architect(self, state: ProjectState) -> dict:
         print("🏗️ Architect is analyzing the project structure")
+        tree_structure = ProjectTreeGenerator.generate(self.root_dir)
 
-        summary = self.architect.analyze("Analyze the structure", context="Tree data...")
+        query = "Analyze the project structure and provide an executive architectural summary."
+        summary = self.architect.analyze(query, context=tree_structure)
         return {"architecture_summary": summary}
 
     def _node_tracer(self, state: ProjectState) -> dict:
@@ -129,22 +130,35 @@ class AgentsWorkflow:
         
         evaluation = self.reviewer.analyze("Does this explain or debug?", context=draft)
 
-        if "VIOLATION" in evaluation:
+        if "VIOLATION" in evaluation.upper():
             print("❌ Reviewer rejected the explanation. Sending back...")
             return {"reviewer_feedback": evaluation}
         
         print("✅ Reviewer approved the explanation.")
 
-        return {"explanations": {file_target: draft}}
+        return {
+            "explanations": {file_target: draft},
+            "reviewer_feedback": None
+        }
 
     def _node_storyteller(self, state: ProjectState) -> dict:
         print("📝 Storyteller is generating the final UI JSON...")
 
+        raw_context = f"Architecture:\n{state['architecture_summary']}\n\nModules:\n"
+        for file, expl in state.get("explanations", {}).items():
+            raw_context += f"--- {file} ---\n{expl}\n\n"
+
+        narrative_markdown = self.storyteller.analyze(
+            query="Generate the final cohesive documentation.", 
+            context=raw_context
+        )
+
         final_data = {
             "title": "RepoWhisper Analysis",
-            "architecture": state["architecture_summary"],
-            "modules": [{"file": k, "explanation": v} for k, v in state["explanations"].items()]
+            "narrative": narrative_markdown,
+            "raw_modules": [{"file": k, "explanation": v} for k, v in state.get("explanations", {}).items()]
         }
+        import json
         return {"final_output_json": json.dumps(final_data, indent=2)}
 
     
