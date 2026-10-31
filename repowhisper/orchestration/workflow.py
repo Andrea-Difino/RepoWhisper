@@ -1,3 +1,5 @@
+import codecs
+import os
 from typing import Literal
 
 from agents.architect import Architect
@@ -62,6 +64,15 @@ class AgentsWorkflow:
         workflow.add_edge("navigator_node", "reviewer_node")
 
         workflow.add_conditional_edges(
+            "navigator_node",
+            self._skip_file,
+            {
+                True: "file_dispatcher_node",
+                False: "reviewer_node"
+            }
+        )
+
+        workflow.add_conditional_edges(
             "reviewer_node",
             self._review_routing,
             {
@@ -87,6 +98,7 @@ class AgentsWorkflow:
         print("🗺️ Tracer is building the logical bottom-up map...")
         deps = self.tracer.build_graph()
         ordered_files = self.tracer.get_ordered_processing_list(deps)
+        
         return {
             "dependency_graph": deps,
             "unprocessed_files": ordered_files,
@@ -103,38 +115,43 @@ class AgentsWorkflow:
         return {
             "current_file": next_file,
             "unprocessed_files": unprocessed[1:],
-            "reviewer_feedback": None
+            "reviewer_feedback": None,
+            "file_error": False,
         }
 
     def _node_navigator(self, state: ProjectState) -> dict:
         file_target = state["current_file"]
         feedback = state.get("reviewer_feedback")
         print(f"🧭 Navigator is reading {file_target}...")
-        
-        results = self.memory_manager.db.similarity_search(
-            query="Extract entire file logic", 
-            k=5, 
-            filter={"source": file_target} # type: ignore
-        )
-        
-        code_context = "\n".join([doc.page_content for doc in results])
+
+        absolute_target = os.path.normpath(os.path.join(self.root_dir, file_target)) # type: ignore
+        code_context = ""
+        try:
+            with codecs.open(absolute_target, 'r', encoding='utf-8', errors='ignore') as f:
+                code_context = f.read()
+            print("✅ File loaded")
+        except OSError as e:
+            print(f"⚠️ Error reading file {absolute_target}: {e}")
+            return {"file_error": True}
+
         query = f"Explain the logic of this file. Feedback to fix: {feedback}" if feedback else "Explain this file logically."
         explanation = self.navigator.analyze(query, context=code_context)
 
-        return {"current_draft": explanation}
+        print(explanation)
+        return {"current_draft": explanation, "file_error": False}
 
     def _node_reviewer(self, state: ProjectState) -> dict:
         draft = state.get("current_draft", "")
         file_target = state["current_file"]
         print(f"🛡️ Reviewer is checking {file_target} for debugging violations...")
-        
+
         evaluation = self.reviewer.analyze("Does this explain or debug?", context=draft)
 
         if "VIOLATION" in evaluation.upper():
-            print("❌ Reviewer rejected the explanation. Sending back...")
+            print(f"❌ Reviewer rejected the explanation, motivation: {evaluation}. Sending back...")
             return {"reviewer_feedback": evaluation}
         
-        print("✅ Reviewer approved the explanation.")
+        print("✅ Reviewer approved the explanation: {evaluation}")
 
         return {
             "explanations": {file_target: draft},
@@ -161,7 +178,8 @@ class AgentsWorkflow:
         import json
         return {"final_output_json": json.dumps(final_data, indent=2)}
 
-    
+    def _skip_file(self, state: ProjectState) -> bool:
+        return state.get("file_error")
 
     def _dispatch_routing(self, state: ProjectState) -> Literal["process_file", "finish_analysis"]:
         if state.get("current_file"):
