@@ -16,15 +16,15 @@ def main():
     )
     
     engine = RepoWhisper(
-        source_target="https://github.com/nsidnev/fastapi-realworld-example-app",
+        source_target="https://github.com/Andrea-Difino/WaveRedact",
         llm=my_llm
     )
     
     try:
         engine.build_knowledge_base()
 
-        answer = engine.ask("How is the database connection established?")
-        print("\nANSWER:\n", answer)
+        architecture = engine.get_architect_overview()
+        print("\nANSWER:\n", architecture)
         
     finally:
         engine.cleanup()
