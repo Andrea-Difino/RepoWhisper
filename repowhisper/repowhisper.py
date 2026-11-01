@@ -81,6 +81,7 @@ class RepoWhisper:
                 "current_draft": "",
                 "file_error": False,
                 "explanations": {},
+                "file_codes": {},
                 "reviewer_feedback": None,
                 "final_output_json": ""
             }

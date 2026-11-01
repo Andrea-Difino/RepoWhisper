@@ -140,7 +140,11 @@ class AgentsWorkflow:
         explanation = self.navigator.analyze(query, context=code_context)
 
         print(explanation)
-        return {"current_draft": explanation, "file_error": False}
+        return {
+            "current_draft": explanation, 
+            "file_error": False, 
+            "file_codes": {file_target:code_context}
+        }
 
     def _node_reviewer(self, state: ProjectState) -> dict:
         draft = state.get("current_draft", "")
@@ -170,11 +174,20 @@ class AgentsWorkflow:
             context=raw_context
         )
 
+        raw_modules_list = []
+        for file_target, expl in state.get("explanations", {}).items():
+            raw_modules_list.append({
+                "file": file_target,
+                "explanation": expl,
+                "code_snippet": state.get("file_codes", {}).get(file_target, "")
+            })
+
         final_data = {
             "title": "RepoWhisper Analysis",
             "narrative": narrative_markdown,
-            "raw_modules": [{"file": k, "explanation": v} for k, v in state.get("explanations", {}).items()]
+            "raw_modules": raw_modules_list
         }
+
         import json
         return {"final_output_json": json.dumps(final_data, indent=2)}
 
