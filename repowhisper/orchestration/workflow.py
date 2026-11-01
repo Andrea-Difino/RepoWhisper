@@ -153,7 +153,7 @@ class AgentsWorkflow:
             print(f"❌ Reviewer rejected the explanation, motivation: {evaluation}. Sending back...")
             return {"reviewer_feedback": evaluation}
         
-        print("✅ Reviewer approved the explanation: {evaluation}")
+        print(f"✅ Reviewer approved the explanation: {evaluation}")
 
         return {
             "explanations": {file_target: draft},
@@ -163,9 +163,7 @@ class AgentsWorkflow:
     def _node_storyteller(self, state: ProjectState) -> dict:
         print("📝 Storyteller is generating the final UI JSON...")
 
-        raw_context = f"Architecture:\n{state['architecture_summary']}\n\nModules:\n"
-        for file, expl in state.get("explanations", {}).items():
-            raw_context += f"--- {file} ---\n{expl}\n\n"
+        raw_context = f"Architecture:\n{state['architecture_summary']}\n"
 
         narrative_markdown = self.storyteller.analyze(
             query="Generate the final cohesive documentation.", 
