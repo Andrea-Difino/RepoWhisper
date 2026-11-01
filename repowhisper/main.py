@@ -12,7 +12,8 @@ def main():
     api_key = SecretStr(os.environ.get("GROQ_API_KEY", ""))
     my_llm = ChatGroq(
         api_key=api_key, 
-        model="openai/gpt-oss-120b"
+        model="openai/gpt-oss-120b",
+        max_tokens=6000
     )
     
     engine = RepoWhisper(
