@@ -67,8 +67,8 @@ class AgentsWorkflow:
             "navigator_node",
             self._skip_file,
             {
-                True: "file_dispatcher_node",
-                False: "reviewer_node"
+                "file_error": "file_dispatcher_node",
+                "no_file_error": "reviewer_node"
             }
         )
 
@@ -189,8 +189,10 @@ class AgentsWorkflow:
         import json
         return {"final_output_json": json.dumps(final_data, indent=2)}
 
-    def _skip_file(self, state: ProjectState) -> bool:
-        return state.get("file_error")
+    def _skip_file(self, state: ProjectState) -> Literal["file_error", "no_file_error"]:
+        if state.get("is_file_reading_error"):
+            return "file_error"
+        return "no_file_error"
 
     def _dispatch_routing(self, state: ProjectState) -> Literal["process_file", "finish_analysis"]:
         if state.get("current_file"):

@@ -79,12 +79,14 @@ class RepoWhisper:
                 "unprocessed_files": [],
                 "current_file": None,
                 "current_draft": "",
-                "file_error": False,
+                "is_file_reading_error": False,
                 "explanations": {},
                 "file_codes": {},
                 "reviewer_feedback": None,
                 "final_output_json": ""
             }
+
+            print(workflow.graph.get_graph().draw_mermaid())
 
             final_state = workflow.graph.invoke(initial_state)
             return final_state["final_output_json"]

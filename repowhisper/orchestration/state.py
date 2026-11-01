@@ -15,7 +15,7 @@ class ProjectState(TypedDict):
     unprocessed_files: list[str]
     current_file: str | None
     current_draft: str
-    file_error: bool
+    is_file_reading_error: bool
 
     explanations: Annotated[dict[str, str], operator.ior]
     file_codes: Annotated[dict[str, str], operator.ior]
