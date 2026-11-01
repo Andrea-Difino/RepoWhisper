@@ -44,7 +44,7 @@ class RepoWhisper:
         self._navigator = CodeNavigator(self.llm, self.user_level.value)
         self._architect = Architect(self.llm)
         self._reviewer = Reviewer(self.llm)
-        self._storyteller = Storyteller(self.llm)
+        self._storyteller = Storyteller(self.llm, self.user_level.value)
 
     def generate_documentation(self) -> str:
         """
