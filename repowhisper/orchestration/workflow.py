@@ -63,8 +63,6 @@ class AgentsWorkflow:
             }
         )
 
-        workflow.add_edge("navigator_node", "reviewer_node")
-
         workflow.add_conditional_edges(
             "navigator_node",
             self._skip_file,
