@@ -18,6 +18,8 @@ class ProjectState(TypedDict):
     file_error: bool
 
     explanations: Annotated[dict[str, str], operator.ior]
+    file_codes: Annotated[dict[str, str], operator.ior]
+
     reviewer_feedback: str | None
     final_output_json: str
 

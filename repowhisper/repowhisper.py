@@ -28,10 +28,10 @@ class RepoWhisper:
         Args:
             source_target (str): The URL of the git repository or local path.
             llm (BaseChatModel): The initialized LangChain chat model.
-            user_level (UserLevel): Default JUNIOR. The user level used to tell the llm how the explanation should be
-                                    JUNIOR: large explanation 
-                                    MID: mid level explanation
-                                    SENIOR: very short explanation
+            user_level (UserLevel): Default JUNIOR. The user level used to tell the llm how the explanation should be\n
+            \tJUNIOR: large explanation 
+            \tMID: mid level explanation
+            \tSENIOR: very short explanation
         """
         self.source_target = source_target
         self.user_level = user_level
@@ -81,6 +81,7 @@ class RepoWhisper:
                 "current_draft": "",
                 "file_error": False,
                 "explanations": {},
+                "file_codes": {},
                 "reviewer_feedback": None,
                 "final_output_json": ""
             }
