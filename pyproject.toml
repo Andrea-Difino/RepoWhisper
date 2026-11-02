@@ -1,5 +1,5 @@
 [project]
-name = "repowhisper"
+name = "RepoWhisper"
 version = "0.1.0"
 description = "An enterprise multi-agent AI pipeline to automatically document and analyze software repositories."
 readme = "README.md"
