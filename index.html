@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RepoWhisper — Studia il codice un passo alla volta</title>
+  <meta name="description" content="RepoWhisper trasforma repository in percorsi di studio chiari e guidati.">
+  <link rel="stylesheet" href="style/main.css">
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand">
+        <img src="imgs/scritta_lunga_color.png" alt="RepoWhisper logo" width="200px">
+      </div>
+      <a class="github" href="https://github.com/Andrea-Difino/RepoWhisper" target="_blank" rel="noreferrer">GitHub</a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Studia il<br>codice <span class="blue">un</span><br><span class="blue">passo alla</span><br><span class="blue">volta</span></h1>
+        <p class="hero-copy">RepoWhisper trasforma qualsiasi repository in un percorso di studio: dal punto d’ingresso fino all’ultimo modulo, con spiegazioni chiare, in locale sul tuo computer.</p>
+        <div class="install-row">
+          <code class="install">⌘ pip install RepoWhisper</code>
+          <button class="copy" data-copy="pip install RepoWhisper">Copia</button>
+        </div>
+        <div class="hero-art" aria-hidden="true"><div class="orbit"></div><div class="tile"></div></div>
+      </section>
+
+      <section class="feature">
+        <h2 class="feature-title reveal">Spiegazione<br>&amp; codice</h2>
+        <div class="feature-label reveal">
+          Unisci la teoria alla pratica in un'unica schermata. Da un lato leggi la <strong>spiegazione architetturale generata dall'IA</strong> per comprendere i concetti chiave, dall'altro esplori il <strong>codice sorgente originale</strong>. I sussurri contestuali ti guidano riga per riga nei passaggi più complessi, per non farti mai perdere il filo.
+        </div>
+        <div class="mockups">
+          <div class="mock-card paper reveal">
+            <div class="placeholder">
+              <span class="tiny">FIRST CLASS / OVERVIEW</span>
+              <h3>FIRST CLASS</h3>
+              <p>Questa classe rappresenta un componente centrale del progetto. La spiegazione accompagna il codice e chiarisce responsabilità e comportamento.</p>
+              <p><strong>• __init__</strong> — inizializza lo stato<br><strong>• process()</strong> — esegue la logica principale</p>
+              <p class="tiny">Esempio di contenuto illustrativo</p>
+            </div>
+          </div>
+          <div class="mock-card code reveal">
+            <div class="placeholder">
+              <h3>source.py</h3>
+              <div class="code-lines"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="feature feature-reversed">
+        <h2 class="feature-title reveal">Mappa<br>&amp; Nodi</h2>
+        <div class="feature-label reveal">
+          Visualizza l'intero ecosistema con il <strong>Grafo Interattivo</strong>. Scopri come i moduli comunicano tra loro, traccia le dipendenze e orientati nell'architettura ad alto livello. Una bussola visiva essenziale prima ancora di leggere la prima riga di codice.
+        </div>
+        <div class="mockups">
+          <div class="graph-mock reveal">
+            <svg style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
+              <line x1="20%" y1="50%" x2="50%" y2="25%" stroke="#c9cbd1" stroke-width="2" stroke-dasharray="4" />
+              <line x1="50%" y1="25%" x2="80%" y2="60%" stroke="#c9cbd1" stroke-width="2" stroke-dasharray="4" />
+              <line x1="20%" y1="50%" x2="80%" y2="60%" stroke="#c9cbd1" stroke-width="2" stroke-dasharray="4" />
+            </svg>
+            <div class="graph-node" style="left: calc(20% - 24px); top: calc(50% - 24px); background: var(--blue); color: white;">A</div>
+            <div class="graph-node" style="left: calc(50% - 24px); top: calc(25% - 24px); background: var(--ink); color: white;">B</div>
+            <div class="graph-node" style="left: calc(80% - 24px); top: calc(60% - 24px); background: white; border: 2px solid #c9cbd1; color: var(--ink);">C</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="quickstart">
+        <div class="quickstart-terminal reveal">
+          <div class="terminal-header">
+            <div class="terminal-dot red"></div>
+            <div class="terminal-dot yellow"></div>
+            <div class="terminal-dot green"></div>
+          </div>
+          <pre class="terminal-body"><span class="py-var">my_llm</span> = <span class="py-class">BaseChatModel</span>(
+    <span class="py-arg">api_key</span>=<span class="py-str">"***"</span>,
+    <span class="py-arg">llm</span>=<span class="py-str">"model_name"</span>
+)
+
+<span class="py-var">engine</span> = <span class="py-class">RepoWhisper</span>(
+    <span class="py-arg">source_target</span>=<span class="py-str">"https://github.com/Andrea-Difino/RepoWhisper"</span>,
+    <span class="py-arg">llm</span>=my_llm,
+    <span class="py-arg">user_level</span>=<span class="py-class">UserLevel</span>.JUNIOR
+)</pre>
+        </div>
+        <p class="quickstart-text reveal">
+          Inizializza il motore in poche righe di Python. Configura il repository target, collega il tuo LLM preferito e definisci il livello di competenza per generare una documentazione su misura.
+        </p>
+      </section>
+
+      <section class="closing" id="closing">
+        <h2 class="scroll-title" aria-label="La prossima repository non sarà più un ostacolo.">
+          <span class="word">La</span><span class="word">prossima</span><span class="word emphasis">repository</span><br>
+          <span class="word emphasis">non</span><span class="word">sarà</span><span class="word">più</span><span class="word">un</span><br>
+          <span class="word emphasis">ostacolo.</span>
+        </h2>
+        <div class="install-row">
+          <code class="install">⌘ pip install RepoWhisper</code>
+        </div>
+      </section>
+      
+    </main>
+    <footer>RepoWhisper · Study code, one step at a time</footer>
+  </div>
+
+  <script>
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.18 });
+
+    document.querySelectorAll('.reveal, .feature-label, .feature-title, .mock-card')
+      .forEach(el => revealObserver.observe(el));
+
+    document.querySelectorAll('[data-copy]').forEach(button => {
+      button.addEventListener('click', async () => {
+        const command = button.dataset.copy;
+        try {
+          await navigator.clipboard.writeText(command);
+          button.textContent = '✓ Copiato';
+        } catch {
+          button.textContent = 'Seleziona il comando';
+        }
+        setTimeout(() => button.textContent = 'Copia', 1600);
+      });
+    });
+
+    const words = [...document.querySelectorAll('.scroll-title .word')];
+    const closing = document.querySelector('#closing');
+
+    function updateScrollWords() {
+      const rect = closing.getBoundingClientRect();
+      const viewport = window.innerHeight;
+      
+      const start = viewport * 0.90;
+      const end = viewport * 0.65; 
+      
+      let progress = (start - rect.top) / (start - end);
+      
+      if ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight - 10) {
+        progress = 1;
+      }
+      
+      progress = Math.min(1, Math.max(0, progress));
+      const activeCount = Math.ceil(progress * words.length);
+
+      words.forEach((word, index) => {
+        word.classList.toggle('active', index < activeCount);
+      });
+    }
+    
+    window.addEventListener('scroll', updateScrollWords, { passive: true });
+    window.addEventListener('resize', updateScrollWords);
+    updateScrollWords();
+  </script>
+</body>
+</html>
