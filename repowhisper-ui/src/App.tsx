@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import { ArrowLeft, ArrowRight, Check, Lock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check,Network, X, Lock } from 'lucide-react';
 
 export interface RawModule {
   dir: string;
@@ -13,6 +13,23 @@ export interface RawModule {
 }
 
 const FILES: RawModule[] = [
+  {
+    dir: "root",
+    path: "project/overview",
+    title: "EXECUTIVE SUMMARY",
+    explanation: "### Benvenuto in Taskly API\n\nQuesto progetto è un'architettura backend robusta costruita su **Express.js** e **PostgreSQL**. L'obiettivo principale è gestire operazioni CRUD per un sistema di task management, con un focus estremo sulla sicurezza delle rotte.\n\n### Flusso dei Dati\n- Il server si inizializza montando i middleware globali.\n- Tutte le richieste passano attraverso il guardiano di autenticazione.\n- I controller interrogano il database tramite un pool di connessioni ottimizzato.\n\n> Studia l'albero delle directory qui a destra per orientarti, poi clicca su **studiato** per immergerti nel codice sorgente riga per riga.",
+    code_snippet: `Taskly-API/
+├── src/
+│   ├── index.js          # Boot e configurazione Express
+│   ├── db.js             # Pool di connessioni PostgreSQL
+│   ├── middleware/
+│   │   └── auth.js       # JWT Guard e validazione token
+│   └── routes/
+│       └── tasks.js      # Endpoint CRUD per i task
+├── package.json          # Dipendenze e scripts
+└── .env                  # Variabili d'ambiente (DB_URL, PORT)`,
+    notes: {} // Nessuna nota per l'albero ASCII
+  },
   {
     dir: "src",
     path: "src/index.js",
@@ -55,10 +72,11 @@ export default function App() {
   const [studiedFiles, setStudiedFiles] = useState<Set<string>>(new Set());
   const [activeLine, setActiveLine] = useState<number | null>(null);
 
+  const [showGraph, setShowGraph] = useState(false);
+
   const currentModule = FILES[currentIndex];
   const isCurrentStudied = studiedFiles.has(currentModule.path);
   const canGoPrev = currentIndex > 0;
-  // Puoi avanzare solo se hai studiato la classe corrente e non sei all'ultimo file
   const canGoNext = isCurrentStudied && currentIndex < FILES.length - 1;
 
   // Resetta la riga selezionata quando si cambia slide
@@ -79,7 +97,7 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [canGoNext, canGoPrev]);
+  }, [canGoNext, canGoPrev, showGraph]);
 
   const handleToggleStudy = () => {
     const updated = new Set(studiedFiles);
@@ -107,7 +125,6 @@ export default function App() {
 
   const lines = currentModule.code_snippet.split('\n');
 
-  // Varianti per l'animazione a scorrimento orizzontale
   const slideVariants = {
     enter: (dir: number) => ({
       x: dir > 0 ? 80 : -80,
@@ -132,16 +149,26 @@ export default function App() {
 
       {/* TOP BAR */}
       <header className="w-full max-w-[1440px] h-[15vh] mx-auto px-12 flex flex-col items-center justify-end z-20 gap-4">
-        <span className="text-[15px] font-mono font-normal  bg-black/5 text-black/60 px-4 py-2 rounded-full">
-          {currentIndex + 1} / {FILES.length}
-        </span>
+        <div className="flex items-center gap-4">
+          <span className="text-[15px] font-mono font-normal bg-black/5 text-black/60 px-4 py-2 rounded-full">
+            {currentIndex === 0 ? 'START' : `${currentIndex} / ${FILES.length - 1}`}
+          </span>
+          
+          <button 
+            onClick={() => setShowGraph(true)}
+            className="flex items-center gap-2 bg-white border border-black/10 text-black/70 px-4 py-2 rounded-full font-medium text-sm hover:bg-black/5 hover:text-black transition-colors shadow-sm cursor-pointer"
+          >
+            <Network className="w-4 h-4" />
+            Mappa Dipendenze
+          </button>
+        </div>
+        
 
         {/* Controlli di Navigazione Orizzontale */}
         <div className="flex items-center gap-4 mb-1">
           <button
             onClick={goPrev}
             disabled={!canGoPrev}
-            title="Modulo precedente"
             className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-200 ${canGoPrev
               ? 'border-[#11151C] text-[#11151C] hover:bg-[#11151C] hover:text-white cursor-pointer active:scale-95'
               : 'border-black/20 text-black/20 cursor-not-allowed'
@@ -153,11 +180,6 @@ export default function App() {
           <button
             onClick={goNext}
             disabled={!canGoNext}
-            title={
-              !isCurrentStudied
-                ? "Segna come 'studiato' per sbloccare il modulo successivo"
-                : "Prossimo modulo"
-            }
             className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-200 ${canGoNext
               ? 'border-[#11151C] text-[#11151C] hover:bg-[#11151C] hover:text-white cursor-pointer shadow-sm active:scale-95'
               : 'border-black/20 text-black/25 cursor-not-allowed'
@@ -214,122 +236,124 @@ export default function App() {
                     </h2>
 
                     <div className="prose prose-sm lg:prose-base prose-slate max-w-none text-[#222] prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-widest prose-headings:text-black/50 prose-headings:mt-5 prose-headings:mb-2 prose-p:leading-relaxed prose-li:my-0.5">
-                      <ReactMarkdown>
+                      <ReactMarkdown
+                        components={{
+                          // Ripristiniamo gli elenchi puntati con stile
+                          ul: ({ node, ...props }) => (
+                            <ul className="list-disc pl-6 my-4 space-y-2 marker:text-black/40" {...props} />
+                          ),
+                          // Ripristiniamo gli elenchi numerati (nel caso servissero in futuro)
+                          ol: ({ node, ...props }) => (
+                            <ol className="list-decimal pl-6 my-4 space-y-2 marker:text-black/40" {...props} />
+                          ),
+                          // Diamo respiro ai singoli elementi della lista
+                          li: ({ node, ...props }) => (
+                            <li className="text-[#222] leading-relaxed" {...props} />
+                          ),
+                          // Assicuriamoci che i paragrafi abbiano la giusta spaziatura
+                          p: ({ node, ...props }) => (
+                            <p className="mb-4 leading-relaxed text-[#222]" {...props} />
+                          ),
+                          // Rendiamo il grassetto visivamente più deciso
+                          strong: ({ node, ...props }) => (
+                            <strong className="font-bold text-[#11151C]" {...props} />
+                          ),
+                        }}
+                      >
                         {currentModule.explanation}
                       </ReactMarkdown>
                     </div>
-
                   </div>
                 </div>
 
-                {/* BOTTONE "studiato" */}
                 <div className="flex justify-end items-center pt-3 pr-2">
                   <button
                     onClick={handleToggleStudy}
-                    className={`px-8 py-1.5 rounded-full border text-sm font-medium tracking-wide transition-all duration-200 flex items-center gap-2 cursor-pointer ${isCurrentStudied
-                      ? 'bg-[#4E7D34] border-[#4E7D34] text-white shadow-sm'
-                      : 'bg-transparent border-[#4E7D34] text-[#4E7D34] hover:bg-[#4E7D34]/10'
-                      }`}
+                    className={`px-8 py-1.5 rounded-full border text-sm font-medium tracking-wide transition-all duration-200 flex items-center gap-2 cursor-pointer ${isCurrentStudied ? 'bg-[#4E7D34] border-[#4E7D34] text-white shadow-sm' : 'bg-transparent border-[#4E7D34] text-[#4E7D34] hover:bg-[#4E7D34]/10'}`}
                   >
                     {isCurrentStudied && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
-                    studiato
+                    {currentIndex === 0 ? 'inizia studio' : 'studiato'}
                   </button>
                 </div>
-
               </div>
 
-              {/* COLONNA DESTRA (7/12): Monolite Nero*/}
+              {/* COLONNA DESTRA */}
               <div className="col-span-7 h-[calc(100%-52px)] bg-[#0B0F17] rounded-[36px] p-7 flex flex-col justify-between shadow-xl overflow-hidden select-text border border-white/5">
-
-                {/* Header Interno del Codice */}
                 <div className="flex items-center justify-between pb-4 mb-2 border-b border-white/10 shrink-0">
                   <span className="font-mono text-xs text-slate-400">
-                    {currentModule.path}
+                    {currentIndex === 0 ? 'Project Architecture' : currentModule.path}
                   </span>
                   <span className="text-[11px] font-mono text-slate-500">
-                    Clicca sulle righe evidenziate per i dettagli
+                    {currentIndex === 0 ? 'Struttura ad albero' : 'Clicca sulle righe evidenziate per i dettagli'}
                   </span>
                 </div>
 
-                {/* Corpo del Codice */}
                 <div className="flex-1 overflow-auto py-2 font-mono text-[14px] leading-[1.85]">
                   {lines.map((line, i) => {
-                    const hasNote = Boolean(currentModule.notes[i]);
+                    const hasNote = Boolean(currentModule.notes && currentModule.notes[i]);
                     const isSelected = activeLine === i;
+
+                    // Gestione speciale per i colori dell'albero ASCII nella slide 0
+                    const isTreeLine = currentIndex === 0;
+                    const lineClass = isTreeLine 
+                      ? 'text-[#98c379] hover:bg-white/[0.02]' 
+                      : hasNote
+                        ? isSelected
+                          ? 'bg-blue-500/25 text-white border-l-2 border-blue-400 cursor-pointer'
+                          : 'bg-white/[0.04] text-slate-100 hover:bg-white/[0.09] border-l-2 border-blue-400/50 cursor-pointer'
+                        : 'text-slate-300 border-l-2 border-transparent';
 
                     return (
                       <div
                         key={i}
                         onClick={() => hasNote && setActiveLine(isSelected ? null : i)}
-                        className={`flex items-baseline px-4 transition-colors whitespace-pre ${hasNote
-                          ? isSelected
-                            ? 'bg-blue-500/25 text-white border-l-2 border-blue-400 cursor-pointer'
-                            : 'bg-white/[0.04] text-slate-100 hover:bg-white/[0.09] border-l-2 border-blue-400/50 cursor-pointer'
-                          : 'text-slate-300 border-l-2 border-transparent'
-                          }`}
+                        className={`flex items-baseline px-4 transition-colors whitespace-pre ${lineClass}`}
                       >
-                        <span className="w-8 shrink-0 text-slate-600 select-none text-xs text-right pr-4">
-                          {i + 1}
-                        </span>
+                        {!isTreeLine && (
+                          <span className="w-8 shrink-0 text-slate-600 select-none text-xs text-right pr-4">
+                            {i + 1}
+                          </span>
+                        )}
                         <span>{line || ' '}</span>
                       </div>
                     );
                   })}
                 </div>
 
-                {/* Box "Sussurro" per la riga selezionata */}
-                <div className="pt-4 mt-2 border-t border-white/10 min-h-[52px] flex items-center shrink-0">
-                  {activeLine !== null && currentModule.notes[activeLine] ? (
-                    <div className="text-xs lg:text-sm text-slate-200 flex items-center gap-2">
-                      <span className="text-blue-400 font-mono font-bold">
-                        Riga {activeLine + 1} →
-                      </span>
-                      <span>{currentModule.notes[activeLine]}</span>
-                    </div>
-                  ) : (
-                    <div className="text-xs text-slate-500 flex items-center gap-2">
-                      {!isCurrentStudied ? (
-                        <>
-                          <Lock className="w-3.5 h-3.5 text-slate-500" />
-                          <span>
-                            Esplora il codice e clicca su <b>studiato</b> a sinistra per sbloccare la freccia avanti.
-                          </span>
-                        </>
-                      ) : (
-                        <span>
-                          Modulo completato! Clicca sulla freccia a destra <b>→</b> per passare al file successivo.
-                        </span>
-                      )}
-                    </div>
-                  )}
-                </div>
-
+                {currentIndex !== 0 && (
+                  <div className="pt-4 mt-2 border-t border-white/10 min-h-[52px] flex items-center shrink-0">
+                    {activeLine !== null && currentModule.notes[activeLine] ? (
+                      <div className="text-xs lg:text-sm text-slate-200 flex items-center gap-2">
+                        <span className="text-blue-400 font-mono font-bold">Riga {activeLine + 1} →</span>
+                        <span>{currentModule.notes[activeLine]}</span>
+                      </div>
+                    ) : (
+                      <div className="text-xs text-slate-500 flex items-center gap-2">
+                        {!isCurrentStudied ? (
+                          <>
+                            <Lock className="w-3.5 h-3.5 text-slate-500" />
+                            <span>Esplora il codice e clicca su <b>studiato</b> a sinistra per sbloccare la freccia avanti.</span>
+                          </>
+                        ) : (
+                          <span>Modulo completato! Clicca sulla freccia a destra <b>→</b> per passare al file successivo.</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* PEEK DESTRO */}
         <div
           onClick={goNext}
-          className={`fixed right-0 top-1/2 -translate-y-1/2 w-[46px] xl:w-[65px] h-[45vh] bg-[#EFEFEF] rounded-l-[36px] transition-all duration-500 z-20 flex items-center justify-center ${currentIndex < FILES.length - 1
-            ? canGoNext
-              ? 'opacity-100 hover:w-[70px] cursor-pointer shadow-md'
-              : 'opacity-50 cursor-not-allowed'
-            : 'opacity-0 pointer-events-none translate-x-full'
-            }`}
-          title={
-            canGoNext
-              ? "Vai al prossimo modulo"
-              : "Completa prima questo modulo cliccando su 'studiato'"
-          }
+          className={`fixed right-0 top-1/2 -translate-y-1/2 w-[46px] xl:w-[65px] h-[45vh] bg-[#EFEFEF] rounded-l-[36px] transition-all duration-500 z-20 flex items-center justify-center ${currentIndex < FILES.length - 1 ? canGoNext ? 'opacity-100 hover:w-[70px] cursor-pointer shadow-md' : 'opacity-50 cursor-not-allowed' : 'opacity-0 pointer-events-none translate-x-full'}`}
+          title={canGoNext ? "Vai al prossimo modulo" : "Completa prima questo modulo cliccando su 'studiato'"}
         >
-          {!canGoNext && currentIndex < FILES.length - 1 && (
-            <Lock className="w-4 h-4 text-black/25" />
-          )}
+          {!canGoNext && currentIndex < FILES.length - 1 && <Lock className="w-4 h-4 text-black/25" />}
         </div>
-
       </div>
 
       {/* FOOTER MINIMALE */}
