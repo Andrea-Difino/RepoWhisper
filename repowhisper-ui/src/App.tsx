@@ -7,7 +7,6 @@ export interface RawModule {
   dir: string;
   path: string;
   title: string;
-  tag: string;
   explanation: string;
   code_snippet: string;
   notes: Record<number, string>;
@@ -18,7 +17,6 @@ const FILES: RawModule[] = [
     dir: "src",
     path: "src/index.js",
     title: "ENTRY POINT: SERVER BOOTSTRAP",
-    tag: "ENTRY POINT",
     explanation: "**Summary**\n\n1. A custom color scheme is defined, assigning specific colors and styles to the labels *info*, *warning*, *error*, and *success*.  \n2. This scheme is stored in a theme object that the Rich library can understand.  \n3. A console instance is then created, linking it to the custom theme.  \n4. The console will automatically apply the defined colors whenever those label names are used in output.  \n5. This setup allows consistent, visually distinct messages throughout the application.  \n6. For example, an *info* message will appear in cyan, while a *warning* shows in yellow.  \n7. Errors are highlighted with bold red text, making them stand out.  \n8. Success messages are displayed in bold green, signaling positive outcomes.  \n9. By centralizing the theme, any future style changes require only a single edit.  \n10. The resulting console object can be imported elsewhere to produce themed, readable terminal output.",
     code_snippet: `import express from "express";\nimport { auth } from "./middleware/auth.js";\nimport tasks from "./routes/tasks.js";\n\nconst app = express();\napp.use(express.json());\napp.use(auth);\napp.use("/tasks", tasks);\n\napp.listen(process.env.PORT || 3000);`,
     notes: {
@@ -31,7 +29,6 @@ const FILES: RawModule[] = [
     dir: "src",
     path: "src/middleware/auth.js",
     title: "AUTH GUARD MIDDLEWARE",
-    tag: "MIDDLEWARE",
     explanation: "Controlla l’header `Authorization` e blocca le richieste senza token valido[cite: 1].\n\n### Cosa succede\n* Estrae il token dal formato `Bearer <token>`[cite: 1]\n* Se manca, interrompe il flusso e risponde **401**[cite: 1]\n* Se valido, salva l’utente in `req.user` e passa oltre[cite: 1]",
     code_snippet: `export function auth(req, res, next) {\n  const h = req.headers.authorization || "";\n  const token = h.replace("Bearer ", "");\n  if (!token) return res.status(401).end();\n  req.user = verify(token);\n  next();\n}`,
     notes: {
@@ -43,7 +40,6 @@ const FILES: RawModule[] = [
     dir: "src",
     path: "src/db.js",
     title: "DATABASE CONNECTION POOL",
-    tag: "DATABASE",
     explanation: "Apre la connessione al database PostgreSQL e la condivide con tutta l’app[cite: 1].\n\n### Cosa succede\n* Crea un **pool** di connessioni riutilizzabili[cite: 1]\n* Espone una sola funzione, `query(sql, params)`[cite: 1]\n\n> **Da ricordare:** Usa sempre i parametri (`$1`, `$2`) e mai la concatenazione: previene la SQL injection[cite: 1].",
     code_snippet: `import pg from "pg";\n\nconst pool = new pg.Pool({\n  connectionString: process.env.DATABASE_URL,\n});\n\nexport const query = (sql, params) =>\n  pool.query(sql, params);`,
     notes: {
@@ -210,9 +206,6 @@ export default function App() {
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <span className="font-mono text-xs text-black/50">
                         {currentModule.path}
-                      </span>
-                      <span className="text-[10px] font-bold tracking-widest uppercase px-2.5 py-0.5 rounded-full bg-black/5 text-black/70">
-                        {currentModule.tag}
                       </span>
                     </div>
 
