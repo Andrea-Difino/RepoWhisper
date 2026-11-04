@@ -164,9 +164,27 @@ class AgentsWorkflow:
 
         evaluation = self.reviewer.analyze("Does this explain or debug?", context=draft)
 
-        if "VIOLATION" in evaluation.upper():
+        clean_str = evaluation.strip()
+        if clean_str.startswith("```json"):
+            clean_str = clean_str[7:]
+        elif clean_str.startswith("```"):
+            clean_str = clean_str[3:]
+
+        clean_str = clean_str.removesuffix("```")
+        print(clean_str)
+
+        import json
+        try:
+            result: dict = json.loads(clean_str)
+            status = result.get("response", "VIOLATION")
+            feedback = result.get("feedback", "")
+        except json.JSONDecodeError:
+            status = "VIOLATION"
+            feedback = ""
+
+        if status == "VIOLATION":
             tqdm.write(f"❌ Reviewer rejected {os.path.basename(file_target)}. Retrying...") #type: ignore
-            return {"reviewer_feedback": evaluation}
+            return {"reviewer_feedback": feedback}
 
         if self.pbar:
             self.pbar.update(1)
