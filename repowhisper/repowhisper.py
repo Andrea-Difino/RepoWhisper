@@ -75,6 +75,7 @@ class RepoWhisper:
 
             initial_state: ProjectState = {
                 "architecture_summary": "",
+                "tree_structure": "",
                 "dependency_graph": {},
                 "unprocessed_files": [],
                 "current_file": None,

@@ -89,10 +89,10 @@ class AgentsWorkflow:
     def _node_architect(self, state: ProjectState) -> dict:
         print("🏗️ Architect is analyzing the project structure")
         tree_structure = ProjectTreeGenerator.generate(self.root_dir)
-
+        
         query = "Analyze the project structure and provide an executive architectural summary."
         summary = self.architect.analyze(query, context=tree_structure)
-        return {"architecture_summary": summary}
+        return {"architecture_summary": summary,  "tree_structure": tree_structure}
 
     def _node_tracer(self, state: ProjectState) -> dict:
         print("🗺️ Tracer is building the logical bottom-up map...")
