@@ -13,7 +13,8 @@ def main():
     my_llm = ChatGroq(
         api_key=api_key, 
         model="openai/gpt-oss-120b",
-        max_tokens=6000
+        max_tokens=6000,
+        max_retries=6
     )
     
     engine = RepoWhisper(

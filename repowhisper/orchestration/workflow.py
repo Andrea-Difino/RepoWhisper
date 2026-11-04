@@ -9,6 +9,7 @@ from agents.storyteller import Storyteller
 from langgraph.graph import END, START, StateGraph
 from memory.chroma_db_manager import ChromaDBManager
 from orchestration.state import ProjectState
+from tqdm import tqdm
 from utils.dependency_tracer import DependencyTracer
 from utils.tree_generator import ProjectTreeGenerator
 
@@ -36,6 +37,8 @@ class AgentsWorkflow:
         self.reviewer = reviewer
         self.storyteller = storyteller
         self.tracer = DependencyTracer(self.root_dir)
+
+        self.pbar = None
 
         self.graph = self._build_graph()
 
@@ -98,7 +101,15 @@ class AgentsWorkflow:
         print("🗺️ Tracer is building the logical bottom-up map...")
         deps = self.tracer.build_graph()
         ordered_files = self.tracer.get_ordered_processing_list(deps)
-        
+
+        total_files = len(ordered_files)
+        self.pbar = tqdm(
+            total=total_files, 
+            desc="Analyzing files", 
+            bar_format="{desc}: {percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
+            colour="CYAN"
+        )
+
         return {
             "dependency_graph": deps,
             "unprocessed_files": ordered_files,
@@ -122,22 +133,25 @@ class AgentsWorkflow:
     def _node_navigator(self, state: ProjectState) -> dict:
         file_target = state["current_file"]
         feedback = state.get("reviewer_feedback")
-        print(f"🧭 Navigator is reading {file_target}...")
+
+        if self.pbar:
+            self.pbar.set_description(f"Navigator reading: {os.path.basename(file_target)}") # type: ignore
 
         absolute_target = os.path.normpath(os.path.join(self.root_dir, file_target)) # type: ignore
         code_context = ""
         try:
             with codecs.open(absolute_target, 'r', encoding='utf-8', errors='ignore') as f:
                 code_context = f.read()
-            print("✅ File loaded")
         except OSError as e:
-            print(f"⚠️ Error reading file {absolute_target}: {e}")
+            tqdm.write(f"⚠️ Error reading file {absolute_target}: {e}")
+            if self.pbar:
+                self.pbar.update(1)
             return {"file_error": True}
 
         query = f"Explain the logic of this file. Feedback to fix: {feedback}" if feedback else "Explain this file logically."
         explanation = self.navigator.analyze(query, context=code_context)
 
-        print(explanation)
+        #print(explanation)
         return {
             "current_draft": explanation, 
             "file_error": False, 
@@ -147,15 +161,15 @@ class AgentsWorkflow:
     def _node_reviewer(self, state: ProjectState) -> dict:
         draft = state.get("current_draft", "")
         file_target = state["current_file"]
-        print(f"🛡️ Reviewer is checking {file_target} for debugging violations...")
 
         evaluation = self.reviewer.analyze("Does this explain or debug?", context=draft)
 
         if "VIOLATION" in evaluation.upper():
-            print(f"❌ Reviewer rejected the explanation, motivation: {evaluation}. Sending back...")
+            tqdm.write(f"❌ Reviewer rejected {os.path.basename(file_target)}. Retrying...") #type: ignore
             return {"reviewer_feedback": evaluation}
-        
-        print(f"✅ Reviewer approved the explanation: {evaluation}")
+
+        if self.pbar:
+            self.pbar.update(1)
 
         return {
             "explanations": {file_target: draft},
@@ -163,6 +177,10 @@ class AgentsWorkflow:
         }
 
     def _node_storyteller(self, state: ProjectState) -> dict:
+        if self.pbar:
+            self.pbar.set_description("Codebase analyzed")
+            self.pbar.close()
+        
         print("📝 Storyteller is generating the final UI JSON...")
 
         raw_context = f"Architecture:\n{state['architecture_summary']}\n"
@@ -182,6 +200,7 @@ class AgentsWorkflow:
 
         final_data = {
             "title": "RepoWhisper Analysis",
+            "tree_structure": state.get("tree_structure", ""),
             "narrative": narrative_markdown,
             "raw_modules": raw_modules_list
         }
