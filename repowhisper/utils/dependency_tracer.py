@@ -54,8 +54,8 @@ class DependencyTracer:
                         deps.append(alias.name)
                 elif isinstance(node, ast.ImportFrom) and node.module:
                     deps.append(node.module)
-        except Exception:
-            pass
+        except (OSError, SyntaxError) as exc:
+            print(f"Impossible to analyze {file_path}: {exc}")
         return deps
 
     def _resolve_module_to_file(self, module_name: str, valid_files: list[str]) -> str | None:
