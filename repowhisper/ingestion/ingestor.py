@@ -1,7 +1,3 @@
-import os
-import tempfile
-
-from git import Repo
 from langchain_community.document_loaders.generic import GenericLoader
 from langchain_community.document_loaders.parsers import LanguageParser
 from langchain_core.documents import Document
