@@ -39,7 +39,8 @@ class RepoWhisper:
 
         self._source_manager = SourceManager(self.source_target)
         self._memory_manager = None
-        self._repo_path = None
+        self._repo_path: str | None = None
+        self.repo_name: str = source_target.split("/")[-1]
 
         self._navigator = CodeNavigator(self.llm, self.user_level.value)
         self._architect = Architect(self.llm)
@@ -86,8 +87,6 @@ class RepoWhisper:
                 "reviewer_feedback": None,
                 "final_output_json": ""
             }
-
-            print(workflow.graph.get_graph().draw_mermaid())
 
             final_state = workflow.graph.invoke(initial_state)
             return final_state["final_output_json"]
