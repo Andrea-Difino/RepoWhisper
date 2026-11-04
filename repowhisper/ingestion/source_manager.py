@@ -39,7 +39,7 @@ class SourceManager:
         """
         Creates a temporary directory and clones the git repository into it.
         """
-        self.temp_dir = tempfile.TemporaryDirectory()
+        self.temp_dir = tempfile.TemporaryDirectory(prefix="repowhisper_")
         try:
             print(f"Cloning repository from {self.target}...")
             Repo.clone_from(self.target, self.temp_dir.name)
