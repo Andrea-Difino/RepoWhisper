@@ -52,6 +52,4 @@ class Ingestor:
         )
         structured_docs = python_splitter.split_documents(raw_docs)
 
-        print(f"Found {len(structured_docs)} fragmented blocks of code")
-
         return structured_docs
