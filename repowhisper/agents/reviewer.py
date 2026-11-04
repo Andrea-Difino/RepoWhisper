@@ -21,10 +21,10 @@ class Reviewer(BaseAgent):
                 CRITICAL DISTINCTION: It is perfectly acceptable for the explanation to describe how the code ITSELF 
                 handles errors (e.g., 'the code logs an error if the folder is missing'). Do not flag this as a violation.\n\n
                 You must respond using JSON. The answer should have this structure:\n
-                {
+                {{
                     "response": "<VIOLATION/APPROVED>"
                     "feedback": "<a very short feedback to fix the explanation if VIOLATION>"
-                }\n\n
+                }}\n\n
                 If the text violates the Golden Rule, the 'response' field MUST contain VIOLATION and a short advice in the 'feedback' field.\n
                 If the text is right, the 'response' field MUST contain APPROVED and the 'feedback' field an empty string."""
             ),
