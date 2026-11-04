@@ -27,8 +27,9 @@ def main():
         json_file = engine.generate_documentation()
         output_filepath = "repowhisper_analysis.json"
 
-        with open(output_filepath, "w", encoding="utf-8") as file:
-            file.write(json_file)
+        if json_file:
+            with open(output_filepath, "w", encoding="utf-8") as file:
+                file.write(json_file)
 
     except Exception as e:
         print(f"❌ Si è verificato un errore durante l'analisi: {e}")
