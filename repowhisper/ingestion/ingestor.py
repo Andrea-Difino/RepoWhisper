@@ -3,10 +3,8 @@ from langchain_community.document_loaders.parsers import LanguageParser
 from langchain_core.documents import Document
 from langchain_text_splitters import Language, RecursiveCharacterTextSplitter
 
-SUFFEXES = {
-    "python" : ".py",
-    "javascript": ".js",
-    "typescript": ".ts"
+LANGUAGE_MAP: dict[str, dict] = {
+    "python" : {"extension": ".py", "enum": Language.PYTHON},
 }
 
 class Ingestor:
@@ -31,25 +29,40 @@ class Ingestor:
         if not languages:
             languages = ["python"]
 
-        suffixes = [SUFFEXES[lang] for lang in languages]
+        all_docs = []
 
-        loader = GenericLoader.from_filesystem(
-            self.source_path,
-            glob="**/*",
-            suffixes=suffixes,
-            parser=LanguageParser(language="python", parser_threshold=500),
-            parser_kwargs={
-                "autodetect_encoding": True
-            }
-        )
+        for lang_key in languages:
+            lang_key = lang_key.lower()
+            
+            if lang_key not in LANGUAGE_MAP:
+                print(f"⚠️ Warning: language '{lang_key}' not supported by the Ingestor. It will be ignored.")
+                continue
 
-        raw_docs = loader.load()
+            config = LANGUAGE_MAP[lang_key]
+            suffix: str = config["extension"]
+            lang_enum: Language = config["enum"]
 
-        python_splitter = RecursiveCharacterTextSplitter.from_language(
-            language=Language.PYTHON,
-            chunk_size=1000,
-            chunk_overlap=150
-        )
-        structured_docs = python_splitter.split_documents(raw_docs)
+            loader = GenericLoader.from_filesystem(
+                self.source_path,
+                glob="**/*",
+                suffixes=[suffix],
+                parser=LanguageParser(language=lang_key, parser_threshold=500), #type: ignore
+                parser_kwargs={
+                    "autodetect_encoding": True
+                }
+            )
 
-        return structured_docs
+            raw_docs = loader.load()
+
+            if not raw_docs:
+                continue
+
+            python_splitter = RecursiveCharacterTextSplitter.from_language(
+                language=lang_enum,
+                chunk_size=1000,
+                chunk_overlap=150
+            )
+            structured_docs = python_splitter.split_documents(raw_docs)
+            all_docs.extend(structured_docs)
+
+        return all_docs

@@ -32,7 +32,7 @@ def main():
                 file.write(json_file)
 
     except Exception as e:
-        print(f"❌ Si è verificato un errore durante l'analisi: {e}")
+        print(f"An error occured during the analysis: {e}")
 
 if __name__ == "__main__":
     main()
