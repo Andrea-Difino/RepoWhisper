@@ -16,7 +16,7 @@ def main():
         max_tokens=6000,
         max_retries=6,
     )
-    
+
     engine = RepoWhisper(
         source_target="https://github.com/Andrea-Difino/WaveRedact",
         llm=my_llm,
