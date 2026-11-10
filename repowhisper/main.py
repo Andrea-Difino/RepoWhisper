@@ -22,7 +22,7 @@ def main():
         llm=my_llm,
         user_level=UserLevel.JUNIOR
     )
-    
+
     try:
         json_file = engine.generate_documentation()
         output_filepath = "repowhisper_analysis.json"
