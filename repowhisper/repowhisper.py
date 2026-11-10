@@ -1,3 +1,8 @@
+import os
+import socketserver
+import webbrowser
+from http.server import SimpleHTTPRequestHandler
+
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
 from agents.reviewer import Reviewer
@@ -47,14 +52,9 @@ class RepoWhisper:
         self._reviewer = Reviewer(self.llm)
         self._storyteller = Storyteller(self.llm, self.user_level.value)
 
-    def generate_documentation(self) -> str | None:
-        """
-        The main public method. Orchestrates cloning, parsing, database building, 
-        and fully automated LangGraph analysis.
-        
-        Returns:
-            str | None : A formatted JSON string ready for a frontend UI if there is no error, else it returns None
-        """
+        self._print_ascii_art()
+
+    def _print_ascii_art(self):
         ascii_art = r"""
             ____                  _       __     _                     
            / __ \___  ____  ____ | |     / /___ (_)____ ____  ___  _____
@@ -65,6 +65,15 @@ class RepoWhisper:
         """
                 
         print(f"\033[94m{ascii_art}\033[0m")
+
+    def generate_documentation(self) -> str | None:
+        """
+        The main public method. Orchestrates cloning, parsing, database building, 
+        and fully automated LangGraph analysis.
+        
+        Returns:
+            str | None : A formatted JSON string ready for a frontend UI if there is no error, else it returns None
+        """
         try:
             self._repo_path = self._source_manager.get_path()
             ingestor = Ingestor(self._repo_path)
@@ -102,5 +111,46 @@ class RepoWhisper:
             return final_state["final_output_json"]
         except KeyboardInterrupt:
             print("Program interrupted by the user")
+            return None
         finally:
             self._source_manager.cleanup()
+
+    def serve_ui(self, port: int=8543) -> None:
+        """
+        Execute full analysis, save data and launch react interface locally.
+        """
+        json_data = self.generate_documentation()
+        
+        if not json_data:
+            print("Impossible to start interface, json generation failed")
+            return
+
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        ui_dir = os.path.join(base_dir, "ui_dist")
+        
+        if not os.path.exists(ui_dir):
+            raise FileNotFoundError(
+                f"ui_dir not found: {ui_dir}. "
+            )
+
+        json_path = os.path.join(ui_dir, "data.json")
+        with open(json_path, "w", encoding="utf-8") as f:
+            f.write(json_data)
+
+        os.chdir(ui_dir)
+
+        class QuietHandler(SimpleHTTPRequestHandler):
+            def log_message(self, format, *args):
+                pass
+                
+        with socketserver.TCPServer(("", port), QuietHandler) as httpd:
+            print(f"\n Studio interface available at: http://localhost:{port}")
+            print("Press Ctrl+C to stop server and close the app")
+            
+            webbrowser.open(f"http://localhost:{port}")
+            
+            try:
+                httpd.serve_forever()
+            except KeyboardInterrupt:
+                print("\n Repowhisper server turned off")
+                httpd.server_close()
