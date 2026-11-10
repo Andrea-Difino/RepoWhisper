@@ -197,8 +197,6 @@ class AgentsWorkflow:
         if self.pbar:
             self.pbar.set_description("Codebase analyzed")
             self.pbar.close()
-        
-        print("📝 Storyteller is generating the final UI JSON...")
 
         raw_context = f"Architecture:\n{state['architecture_summary']}\n"
 

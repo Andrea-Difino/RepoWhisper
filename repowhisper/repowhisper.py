@@ -144,7 +144,7 @@ class RepoWhisper:
                 pass
                 
         with socketserver.TCPServer(("", port), QuietHandler) as httpd:
-            print(f"\n Studio interface available at: http://localhost:{port}")
+            print(f"\nStudio interface available at: http://localhost:{port}")
             print("Press Ctrl+C to stop server and close the app")
             
             webbrowser.open(f"http://localhost:{port}")
