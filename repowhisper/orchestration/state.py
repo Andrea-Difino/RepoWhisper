@@ -10,6 +10,7 @@ class ProjectState(TypedDict):
     """
 
     architecture_summary: str
+    tree_structure: str
     dependency_graph: dict[str, list[str]]
 
     unprocessed_files: list[str]

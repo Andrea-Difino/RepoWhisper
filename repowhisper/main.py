@@ -13,24 +13,26 @@ def main():
     my_llm = ChatGroq(
         api_key=api_key, 
         model="openai/gpt-oss-120b",
-        max_tokens=6000
+        max_tokens=6000,
+        max_retries=6,
     )
-    
+
     engine = RepoWhisper(
         source_target="https://github.com/Andrea-Difino/WaveRedact",
         llm=my_llm,
         user_level=UserLevel.JUNIOR
     )
-    
+
     try:
         json_file = engine.generate_documentation()
         output_filepath = "repowhisper_analysis.json"
 
-        with open(output_filepath, "w", encoding="utf-8") as file:
-            file.write(json_file)
+        if json_file:
+            with open(output_filepath, "w", encoding="utf-8") as file:
+                file.write(json_file)
 
     except Exception as e:
-        print(f"❌ Si è verificato un errore durante l'analisi: {e}")
+        print(f"An error occured during the analysis: {e}")
 
 if __name__ == "__main__":
     main()

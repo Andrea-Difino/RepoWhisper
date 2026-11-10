@@ -20,8 +20,13 @@ class Reviewer(BaseAgent):
                 or suggest fixes. Assume the code works perfectly.\n\n
                 CRITICAL DISTINCTION: It is perfectly acceptable for the explanation to describe how the code ITSELF 
                 handles errors (e.g., 'the code logs an error if the folder is missing'). Do not flag this as a violation.\n\n
-                If the text violates the Golden Rule, respond EXACTLY with the word 'VIOLATION' followed by a short instruction on what to remove.\n
-                If the text is a pure, educational explanation, respond EXACTLY with the word 'APPROVED'."""
+                You must respond using JSON. The answer should have this structure:\n
+                {{
+                    "response": "<VIOLATION/APPROVED>"
+                    "feedback": "<a very short feedback to fix the explanation if VIOLATION>"
+                }}\n\n
+                If the text violates the Golden Rule, the 'response' field MUST contain VIOLATION and a short advice in the 'feedback' field.\n
+                If the text is right, the 'response' field MUST contain APPROVED and the 'feedback' field an empty string."""
             ),
             ("user","Evaluate this explanation:\n\n{context}")
         ])

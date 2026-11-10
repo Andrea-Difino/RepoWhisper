@@ -39,21 +39,32 @@ class RepoWhisper:
 
         self._source_manager = SourceManager(self.source_target)
         self._memory_manager = None
-        self._repo_path = None
+        self._repo_path: str | None = None
+        self.repo_name: str = source_target.split("/")[-1]
 
         self._navigator = CodeNavigator(self.llm, self.user_level.value)
         self._architect = Architect(self.llm)
         self._reviewer = Reviewer(self.llm)
         self._storyteller = Storyteller(self.llm, self.user_level.value)
 
-    def generate_documentation(self) -> str:
+    def generate_documentation(self) -> str | None:
         """
         The main public method. Orchestrates cloning, parsing, database building, 
         and fully automated LangGraph analysis.
         
         Returns:
-            str: A formatted JSON string ready for a frontend UI.
+            str | None : A formatted JSON string ready for a frontend UI if there is no error, else it returns None
         """
+        ascii_art = r"""
+            ____                  _       __     _                     
+           / __ \___  ____  ____ | |     / /___ (_)____ ____  ___  _____
+          / /_/ / _ \/ __ \/ __ \| | /| / / __ \  / ___/ __ \/ _ \/ ___/
+         / _, _/  __/ /_/ / /_/ /| |/ |/ / / / / (__  ) /_/ /  __/ /    
+        /_/ |_|\___/ .___/\____/ |__/|__/_/ /_/_/____/ .___/\___/_/     
+                  /_/                               /_/            
+        """
+                
+        print(f"\033[94m{ascii_art}\033[0m")
         try:
             self._repo_path = self._source_manager.get_path()
             ingestor = Ingestor(self._repo_path)
@@ -75,6 +86,7 @@ class RepoWhisper:
 
             initial_state: ProjectState = {
                 "architecture_summary": "",
+                "tree_structure": "",
                 "dependency_graph": {},
                 "unprocessed_files": [],
                 "current_file": None,
@@ -86,10 +98,9 @@ class RepoWhisper:
                 "final_output_json": ""
             }
 
-            print(workflow.graph.get_graph().draw_mermaid())
-
             final_state = workflow.graph.invoke(initial_state)
             return final_state["final_output_json"]
-            
+        except KeyboardInterrupt:
+            print("Program interrupted by the user")
         finally:
             self._source_manager.cleanup()

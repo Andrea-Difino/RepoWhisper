@@ -26,6 +26,7 @@ dependencies = [
     "langchain-huggingface>=1.2.3",
     "langgraph>=1.2.18",
     "sentence-transformers>=6.2.0",
+    "tqdm>=4.70.1",
     "tree-sitter>=0.26.0",
     "tree-sitter-languages>=1.10.2",
 ]

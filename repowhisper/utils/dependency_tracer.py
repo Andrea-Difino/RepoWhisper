@@ -1,95 +1,92 @@
-import ast
 import os
 
-USELESS_FILES: list[str] = [
-    "__init__.py"
-]
+from .tracers.base_tracer import BaseLanguageTracer
+from .tracers.python_tracer import PythonTracer
+
 
 class DependencyTracer:
     """
-    Build a dependencies graph using the Abstract Syntax Tree (AST).
+    Build a dependencies graph module. Language agnostic
     """
 
     def __init__(self, root_dir: str):
         self.root_dir = root_dir
 
+        self._tracers: dict[str, BaseLanguageTracer] = {}
+        self._register_tracer(PythonTracer())
+
+    def _register_tracer(self, tracer: BaseLanguageTracer):
+        """Register a tracer with its extension"""
+        self._tracers[tracer.extension] = tracer
+
     def build_graph(self) -> dict[str, list[str]]:
         graph = {}
         ignore_dirs = {'tests', 'test', '__tests__', 'venv', '.venv', 'node_modules', '.git'}
-        
+
         for root, dirs, files in os.walk(self.root_dir):
             dirs[:] = [d for d in dirs if d not in ignore_dirs]
             for file in files:
-                if file.endswith('.py') and file not in USELESS_FILES:
-                    file_path = os.path.join(root, file)
-                    rel_path = os.path.relpath(file_path, self.root_dir).replace("\\", "/")
-                    graph[rel_path] = self._extract_python_dependencies(file_path)
+                _, ext = os.path.splitext(file)
+
+                if ext in self._tracers:
+                    tracer = self._tracers[ext]
+
+                    if not tracer.is_useless(file):
+                        file_path = os.path.join(root, file)
+                        rel_path = os.path.relpath(file_path, self.root_dir).replace("\\", "/")
+
+                        graph[rel_path] = tracer.extract_dependencies(file_path, self.root_dir)
 
         resolved_graph = {}
         valid_files = list(graph.keys())
-        
+
+        indices = {}
+        for ext, tracer in self._tracers.items():
+            lang_files = [f for f in valid_files if f.endswith(ext)]
+            indices[ext] = tracer.build_module_index(lang_files)
+
         for file, deps in graph.items():
+            _, ext = os.path.splitext(file)
+            tracer = self._tracers[ext]
+            tracer_index = indices.get(ext, {})
+
             resolved_deps = []
             for dep in deps:
-                resolved_file = self._resolve_module_to_file(dep, valid_files)
+                resolved_file = tracer.resolve_module_to_file(dep, tracer_index)
                 if resolved_file:
                     resolved_deps.append(resolved_file)
+
             resolved_graph[file] = resolved_deps
             
         return resolved_graph
 
-    def _extract_python_dependencies(self, file_path: str) -> list[str]:
-        """
-        Extract python dependencies using (AST), 
-        Ignore strings, comments and noise.
-        """
-        deps = []
-        try:
-            with open(file_path, 'r', encoding='utf-8') as f:
-                tree = ast.parse(f.read(), filename=file_path)
-            
-            for node in ast.walk(tree):
-                if isinstance(node, ast.Import):
-                    for alias in node.names:
-                        deps.append(alias.name)
-                elif isinstance(node, ast.ImportFrom) and node.module:
-                    deps.append(node.module)
-        except Exception:
-            pass
-        return deps
-
-    def _resolve_module_to_file(self, module_name: str, valid_files: list[str]) -> str | None:
-        """
-        Convert a namespace (es. 'utils.console') in the real ('utils/console.py').
-        """
-        path_suffix = module_name.replace('.', '/')
-        possible_matches = [
-            f"{path_suffix}.py",
-        ]
-        
-        for valid_file in valid_files:
-            for match in possible_matches:
-                if valid_file.endswith(match):
-                    return valid_file
-        return None
-
     def get_ordered_processing_list(self, graph: dict[str, list[str]]) -> list[str]:
         """
-        Execute Depth-First Search (DFS) to guaranteed zero dependencies file to be executed first.
+        Advanced DFS with states WHITE (0), GRAY (1), BLACK (2) 
+        to safely detect circular dependencies.
         """
-        visited: set[str] = set()
-        ordered_list: list[str] = []
+        visited = {}  # 0: WHITE, 1: GRAY, 2: BLACK
+        ordered_list = []
 
         def dfs(node: str):
-            if node in visited:
+            state = visited.get(node, 0)
+            if state == 1:
+                print(f"Detected circular dependency on module: {node}")
                 return
-            visited.add(node)
+            if state == 2:
+                return
+
+            visited[node] = 1
+
             for dependency in graph.get(node, []):
-                if dependency not in visited:
+                if dependency in graph:
                     dfs(dependency)
+
+            visited[node] = 2
             ordered_list.append(node)
 
         for file_node in graph:
-            dfs(file_node)
+            if visited.get(file_node, 0) == 0:
+                dfs(file_node)
 
         return ordered_list
