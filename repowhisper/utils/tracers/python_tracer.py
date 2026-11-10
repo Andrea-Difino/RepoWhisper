@@ -1,7 +1,7 @@
 import ast
 import os
 
-from base_tracer import BaseLanguageTracer
+from .base_tracer import BaseLanguageTracer
 
 
 class PythonTracer(BaseLanguageTracer):
