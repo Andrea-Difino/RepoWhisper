@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
-import { ArrowLeft, ArrowRight, Check,Network, X, Lock } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check,Network, Lock } from 'lucide-react';
 
 export interface RawModule {
   dir: string;
