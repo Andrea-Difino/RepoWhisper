@@ -69,7 +69,7 @@ class PythonTracer(BaseLanguageTracer):
         if module_name in module_index:
             return module_index[module_name]
             
-        for key, _ in module_index:
+        for key in module_index:
             if module_name.endswith(key) or key.endswith(module_name):
                 return module_index[key]
                 
