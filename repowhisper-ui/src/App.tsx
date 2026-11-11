@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRepoData } from './hooks/useRepoData';
 import { motion, AnimatePresence } from 'framer-motion';
+import type { ModuleData } from './types';
 
 import TopBar from './components/TopBar';
 import NavigationPeeks from './components/NavigationPeeks';
@@ -85,9 +86,9 @@ export default function App() {
     );
   }
 
-  let currentModule;
-  let isCurrentStudied = false;
-  let lines: string[] = [];
+  let currentModule: ModuleData;
+  let isCurrentStudied: boolean;
+  let lines: string[];
 
   if (currentIndex === 0) {
     currentModule = {
@@ -109,7 +110,7 @@ export default function App() {
       title: filePath.split('/').pop()?.toUpperCase() || "FILE DETAILS",
       explanation: fileData?.explanation || "Spiegazione non trovata nel JSON per questo file.",
       code_snippet: fileData?.code_snippet || "Codice non trovato.",
-      notes: {} as Record<number, string> 
+      notes: {} as Record<number, string>
     };
 
     isCurrentStudied = studiedFiles.has(String(moduleIndex));
@@ -130,8 +131,8 @@ export default function App() {
         <img src="/logo_sfondo_blu.png" className="w-full" alt="Logo" />
       </div>
 
-      <TopBar 
-        currentIndex={currentIndex} 
+      <TopBar
+        currentIndex={currentIndex}
         totalFiles={totalFiles}
         canGoPrev={canGoPrev}
         canGoNext={canGoNext}
@@ -141,12 +142,12 @@ export default function App() {
       />
 
       <div className="flex-1 flex items-center justify-center relative w-full overflow-x-hidden z-10 my-2">
-        <NavigationPeeks 
-           canGoPrev={canGoPrev} 
-           canGoNext={canGoNext} 
-           onPrev={goPrev} 
-           onNext={goNext}
-           isLastSlide={currentIndex >= totalFiles}
+        <NavigationPeeks
+          canGoPrev={canGoPrev}
+          canGoNext={canGoNext}
+          onPrev={goPrev}
+          onNext={goNext}
+          isLastSlide={currentIndex >= totalFiles}
         />
 
         <div className="w-full max-w-[1700px] mx-auto px-16 xl:px-20 h-[50vh] overflow-hidden flex flex-col justify-center">
@@ -165,18 +166,18 @@ export default function App() {
               <div className="col-span-5 flex flex-col h-full min-h-0 justify-between">
                 <ExplanationPanel module={currentModule} />
                 <div className="flex justify-end pt-3 pr-2 shrink-0">
-                  <StudyButton 
-                      isStudied={isCurrentStudied} 
-                      onClick={() => handleToggleStudy(currentIndex === 0 ? "root" : String(currentIndex - 1))} 
-                      isFirstSlide={currentIndex === 0}
+                  <StudyButton
+                    isStudied={isCurrentStudied}
+                    onClick={() => handleToggleStudy(currentIndex === 0 ? "root" : String(currentIndex - 1))}
+                    isFirstSlide={currentIndex === 0}
                   />
                 </div>
               </div>
 
               <div className="col-span-7 h-full min-h-0 flex flex-col">
-                <CodeViewer 
-                  lines={lines} 
-                  notes={currentModule.notes} 
+                <CodeViewer
+                  lines={lines}
+                  notes={currentModule.notes}
                   isTreeLine={currentIndex === 0}
                   isCurrentStudied={isCurrentStudied}
                 />

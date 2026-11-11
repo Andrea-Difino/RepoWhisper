@@ -1,12 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-
-interface ModuleData {
-  path: string;
-  title: string;
-  explanation: string;
-}
+import type { ModuleData } from '../types';
 
 interface ExplanationPanelProps {
   module: ModuleData;

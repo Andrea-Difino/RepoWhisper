@@ -1,12 +1,21 @@
 export interface FileAnalysis {
-    file: string,
+    file: string;
     code_snippet: string;
     explanation: string;
 }
 
 export interface RepoData {
-    title: string,
+    title: string;
     narrative: string;
     tree_structure: string;
-    files: Record<string, FileAnalysis>;
+    raw_modules: FileAnalysis[];
+    files?: Record<string, FileAnalysis>;
+}
+
+export interface ModuleData {
+    path: string;
+    title: string;
+    explanation: string;
+    code_snippet?: string;
+    notes?: Record<number, string>;
 }
