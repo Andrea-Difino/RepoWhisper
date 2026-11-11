@@ -220,4 +220,4 @@ __marimo__/
 .streamlit/secrets.toml
 
 repowhisper/db/*
-repowhisper/*.json
+repowhisper/**/*.json

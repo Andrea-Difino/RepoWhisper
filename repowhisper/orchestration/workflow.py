@@ -98,7 +98,9 @@ class AgentsWorkflow:
 
     def _node_tracer(self, state: ProjectState) -> dict:
         deps = self.tracer.build_graph()
-        ordered_files = self.tracer.get_ordered_processing_list(deps)
+
+        raw_ordered_files = self.tracer.get_ordered_processing_list(deps)
+        ordered_files = [f for f in raw_ordered_files if not f.endswith("__init__.py")]
 
         total_files = len(ordered_files)
         self.pbar = tqdm(
@@ -195,8 +197,6 @@ class AgentsWorkflow:
         if self.pbar:
             self.pbar.set_description("Codebase analyzed")
             self.pbar.close()
-        
-        print("📝 Storyteller is generating the final UI JSON...")
 
         raw_context = f"Architecture:\n{state['architecture_summary']}\n"
 
