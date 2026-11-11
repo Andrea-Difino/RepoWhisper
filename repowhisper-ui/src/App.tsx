@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useRepoData } from './hooks/useRepoData';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Importiamo tutti i componenti puliti
 import TopBar from './components/TopBar';
 import NavigationPeeks from './components/NavigationPeeks';
 import ExplanationPanel from './components/ExplanationPanel';
@@ -12,16 +11,11 @@ import StudyButton from './components/StudyButton';
 export default function App() {
   const { data, loading, error } = useRepoData();
 
-  // 1. STATO GLOBALE (Il "Cervello" dell'app)
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [studiedFiles, setStudiedFiles] = useState<Set<string>>(new Set());
   const [showGraph, setShowGraph] = useState(false);
 
-  // 2. VARIABILI DERIVATE E LOGICA DI NAVIGAZIONE
-  // Ora la chiave reale che usiamo è "raw_modules", e all'interno non è un dizionario
-  // con chiave il percorso, ma è un semplice Array di oggetti. 
-  // Per mantenere la logica funzionante, usiamo l'indice dell'array come identificatore.
   const rawModules = data?.raw_modules || [];
   const totalFiles = rawModules.length;
 
@@ -70,12 +64,11 @@ export default function App() {
     }
   };
 
-  // 3. SCHERMATE DI SICUREZZA (Caricamento e Rete)
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center bg-[#F7F7F7] text-[#11151C]">
         <div className="text-2xl font-bold animate-pulse">
-          Sincronizzazione neurale in corso...
+          Loading...
         </div>
       </div>
     );
@@ -92,24 +85,21 @@ export default function App() {
     );
   }
 
-  // 4. COSTRUZIONE DEL MODULO CORRENTE (Unisce JSON e Interfaccia)
   let currentModule;
   let isCurrentStudied = false;
   let lines: string[] = [];
 
   if (currentIndex === 0) {
     currentModule = {
-      // Per la view, root_id non esiste, diamo semplicemente la path logica
       path: "project/overview",
       title: "EXECUTIVE SUMMARY",
-      explanation: data.narrative || data.architecture_summary || "Riassunto non disponibile.",
-      code_snippet: data.tree_structure || "Albero non disponibile.",
+      explanation: data.narrative || "Resume not available",
+      code_snippet: data.tree_structure || "Tree not available",
       notes: {} as Record<number, string>
     };
     isCurrentStudied = studiedFiles.has("root");
     lines = (data.tree_structure || "").split('\n');
   } else {
-    // Navighiamo nell'array `raw_modules`. currentIndex 1 corrisponde a rawModules[0]
     const moduleIndex = currentIndex - 1;
     const fileData = rawModules[moduleIndex];
     const filePath = fileData?.file || "Path Sconosciuto";
@@ -119,10 +109,9 @@ export default function App() {
       title: filePath.split('/').pop()?.toUpperCase() || "FILE DETAILS",
       explanation: fileData?.explanation || "Spiegazione non trovata nel JSON per questo file.",
       code_snippet: fileData?.code_snippet || "Codice non trovato.",
-      notes: {} as Record<number, string> // Mantenuto se un domani il backend inizierà a generarle
+      notes: {} as Record<number, string> 
     };
-    
-    // Lo stato dello studio si basa sull'indice numerico (trasformato in stringa)
+
     isCurrentStudied = studiedFiles.has(String(moduleIndex));
     lines = (fileData?.code_snippet || "").split('\n');
   }

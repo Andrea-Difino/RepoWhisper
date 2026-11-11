@@ -17,6 +17,7 @@ export function useRepoData() {
 
                 const jsonData: RepoData = await response.json();
                 setData(jsonData);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             } catch (err: any) {
                 setError(err.message || "Unknown error during the loading");
             } finally {

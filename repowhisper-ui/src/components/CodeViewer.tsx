@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Lock, Maximize2, Minimize2 } from 'lucide-react';
 
 interface CodeViewerProps {
@@ -13,13 +13,14 @@ export default function CodeViewer({ lines, notes = {}, isTreeLine, isCurrentStu
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setActiveLine(null);
   }, [lines]);
 
   const renderContent = (expanded: boolean) => (
     <div className={`flex flex-col justify-between overflow-hidden select-text border border-white/5 bg-[#0B0F17] transition-all duration-300 ${
       expanded 
-        ? 'fixed inset-6 z-[100] rounded-[36px] p-10 shadow-2xl' 
+        ? 'fixed inset-6 z-100 rounded-[36px] p-10 shadow-2xl' 
         : 'w-full h-full min-h-0 rounded-[36px] p-5 lg:p-7'
     }`}>
 
@@ -72,7 +73,7 @@ export default function CodeViewer({ lines, notes = {}, isTreeLine, isCurrentStu
       </div>
 
       {!isTreeLine && (
-        <div className="pt-4 mt-2 border-t border-white/10 min-h-[52px] flex items-center shrink-0">
+        <div className="pt-4 mt-2 border-t border-white/10 min-h-13 flex items-center shrink-0">
           {activeLine !== null && notes[activeLine] ? (
             <div className="text-xs lg:text-sm text-slate-200 flex items-center gap-2">
               <span className="text-blue-400 font-mono font-bold">Riga {activeLine + 1} →</span>
@@ -103,7 +104,7 @@ export default function CodeViewer({ lines, notes = {}, isTreeLine, isCurrentStu
       {isExpanded && (
         <>
           <div 
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90]" 
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-90" 
             onClick={() => setIsExpanded(false)} 
           />
           {renderContent(true)}

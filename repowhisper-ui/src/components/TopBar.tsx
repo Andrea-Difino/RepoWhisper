@@ -1,4 +1,3 @@
-import React from 'react';
 import { ArrowLeft, ArrowRight, Network } from 'lucide-react';
 
 interface TopBarProps {
@@ -21,7 +20,7 @@ export default function TopBar({
   onToggleGraph 
 }: TopBarProps) {
   return (
-    <header className="w-full max-w-[1440px] h-[15vh] mx-auto px-12 flex flex-col items-center justify-end z-10 gap-4">
+    <header className="w-full max-w-360 h-[15vh] mx-auto px-12 flex flex-col items-center justify-end z-10 gap-4">
       <div className="flex items-center gap-4">
         <span className="text-[15px] font-mono font-normal bg-black/5 text-black/60 px-4 py-2 rounded-full">
           {currentIndex === 0 ? 'START' : `${currentIndex} / ${totalFiles}`}
