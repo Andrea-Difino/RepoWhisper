@@ -16,7 +16,8 @@
     "react-dom": "^19.3.1",
     "react-markdown": "^10.1.0",
     "react-syntax-highlighter": "^16.1.2",
-    "reactflow": "^11.11.4"
+    "reactflow": "^11.11.4",
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
