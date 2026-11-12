@@ -56,12 +56,15 @@ class RepoWhisper:
 
     def _print_ascii_art(self):
         ascii_art = r"""
-            ____                  _       __     _                     
-           / __ \___  ____  ____ | |     / /___ (_)____ ____  ___  _____
-          / /_/ / _ \/ __ \/ __ \| | /| / / __ \  / ___/ __ \/ _ \/ ___/
-         / _, _/  __/ /_/ / /_/ /| |/ |/ / / / / (__  ) /_/ /  __/ /    
-        /_/ |_|\___/ .___/\____/ |__/|__/_/ /_/_/____/ .___/\___/_/     
-                  /_/                               /_/            
+ ____                                         __                                          
+/\  _`\                                      /\ \      __                                 
+\ \ \L\ \     __   _____     ___   __  __  __\ \ \___ /\_\    ____  _____      __   _ __  
+ \ \ ,  /   /'__`\/\ '__`\  / __`\/\ \/\ \/\ \\ \  _ `\/\ \  /',__\/\ '__`\  /'__`\/\`'__\
+  \ \ \\ \ /\  __/\ \ \L\ \/\ \L\ \ \ \_/ \_/ \\ \ \ \ \ \ \/\__, `\ \ \L\ \/\  __/\ \ \/ 
+   \ \_\ \_\ \____\\ \ ,__/\ \____/\ \___x___/' \ \_\ \_\ \_\/\____/\ \ ,__/\ \____\\ \_\ 
+    \/_/\/ /\/____/ \ \ \/  \/___/  \/__//__/    \/_/\/_/\/_/\/___/  \ \ \/  \/____/ \/_/ 
+                     \ \_\                                            \ \_\               
+                      \/_/                                             \/_/               
         """
                 
         print(f"\033[94m{ascii_art}\033[0m")
@@ -115,15 +118,16 @@ class RepoWhisper:
         finally:
             self._source_manager.cleanup()
 
-    def serve_ui(self, port: int=8543) -> None:
+    def serve_ui(self, json_data: str|None = None, port: int=8543) -> None:
         """
         Execute full analysis, save data and launch react interface locally.
         """
-        json_data = self.generate_documentation()
-        
         if not json_data:
-            print("Impossible to start interface, json generation failed")
-            return
+            json_data = self.generate_documentation()
+        
+            if not json_data:
+                print("Impossible to start interface, json generation failed")
+                return
 
         base_dir = os.path.dirname(os.path.abspath(__file__))
         ui_dir = os.path.join(base_dir, "ui_dist")
