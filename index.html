@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="it">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,10 +8,11 @@
   <meta name="description" content="RepoWhisper trasforma repository in percorsi di studio chiari e guidati.">
   <link rel="stylesheet" href="style/main.css">
 </head>
+
 <body>
-  
+
   <div class="page">
-    <img class="background bg-top" src="imgs/back_1_svg.svg" alt="background-1">
+    <img class="background bg-top" src="imgs/top.svg" alt="background-1">
     <header>
       <div class="brand">
         <img src="imgs/RepoWhisper.png" alt="RepoWhisper logo" width="568px">
@@ -22,38 +24,47 @@
       <section class="hero">
         <h1>Studia il codice un passo alla</h1>
         <h1 class="gradient">VOLTA</h1>
-        <p class="hero-copy">RepoWhisper trasforma qualsiasi repository in un percorso di studio: dal punto d’ingresso fino all’ultimo modulo, con spiegazioni chiare, in locale sul tuo computer.</p>
+        <p class="hero-copy">RepoWhisper trasforma qualsiasi repository in un percorso di studio: dal punto d’ingresso
+          fino all’ultimo modulo, con spiegazioni chiare, in locale sul tuo computer.</p>
         <div class="install-row">
           <code class="install">⌘ pip install RepoWhisper</code>
-          <button class="copy" data-copy="pip install RepoWhisper"><img src="imgs/copy.png" alt="copy button" width="50px"></button>
+          <button class="copy" data-copy="pip install RepoWhisper"><img src="imgs/copy.png" alt="copy button"
+              width="50px"></button>
         </div>
       </section>
 
       <section class="feature">
         <h2 class="feature-title reveal">Spiegazione<br>&amp; codice</h2>
         <div class="feature-label reveal">
-          Unisci la teoria alla pratica in un'unica schermata. Da un lato leggi la <strong>spiegazione architetturale generata dall'IA</strong> per comprendere i concetti chiave, dall'altro esplori il <strong>codice sorgente originale</strong>. I sussurri contestuali ti guidano riga per riga nei passaggi più complessi, per non farti mai perdere il filo.
+          Unisci la teoria alla pratica in un'unica schermata. Da un lato leggi la <strong>spiegazione architetturale
+            generata dall'IA</strong> per comprendere i concetti chiave, dall'altro esplori il <strong>codice sorgente
+            originale</strong>. I sussurri contestuali ti guidano riga per riga nei passaggi più complessi, per non
+          farti mai perdere il filo.
         </div>
         <div class="mockups">
           <div class="mock-card paper reveal">
             <div class="placeholder">
               <span class="tiny">FIRST CLASS / OVERVIEW</span>
               <h3>FIRST CLASS</h3>
-              <p>Questa classe rappresenta un componente centrale del progetto. La spiegazione accompagna il codice e chiarisce responsabilità e comportamento.</p>
-              <p><strong>• __init__</strong> — inizializza lo stato<br><strong>• process()</strong> — esegue la logica principale</p>
+              <p>Questa classe rappresenta un componente centrale del progetto. La spiegazione accompagna il codice e
+                chiarisce responsabilità e comportamento.</p>
+              <p><strong>• __init__</strong> — inizializza lo stato<br><strong>• process()</strong> — esegue la logica
+                principale</p>
               <p class="tiny">Esempio di contenuto illustrativo</p>
             </div>
           </div>
           <div class="mock-card code reveal">
             <div class="placeholder">
               <h3>source.py</h3>
-              <div class="code-lines"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="code-lines">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      
+
 
       <section class="quickstart">
         <div class="quickstart-terminal reveal">
@@ -74,47 +85,205 @@
 )</pre>
         </div>
         <p class="quickstart-text reveal">
-          Inizializza il motore in poche righe di Python. Configura il repository target, collega il tuo LLM preferito e definisci il livello di competenza per generare una documentazione su misura.
+          Inizializza il motore in poche righe di Python. Configura il repository target, collega il tuo LLM preferito e
+          definisci il livello di competenza per generare una documentazione su misura.
         </p>
       </section>
-      
-      <section class="feature feature-reversed">
-        <h2 class="feature-title reveal">Mappa<br>&amp; Nodi</h2>
-        <div class="feature-label reveal">
-          Visualizza l'intero ecosistema con il <strong>Grafo Interattivo</strong>. Scopri come i moduli comunicano tra loro, traccia le dipendenze e orientati nell'architettura ad alto livello. Una bussola visiva essenziale prima ancora di leggere la prima riga di codice.
-        </div>
-        <div class="mockups">
-          <div class="graph-mock reveal">
-            <svg style="position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none;">
-              <line x1="20%" y1="50%" x2="50%" y2="25%" stroke="#c9cbd1" stroke-width="2" stroke-dasharray="4" />
-              <line x1="50%" y1="25%" x2="80%" y2="60%" stroke="#c9cbd1" stroke-width="2" stroke-dasharray="4" />
-              <line x1="20%" y1="50%" x2="80%" y2="60%" stroke="#c9cbd1" stroke-width="2" stroke-dasharray="4" />
-            </svg>
-            <div class="graph-node" style="left: calc(20% - 24px); top: calc(50% - 24px); background: var(--blue); color: white;">A</div>
-            <div class="graph-node" style="left: calc(50% - 24px); top: calc(25% - 24px); background: var(--ink); color: white;">B</div>
-            <div class="graph-node" style="left: calc(80% - 24px); top: calc(60% - 24px); background: white; border: 2px solid #c9cbd1; color: var(--ink);">C</div>
+
+      <section id="agent-graph" aria-labelledby="ag-title">
+        <div class="ag-stage">
+          <div class="ag-heading">
+            <div>
+              <span class="ag-eyebrow">SYSTEM ARCHITECTURE <i></i> MULTI-AGENT WORKFLOW</span>
+              <h2 id="ag-title">Un sistema coordinato.<br><span>Un’analisi, passo dopo passo.</span></h2>
+              <p class="ag-sub">Un flusso orchestrato in cui ogni agente ha una responsabilità precisa.</p>
+            </div>
+          </div>
+          <div class="ag-view">
+            <svg id="ag-svg" viewBox="0 0 1200 380" role="img"
+              aria-label="Architettura multi-agente di RepoWhisper"></svg>
+          </div>
+          <div class="ag-footer">
+            <div class="ag-cap" id="ag-cap" aria-live="polite"></div>
           </div>
         </div>
       </section>
 
       <section class="closing" id="closing">
         <h2 class="scroll-title" aria-label="La prossima repository non sarà più un ostacolo.">
-          <span class="word">La</span><span class="word">prossima</span><span class="word emphasis">repository</span><br>
-          <span class="word emphasis">non</span><span class="word">sarà</span><span class="word">più</span><span class="word">un</span><br>
+          <span class="word">La</span><span class="word">prossima</span><span
+            class="word emphasis">repository</span><br>
+          <span class="word emphasis">non</span><span class="word">sarà</span><span class="word">più</span><span
+            class="word">un</span><br>
           <span class="word emphasis">ostacolo.</span>
         </h2>
         <div class="install-row">
           <code class="install">⌘ pip install RepoWhisper</code>
-          <button class="copy" data-copy="pip install RepoWhisper"><img src="imgs/copy.png" alt="copy button" width="50px"></button>
+          <button class="copy" data-copy="pip install RepoWhisper"><img src="imgs/copy.png" alt="copy button"
+              width="50px"></button>
         </div>
       </section>
-      
+
     </main>
     <footer>RepoWhisper · Study code, one step at a time</footer>
-    <img class="background bg-bottom" src="imgs/bottom.png" alt="background-2">
+    <img class="background bg-bottom" src="imgs/bottom_2.png" alt="background-2">
   </div>
 
-  
+  <script>
+    (function () {
+      const root = document.getElementById('agent-graph');
+      const svg = document.getElementById('ag-svg');
+      const cap = document.getElementById('ag-cap');
+      const view = root.querySelector('.ag-view');
+      const NS = 'http://www.w3.org/2000/svg';
+      const mk = (tag, attrs = {}, parent) => {
+        const el = document.createElementNS(NS, tag);
+        Object.entries(attrs).forEach(([key, value]) => el.setAttribute(key, value));
+        if (parent) parent.appendChild(el);
+        return el;
+      };
+
+      const steps = [
+        { t: '01 / ARCHITECT', p: 'L’architect esamina la repository nel suo insieme: struttura delle cartelle, linguaggi e punti d’ingresso. Produce una mappa ad alto livello che orienta il lavoro degli agenti successivi.' },
+        { t: '02 / TRACER', p: 'Il tracer ricostruisce le relazioni tra i componenti: import, chiamate tra funzioni e dipendenze tra moduli. Da questa mappa ricava i file da analizzare e il loro ordine.' },
+        { t: '03 / DISPATCHER', p: 'Il dispatcher coordina il flusso. Non analizza direttamente il codice: valuta lo stato dell’elaborazione e instrada ogni passaggio verso l’agente appropriato.' },
+        { t: '04 / NAVIGATOR', p: 'Con l’evento <code>process_file</code>, il navigator apre il file selezionato e ne analizza struttura, classi, funzioni e responsabilità all’interno del progetto.' },
+        { t: '05 / REVIEWER', p: 'Il reviewer verifica il risultato del navigator. In caso di esito positivo il flusso prosegue; se l’analisi non è soddisfacente, <code>fail_retry</code> richiede un nuovo tentativo.' },
+        { t: '06 / CONTROL FLOW', p: 'Il dispatcher gestisce i percorsi di ritorno: <code>file_error</code> consente di proseguire quando un file non è leggibile, mentre <code>pass_next</code> avvia l’analisi del file successivo.' },
+        { t: '07 / STORYTELLER', p: 'Quando non restano file da elaborare, <code>finish_analysis</code> attiva lo storyteller. L’agente consolida i risultati e li trasforma in una spiegazione coerente della repository.' }
+      ];
+
+      const N = steps.length;
+      steps.forEach(step => {
+        const item = document.createElement('div');
+        item.className = 'ag-step';
+        item.innerHTML = `<h3>${step.t}</h3><p>${step.p}</p>`;
+        cap.appendChild(item);
+      });
+      const capEls = [...cap.children];
+
+      const defs = mk('defs', {}, svg);
+      defs.innerHTML = `
+        <linearGradient id="ag-dispatcher" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#244fba"/>
+          <stop offset="1" stop-color="#3979e8"/>
+        </linearGradient>
+        <marker id="ag-arrow" viewBox="0 0 10 10" refX="8" refY="5"
+          markerWidth="6" markerHeight="6" orient="auto">
+          <path d="M0 0 L10 5 L0 10 Z" fill="#8b99ad"/>
+        </marker>
+      `;
+
+      const items = [];
+      const node = (id, x, y, w, h, label, step, a, b, shape) => {
+        const g = mk('g', { class: `n ${shape === 'box' ? 'dispatcher' : ''}` }, svg);
+        if (shape === 'start') {
+          mk('circle', { class: 'start-ring', cx: x, cy: y, r: 8 }, g);
+          mk('circle', { class: 'start-core', cx: x, cy: y, r: 3 }, g);
+        } else if (shape === 'end') {
+          mk('circle', { class: 'end-ring', cx: x, cy: y, r: 10 }, g);
+          mk('circle', { class: 'end-core', cx: x, cy: y, r: 4 }, g);
+        } else {
+          mk('rect', { x, y, width: w, height: h, rx: shape === 'box' ? 8 : 13 }, g);
+          mk('text', { x: x + w / 2, y: y + h / 2 }, g).textContent = label;
+        }
+        items.push({ kind: 'n', el: g, step, a, b });
+      };
+
+      const edge = (d, step, a, b, label, lx, ly, loop) => {
+        const g = mk('g', { class: `e${loop ? ' loop' : ''}` }, svg);
+        const path = mk('path', { d, pathLength: 1, 'marker-end': 'url(#ag-arrow)' }, g);
+        let lb = null;
+        if (label) {
+          lb = mk('g', { class: 'lb' }, g);
+          mk('rect', {}, lb);
+          mk('text', { x: lx, y: ly }, lb).textContent = label;
+        }
+        items.push({ kind: 'e', el: g, p: path, lb, step, a, b });
+      };
+
+      node('start', 28, 170, 0, 0, '', 0, 0, .2, 'start');
+      edge('M 38 170 H 70', 0, .1, .4);
+      node('architect', 70, 140, 130, 60, 'architect_node', 0, .35, .7);
+      edge('M 200 170 H 245', 1, 0, .4);
+      node('tracer', 245, 140, 130, 60, 'tracer_node', 1, .35, .7);
+      edge('M 375 170 H 440', 2, 0, .4);
+      node('dispatcher', 440, 140, 150, 60, 'file_dispatcher_node', 2, .35, .7, 'box');
+      edge('M 515 140 V 96 Q 515 80 531 80 H 700', 3, 0, .5, 'process_file', 615, 80, true);
+      node('navigator', 700, 50, 140, 60, 'navigator_node', 3, .45, .8);
+      node('reviewer', 1030, 50, 140, 60, 'reviewer_node', 4, 0, .3);
+      edge('M 840 62 H 1030', 4, .3, .65, 'no_file_error', 935, 62, true);
+      edge('M 1030 98 H 840', 4, .55, .9, 'fail_retry', 935, 98, true);
+      edge('M 740 110 V 138 Q 740 158 720 158 H 592', 5, 0, .5, 'file_error', 656, 158, true);
+      edge('M 1100 110 V 324 Q 1100 340 1084 340 H 506 Q 490 340 490 324 V 202', 5, .35, 1, 'pass_next', 800, 340, true);
+      edge('M 590 184 H 610 Q 620 184 620 194 V 230 Q 620 240 630 240 H 800', 6, 0, .45, 'finish_analysis', 715, 240, true);
+      node('storyteller', 800, 210, 140, 60, 'storyteller_node', 6, .4, .7);
+      edge('M 940 240 H 997', 6, .65, .85);
+      node('end', 1010, 240, 0, 0, '', 6, .8, 1, 'end');
+
+      function fitLabels() {
+        items.forEach(item => {
+          if (!item.lb) return;
+          const text = item.lb.querySelector('text');
+          const rect = item.lb.querySelector('rect');
+          const box = text.getBBox();
+          rect.setAttribute('x', box.x - 8);
+          rect.setAttribute('y', box.y - 5);
+          rect.setAttribute('width', box.width + 16);
+          rect.setAttribute('height', box.height + 10);
+        });
+      }
+      fitLabels();
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLabels);
+
+      const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value));
+      function render(progress) {
+        const globalStep = progress * N;
+        const current = Math.min(N - 1, Math.floor(globalStep));
+        items.forEach(item => {
+          const local = clamp((clamp(globalStep - item.step) - item.a) / (item.b - item.a));
+          const complete = item.step < current || progress >= 1;
+          const amount = complete ? 1 : local;
+          if (item.kind === 'n') {
+            item.el.style.opacity = amount;
+            item.el.classList.toggle('active', item.step === current && !complete);
+            item.el.classList.toggle('complete', complete);
+          } else {
+            item.p.style.strokeDashoffset = 1 - amount;
+            item.p.style.opacity = amount > 0 ? 1 : .18;
+            item.p.setAttribute('marker-end', amount >= .99 ? 'url(#ag-arrow)' : '');
+            item.el.classList.toggle('active', item.step === current && !complete);
+            if (item.lb) item.lb.style.opacity = clamp((amount - .48) / .42);
+          }
+        });
+        capEls.forEach((element, index) => element.classList.toggle('on', index === current));
+        const overflow = svg.clientWidth - view.clientWidth;
+        svg.style.transform = overflow > 0 ? `translateX(${-overflow * clamp(progress * 1.08)}px)` : '';
+      }
+
+      function onScroll() {
+        const rect = root.getBoundingClientRect();
+        const max = root.offsetHeight - window.innerHeight;
+        render(max > 0 ? clamp(-rect.top / max) : 1);
+      }
+
+      const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduceMotion) {
+        root.classList.add('rm');
+        render(1);
+      } else {
+        let ticking = false;
+        addEventListener('scroll', () => {
+          if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(() => { ticking = false; onScroll(); });
+          }
+        }, { passive: true });
+        addEventListener('resize', onScroll);
+        onScroll();
+      }
+    })();
+  </script>
 
   <script>
     const revealObserver = new IntersectionObserver((entries) => {
@@ -148,16 +317,16 @@
     function updateScrollWords() {
       const rect = closing.getBoundingClientRect();
       const viewport = window.innerHeight;
-      
+
       const start = viewport * 0.90;
-      const end = viewport * 0.65; 
-      
+      const end = viewport * 0.65;
+
       let progress = (start - rect.top) / (start - end);
-      
+
       if ((window.innerHeight + Math.round(window.scrollY)) >= document.body.offsetHeight - 10) {
         progress = 1;
       }
-      
+
       progress = Math.min(1, Math.max(0, progress));
       const activeCount = Math.ceil(progress * words.length);
 
@@ -165,10 +334,11 @@
         word.classList.toggle('active', index < activeCount);
       });
     }
-    
+
     window.addEventListener('scroll', updateScrollWords, { passive: true });
     window.addEventListener('resize', updateScrollWords);
     updateScrollWords();
   </script>
 </body>
+
 </html>
