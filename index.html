@@ -66,14 +66,15 @@
 
 
 
-      <section class="quickstart">
-        <div class="quickstart-terminal reveal">
-          <div class="terminal-header">
-            <div class="terminal-dot red"></div>
-            <div class="terminal-dot yellow"></div>
-            <div class="terminal-dot green"></div>
-          </div>
-          <pre class="terminal-body"><span class="py-var">my_llm</span> = <span class="py-class">BaseChatModel</span>(
+      <section class="quickstart" id="quickstart">
+        <div class="qs-stage">
+          <div class="quickstart-terminal" id="qs-terminal">
+            <div class="terminal-header">
+              <div class="terminal-dot red"></div>
+              <div class="terminal-dot yellow"></div>
+              <div class="terminal-dot green"></div>
+            </div>
+            <pre class="terminal-body"><span class="py-var">my_llm</span> = <span class="py-class" id="qs-base">BaseChatModel</span>(
     <span class="py-arg">api_key</span>=<span class="py-str">"***"</span>,
     <span class="py-arg">llm</span>=<span class="py-str">"model_name"</span>
 )
@@ -83,11 +84,24 @@
     <span class="py-arg">llm</span>=my_llm,
     <span class="py-arg">user_level</span>=<span class="py-class">UserLevel</span>.JUNIOR
 )</pre>
+          </div>
+          <aside class="qs-note" id="qs-note">
+            <h3><code>BaseChatModel</code> è la base di LangChain</h3>
+            <p>È la classe base generica di LangChain per i modelli di chat: RepoWhisper funziona con qualsiasi modello
+              che la estende. Scegli il provider e installa il suo extra per avere il modello pronto da passare come <code>llm</code>.</p>
+            <div class="qs-chips" role="group" aria-label="Provider LLM">
+              <button type="button" class="on" data-extra="groq">groq</button>
+              <button type="button" data-extra="openai">openai</button>
+              <button type="button" data-extra="anthropic">anthropic</button>
+              <button type="button" data-extra="ollama">ollama</button>
+            </div>
+            <code class="qs-cmd" id="qs-cmd">pip install "RepoWhisper[groq]"</code>
+          </aside>
+          <p class="quickstart-text" id="qs-text">
+            Inizializza il motore in poche righe di Python. Configura il repository target, collega il tuo LLM preferito e
+            definisci il livello di competenza per generare una documentazione su misura.
+          </p>
         </div>
-        <p class="quickstart-text reveal">
-          Inizializza il motore in poche righe di Python. Configura il repository target, collega il tuo LLM preferito e
-          definisci il livello di competenza per generare una documentazione su misura.
-        </p>
       </section>
 
       <section id="agent-graph" aria-labelledby="ag-title">
@@ -98,6 +112,10 @@
               <h2 id="ag-title">Un sistema coordinato.<br><span>Un’analisi, passo dopo passo.</span></h2>
               <p class="ag-sub">Un flusso orchestrato in cui ogni agente ha una responsabilità precisa.</p>
             </div>
+            <ul class="ag-legend" aria-label="Legenda">
+              <li><span class="lg agent"></span>Agente: ragiona con l’LLM</li>
+              <li><span class="lg helper"></span>Nodo di supporto: logica senza LLM</li>
+            </ul>
           </div>
           <div class="ag-view">
             <svg id="ag-svg" viewBox="0 0 1200 380" role="img"
@@ -144,20 +162,21 @@
       };
 
       const steps = [
-        { t: '01 / ARCHITECT', p: 'L’architect esamina la repository nel suo insieme: struttura delle cartelle, linguaggi e punti d’ingresso. Produce una mappa ad alto livello che orienta il lavoro degli agenti successivi.' },
-        { t: '02 / TRACER', p: 'Il tracer ricostruisce le relazioni tra i componenti: import, chiamate tra funzioni e dipendenze tra moduli. Da questa mappa ricava i file da analizzare e il loro ordine.' },
-        { t: '03 / DISPATCHER', p: 'Il dispatcher coordina il flusso. Non analizza direttamente il codice: valuta lo stato dell’elaborazione e instrada ogni passaggio verso l’agente appropriato.' },
-        { t: '04 / NAVIGATOR', p: 'Con l’evento <code>process_file</code>, il navigator apre il file selezionato e ne analizza struttura, classi, funzioni e responsabilità all’interno del progetto.' },
-        { t: '05 / REVIEWER', p: 'Il reviewer verifica il risultato del navigator. In caso di esito positivo il flusso prosegue; se l’analisi non è soddisfacente, <code>fail_retry</code> richiede un nuovo tentativo.' },
+        { t: '01 / ARCHITECT', k: 'agent', p: 'L’architect esamina la repository nel suo insieme: struttura delle cartelle, linguaggi e punti d’ingresso. Produce una mappa ad alto livello che verrà utilizzata dallo storyteller.' },
+        { t: '02 / TRACER', k: 'helper', p: 'Il tracer ricostruisce le relazioni tra i componenti: import, chiamate tra funzioni e dipendenze tra moduli. Da questa mappa ricava i file da analizzare e il loro ordine.' },
+        { t: '03 / DISPATCHER', k: 'helper', p: 'Il dispatcher coordina il flusso. Non analizza direttamente il codice: valuta lo stato dell’elaborazione e instrada ogni passaggio verso l’agente appropriato.' },
+        { t: '04 / NAVIGATOR', k: 'agent', p: 'Con l’evento <code>process_file</code>, il navigator apre il file selezionato e ne analizza struttura, classi, funzioni e responsabilità all’interno del progetto.' },
+        { t: '05 / REVIEWER', k: 'agent', p: 'Il reviewer verifica il risultato del navigator. In caso di esito positivo il flusso prosegue; se l’analisi non è soddisfacente, <code>fail_retry</code> richiede un nuovo tentativo.' },
         { t: '06 / CONTROL FLOW', p: 'Il dispatcher gestisce i percorsi di ritorno: <code>file_error</code> consente di proseguire quando un file non è leggibile, mentre <code>pass_next</code> avvia l’analisi del file successivo.' },
-        { t: '07 / STORYTELLER', p: 'Quando non restano file da elaborare, <code>finish_analysis</code> attiva lo storyteller. L’agente consolida i risultati e li trasforma in una spiegazione coerente della repository.' }
+        { t: '07 / STORYTELLER', k: 'agent', p: 'Quando non restano file da elaborare, <code>finish_analysis</code> attiva lo storyteller. L’agente consolida i risultati e li trasforma in una spiegazione coerente della repository.' }
       ];
 
       const N = steps.length;
       steps.forEach(step => {
         const item = document.createElement('div');
         item.className = 'ag-step';
-        item.innerHTML = `<h3>${step.t}</h3><p>${step.p}</p>`;
+        const tag = step.k ? `<em class="tag ${step.k}">${step.k === 'agent' ? 'Agente' : 'Nodo di supporto'}</em>` : '';
+        item.innerHTML = `<h3>${step.t}${tag}</h3><p>${step.p}</p>`;
         cap.appendChild(item);
       });
       const capEls = [...cap.children];
@@ -176,7 +195,7 @@
 
       const items = [];
       const node = (id, x, y, w, h, label, step, a, b, shape) => {
-        const g = mk('g', { class: `n ${shape === 'box' ? 'dispatcher' : ''}` }, svg);
+        const g = mk('g', { class: `n ${shape === 'helper' ? 'helper' : 'agent'}` }, svg);
         if (shape === 'start') {
           mk('circle', { class: 'start-ring', cx: x, cy: y, r: 8 }, g);
           mk('circle', { class: 'start-core', cx: x, cy: y, r: 3 }, g);
@@ -184,8 +203,13 @@
           mk('circle', { class: 'end-ring', cx: x, cy: y, r: 10 }, g);
           mk('circle', { class: 'end-core', cx: x, cy: y, r: 4 }, g);
         } else {
-          mk('rect', { x, y, width: w, height: h, rx: shape === 'box' ? 8 : 13 }, g);
+          mk('rect', { x, y, width: w, height: h, rx: shape === 'helper' ? 5 : 22 }, g);
           mk('text', { x: x + w / 2, y: y + h / 2 }, g).textContent = label;
+          if (shape !== 'helper') {
+            const chip = mk('g', { class: 'chip', transform: `translate(${x + w - 32} ${y})` }, g);
+            mk('circle', { r: 10 }, chip);
+            mk('path', { d: 'M0 -5.5L1.5 -1.5L5.5 0L1.5 1.5L0 5.5L-1.5 1.5L-5.5 0L-1.5 -1.5Z' }, chip);
+          }
         }
         items.push({ kind: 'n', el: g, step, a, b });
       };
@@ -206,9 +230,9 @@
       edge('M 38 170 H 70', 0, .1, .4);
       node('architect', 70, 140, 130, 60, 'architect_node', 0, .35, .7);
       edge('M 200 170 H 245', 1, 0, .4);
-      node('tracer', 245, 140, 130, 60, 'tracer_node', 1, .35, .7);
+      node('tracer', 245, 140, 130, 60, 'tracer_node', 1, .35, .7, 'helper');
       edge('M 375 170 H 440', 2, 0, .4);
-      node('dispatcher', 440, 140, 150, 60, 'file_dispatcher_node', 2, .35, .7, 'box');
+      node('dispatcher', 440, 140, 150, 60, 'file_dispatcher_node', 2, .35, .7, 'helper');
       edge('M 515 140 V 96 Q 515 80 531 80 H 700', 3, 0, .5, 'process_file', 615, 80, true);
       node('navigator', 700, 50, 140, 60, 'navigator_node', 3, .45, .8);
       node('reviewer', 1030, 50, 140, 60, 'reviewer_node', 4, 0, .3);
@@ -339,6 +363,49 @@
     window.addEventListener('resize', updateScrollWords);
     updateScrollWords();
   </script>
+  <script>
+    (function () {
+      const sec = document.getElementById('quickstart');
+      const term = document.getElementById('qs-terminal');
+      const note = document.getElementById('qs-note');
+      const txt = document.getElementById('qs-text');
+      const cmd = document.getElementById('qs-cmd');
+      const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+      const ease = t => 1 - Math.pow(1 - t, 3);
+
+      function draw(p) {
+        const z = ease(clamp(p / .55));
+        term.style.transform = `scale(${.5 + .5 * z})`;
+        term.style.opacity = .25 + .75 * clamp(p / .3);
+        const n = clamp((p - .6) / .2);
+        note.style.opacity = n;
+        note.style.transform = `translateY(${(1 - n) * 18}px)`;
+        note.style.pointerEvents = n > .5 ? 'auto' : 'none';
+        txt.style.opacity = clamp((p - .8) / .15);
+        sec.classList.toggle('qs-on', n > .5);
+      }
+      function onScroll() {
+        const r = sec.getBoundingClientRect(), vh = innerHeight;
+        const lead = vh * .4;
+        draw(clamp((-r.top + lead) / (sec.offsetHeight - vh + lead)));
+      }
+
+      note.querySelectorAll('[data-extra]').forEach(btn => btn.addEventListener('click', () => {
+        note.querySelectorAll('[data-extra]').forEach(b => b.classList.toggle('on', b === btn));
+        cmd.textContent = `pip install "RepoWhisper[${btn.dataset.extra}]"`;
+      }));
+
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        sec.classList.add('rm', 'qs-on');
+      } else {
+        let t = false;
+        addEventListener('scroll', () => { if (!t) { t = true; requestAnimationFrame(() => { t = false; onScroll(); }); } }, { passive: true });
+        addEventListener('resize', onScroll);
+        onScroll();
+      }
+    })();
+  </script>
+
 </body>
 
 </html>
