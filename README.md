@@ -1,4 +1,4 @@
-![image](imgs/badge.png)
+![image](imgs/badge_2.png)
 
 <div align="center">
   <p>
