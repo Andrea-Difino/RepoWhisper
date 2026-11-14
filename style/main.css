@@ -32,6 +32,7 @@ html {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+    transition: 800ms ease;
 }
 
 
@@ -43,14 +44,16 @@ html {
     bottom: -5rem;
 }
 
-@media (max-width: 1000px) {
+
+
+@media (max-width: 1350px) {
     .background {
         width: 100%;
         max-width: 100%;
     }
 
     .bg-top {
-        height: 100vh;
+        height: 120vh;
         object-fit: cover;
     }
 
@@ -436,7 +439,6 @@ header {
     height: 90vh;
     top: auto;
     left: 0;
-    object-fit: cover;
     transform: none;
     pointer-events: none;
     z-index: 0;
@@ -547,6 +549,21 @@ footer {
     }
 }
 
+@media (max-width: 1283px){
+    .feature-title {
+        color: #172b4d;
+        font-size: clamp(2.3rem, 9vw, 3rem);
+    }
+
+    .install {
+        font-size: .8rem;
+    }
+
+    .copy {
+        font-size: 5px;
+    }
+}
+
 @media (max-width: 768px) {
     .page {
         padding: 0 2%;
@@ -592,8 +609,8 @@ footer {
         top: 0;
         right: auto;
         left: auto;
-        color: #172b4d;
         font-size: clamp(2.3rem, 9vw, 3rem);
+        text-align: center;
         margin-bottom: -15px;
     }
 
@@ -639,7 +656,8 @@ footer {
     }
 
     .bg-bottom {
-        height: 65vh;
+        height: 70vh;
+        object-fit: cover;
     }
 
     .scroll-title {
@@ -1368,8 +1386,6 @@ footer {
 .qs-cmd:hover{
     border-color: #7f9fe0;
     background: #fff;
-    box-shadow: 0 8px 18px rgba(44, 71, 117, .12);
-    transform: translateY(-2px);
     cursor: pointer;
 }
 
