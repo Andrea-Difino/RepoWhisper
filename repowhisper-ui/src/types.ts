@@ -2,6 +2,7 @@ export interface FileAnalysis {
     file: string;
     code_snippet: string;
     explanation: string;
+    notes?: Record<number, string>;
 }
 
 export interface RepoData {
