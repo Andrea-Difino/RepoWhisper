@@ -8,7 +8,7 @@ from agents.reviewer import Reviewer
 from agents.storyteller import Storyteller
 from langgraph.graph import END, START, StateGraph
 from memory.chroma_db_manager import ChromaDBManager
-from orchestration.state import ProjectState
+from orchestration.state import LineWhisperData, ProjectState
 from tqdm import tqdm
 from utils.dependency_tracer import DependencyTracer
 from utils.tree_generator import ProjectTreeGenerator
@@ -113,7 +113,8 @@ class AgentsWorkflow:
         return {
             "dependency_graph": deps,
             "unprocessed_files": ordered_files,
-            "explanations": {}
+            "explanations": {},
+            "line_whispers": {}
         }
 
     def _node_dispatcher(self, state: ProjectState) -> dict:
@@ -127,6 +128,7 @@ class AgentsWorkflow:
             "current_file": next_file,
             "unprocessed_files": unprocessed[1:],
             "reviewer_feedback": None,
+            "current_line_whispers": [],
             "file_error": False,
         }
 
@@ -149,11 +151,40 @@ class AgentsWorkflow:
             return {"file_error": True}
 
         query = f"Explain the logic of this file. Feedback to fix: {feedback}" if feedback else "Explain this file logically."
-        explanation = self.navigator.analyze(query, context=code_context)
+        navigation = self.navigator.analyze(query, context=code_context)
+        if not isinstance(navigation, dict):
+            raise TypeError("Code Navigator must return a structured dictionary.")
 
-        #print(explanation)
+        explanation = navigation.get("explanation")
+        raw_line_whispers = navigation.get("line_whispers")
+        if not isinstance(explanation, str) or not isinstance(raw_line_whispers, list):
+            raise TypeError(
+                "Code Navigator response must contain an explanation and a line_whispers list."
+            )
+
+        line_count = len(code_context.splitlines())
+        line_whispers: list[LineWhisperData] = []
+        for whisper in raw_line_whispers:
+            if not isinstance(whisper, dict):
+                raise ValueError("Each Code Navigator line whisper must be an object.")
+
+            line_number = whisper.get("line_number")
+            note = whisper.get("note")
+            if (
+                not isinstance(line_number, int)
+                or not isinstance(note, str)
+                or not note.strip()
+                or not 1 <= line_number <= line_count
+            ):
+                raise ValueError(
+                    "Code Navigator line whispers must contain a valid 1-based line number and note."
+                )
+
+            line_whispers.append({"line_number": line_number, "note": note.strip()})
+
         return {
             "current_draft": explanation, 
+            "current_line_whispers": line_whispers,
             "file_error": False, 
             "file_codes": {file_target:code_context}
         }
@@ -190,6 +221,12 @@ class AgentsWorkflow:
 
         return {
             "explanations": {file_target: draft},
+            "line_whispers": {
+                file_target: {
+                    whisper["line_number"] - 1: whisper["note"]
+                    for whisper in state.get("current_line_whispers", [])
+                }
+            },
             "reviewer_feedback": None
         }
 
@@ -210,7 +247,8 @@ class AgentsWorkflow:
             raw_modules_list.append({
                 "file": file_target,
                 "explanation": expl,
-                "code_snippet": state.get("file_codes", {}).get(file_target, "")
+                "code_snippet": state.get("file_codes", {}).get(file_target, ""),
+                "notes": state.get("line_whispers", {}).get(file_target, {})
             })
 
         final_data = {
