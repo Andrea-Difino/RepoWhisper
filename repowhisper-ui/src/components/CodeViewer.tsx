@@ -1,14 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Lock, Maximize2, Minimize2 } from 'lucide-react';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface CodeViewerProps {
   lines: string[];
   notes?: Record<number, string>;
   isTreeLine: boolean;
   isCurrentStudied: boolean;
+  language?: string;
 }
 
-export default function CodeViewer({ lines, notes = {}, isTreeLine, isCurrentStudied }: CodeViewerProps) {
+export default function CodeViewer({
+  lines,
+  notes = {},
+  isTreeLine,
+  isCurrentStudied,
+  language = 'text'
+}: CodeViewerProps) {
   const [activeLine, setActiveLine] = useState<number | null>(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -43,33 +52,44 @@ export default function CodeViewer({ lines, notes = {}, isTreeLine, isCurrentStu
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto py-2 font-mono text-[13px] lg:text-[14px] leading-[1.85] custom-scrollbar min-h-0">
-        {lines.map((line, i) => {
-          const hasNote = Boolean(notes[i]);
-          const isSelected = activeLine === i;
-          const lineClass = isTreeLine
-            ? 'text-[#98c379] hover:bg-white/[0.02]'
-            : hasNote
-              ? isSelected
-                ? 'bg-blue-500/25 text-white border-l-2 border-blue-400 cursor-pointer'
-                : 'bg-white/[0.04] text-slate-100 hover:bg-white/[0.09] border-l-2 border-blue-400/50 cursor-pointer'
-              : 'text-slate-300 border-l-2 border-transparent';
+      <div className="flex-1 overflow-y-auto py-2 custom-scrollbar min-h-0">
+        <SyntaxHighlighter
+          language={isTreeLine ? 'text' : language}
+          style={vscDarkPlus}
+          customStyle={{
+            margin: 0,
+            padding: 0,
+            background: 'transparent',
+            fontSize: 'inherit',
+            lineHeight: '1.85',
+            fontFamily: 'inherit'
+          }}
+          codeTagProps={{ style: { fontFamily: 'inherit' } }}
+          showLineNumbers={!isTreeLine}
+          wrapLines
+          lineNumberStyle={{ color: '#475569', minWidth: '2.5em', paddingRight: '1em', userSelect: 'none' }}
+          lineProps={(lineNumber) => {
+            const index = lineNumber - 1;
+            const hasNote = Boolean(notes[index]);
+            const isSelected = activeLine === index;
 
-          return (
-            <div
-              key={i}
-              onClick={() => hasNote && setActiveLine(isSelected ? null : i)}
-              className={`flex items-baseline px-2 lg:px-4 transition-colors whitespace-pre ${lineClass}`}
-            >
-              {!isTreeLine && (
-                <span className="w-8 shrink-0 text-slate-600 select-none text-xs text-right pr-4">
-                  {i + 1}
-                </span>
-              )}
-              <span>{line || ' '}</span>
-            </div>
-          );
-        })}
+            return {
+              onClick: () => hasNote && setActiveLine(isSelected ? null : index),
+              className: [
+                'px-2 lg:px-4 transition-colors whitespace-pre',
+                isTreeLine
+                  ? 'text-[#98c379] hover:bg-white/[0.02]'
+                  : hasNote
+                    ? isSelected
+                      ? 'bg-blue-500/25 text-white border-l-2 border-blue-400 cursor-pointer'
+                      : 'bg-white/[0.04] hover:bg-white/[0.09] border-l-2 border-blue-400/50 cursor-pointer'
+                    : 'border-l-2 border-transparent'
+              ].join(' ')
+            };
+          }}
+        >
+          {lines.join('\n')}
+        </SyntaxHighlighter>
       </div>
 
       {!isTreeLine && (

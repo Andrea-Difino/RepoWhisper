@@ -5,11 +5,12 @@ import type { ModuleData } from '../types';
 
 interface ExplanationPanelProps {
   module: ModuleData;
+  isOverview?: boolean;
 }
 
-export default function ExplanationPanel({ module }: ExplanationPanelProps) {
+export default function ExplanationPanel({ module, isOverview = false }: ExplanationPanelProps) {
   return (
-    <div className="w-full h-100 bg-[#F4F4F4] rounded-[36px] p-2 lg:p-4 overflow-hidden">
+    <div className={`w-full ${isOverview ? 'h-full' : 'h-100'} bg-[#F4F4F4] rounded-[36px] p-2 lg:p-4 overflow-hidden`}>
       
       <div className="w-full max-h-[calc(100%-5px)] rounded-[26px] p-5 lg:p-7 flex flex-col overflow-y-auto select-text bg-[#F4F4F4] custom-scrollbar">
         
@@ -19,11 +20,11 @@ export default function ExplanationPanel({ module }: ExplanationPanelProps) {
           </span>
         </div>
 
-        <h2 className="text-2xl lg:text-[28px] font-bold tracking-tight text-[#11151C] mb-5 uppercase leading-snug shrink-0">
+        <h2 className={`${isOverview ? 'text-3xl lg:text-5xl' : 'text-2xl lg:text-[28px]'} font-bold tracking-tight text-[#11151C] mb-5 uppercase leading-tight shrink-0`}>
           {module.title}
         </h2>
 
-        <div className="prose prose-sm lg:prose-base prose-slate max-w-none text-[#222] prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-widest prose-headings:text-black/50 prose-headings:mt-5 prose-headings:mb-2 prose-p:leading-relaxed prose-li:my-0.5">
+        <div className={`${isOverview ? 'prose-base lg:prose-lg' : 'prose-sm lg:prose-base'} prose prose-slate max-w-none text-[#222] prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-widest prose-headings:text-black/50 prose-headings:mt-5 prose-headings:mb-2 prose-p:leading-relaxed prose-li:my-0.5`}>
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{

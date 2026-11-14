@@ -9,13 +9,52 @@ import ExplanationPanel from './components/ExplanationPanel';
 import CodeViewer from './components/CodeViewer';
 import StudyButton from './components/StudyButton';
 
+function getLanguageFromPath(path: string): string {
+  const extension = path.split('.').pop()?.toLowerCase();
+  const languages: Record<string, string> = {
+    py: 'python',
+    js: 'javascript',
+    jsx: 'jsx',
+    ts: 'typescript',
+    tsx: 'tsx',
+    json: 'json',
+    css: 'css',
+    html: 'markup',
+    md: 'markdown',
+    rs: 'rust',
+    sh: 'bash',
+    yml: 'yaml',
+    yaml: 'yaml',
+    sql: 'sql'
+  };
+  return languages[extension || ''] || 'text';
+}
+
+function getExampleNotes(code: string, notes?: Record<number, string>): Record<number, string> {
+  if (notes && Object.keys(notes).length > 0) {
+    return notes;
+  }
+
+  const examples: Record<number, string> = {};
+  const lines = code.split('\n');
+  const candidates = lines
+    .map((line, index) => ({ line: line.trim(), index }))
+    .filter(({ line }) => /^(from |import |class |def |function |const |export |async |fn |struct )/.test(line))
+    .slice(0, 3);
+
+  candidates.forEach(({ index, line }) => {
+    examples[index] = `Nota di esempio: questa riga introduce un elemento importante del modulo (${line.slice(0, 42)}${line.length > 42 ? '…' : ''}).`;
+  });
+
+  return examples;
+}
+
 export default function App() {
   const { data, loading, error } = useRepoData();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [studiedFiles, setStudiedFiles] = useState<Set<string>>(new Set());
-  const [showGraph, setShowGraph] = useState(false);
 
   const rawModules = data?.raw_modules || [];
   const totalFiles = rawModules.length;
@@ -39,7 +78,7 @@ export default function App() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [canGoNext, canGoPrev, showGraph]);
+  }, [canGoNext, canGoPrev]);
 
   const handleToggleStudy = (pathOrId: string) => {
     const updated = new Set(studiedFiles);
@@ -96,7 +135,7 @@ export default function App() {
       title: "EXECUTIVE SUMMARY",
       explanation: data.narrative || "Resume not available",
       code_snippet: data.tree_structure || "Tree not available",
-      notes: {} as Record<number, string>
+      notes: {}
     };
     isCurrentStudied = studiedFiles.has("root");
     lines = (data.tree_structure || "").split('\n');
@@ -110,7 +149,7 @@ export default function App() {
       title: filePath.split('/').pop()?.toUpperCase() || "FILE DETAILS",
       explanation: fileData?.explanation || "Spiegazione non trovata nel JSON per questo file.",
       code_snippet: fileData?.code_snippet || "Codice non trovato.",
-      notes: {} as Record<number, string>
+      notes: getExampleNotes(fileData?.code_snippet || "", fileData?.notes)
     };
 
     isCurrentStudied = studiedFiles.has(String(moduleIndex));
@@ -138,7 +177,6 @@ export default function App() {
         canGoNext={canGoNext}
         onPrev={goPrev}
         onNext={goNext}
-        onToggleGraph={() => setShowGraph(true)}
       />
 
       <div className="flex-1 flex items-center justify-center relative w-full overflow-x-hidden z-10 my-2">
@@ -164,7 +202,7 @@ export default function App() {
             >
 
               <div className="col-span-5 flex flex-col h-full min-h-0 justify-between">
-                <ExplanationPanel module={currentModule} />
+                <ExplanationPanel module={currentModule} isOverview={currentIndex === 0} />
                 <div className="flex justify-end pt-3 pr-2 shrink-0">
                   <StudyButton
                     isStudied={isCurrentStudied}
@@ -180,6 +218,7 @@ export default function App() {
                   notes={currentModule.notes}
                   isTreeLine={currentIndex === 0}
                   isCurrentStudied={isCurrentStudied}
+                  language={getLanguageFromPath(currentModule.path)}
                 />
               </div>
             </motion.div>
