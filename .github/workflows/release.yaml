@@ -10,7 +10,6 @@ on:
 
 env:
   PACKAGE_NAME: "repowhisper"
-  OWNER: "AndreaDifi"
 
 jobs:
   details:
