@@ -36,6 +36,9 @@ dependencies = [
 
 [project.optional-dependencies]
 groq = ["langchain-groq>=1.1.3"]
+ollama = ["langchain-ollama>=1.1.0"]
+openai = ["langchain-openai>=1.8.0"]
+anthropic = ["langchain-anthropic>=1.7.10"]
 
 [tool.setuptools]
 include-package-data = true
