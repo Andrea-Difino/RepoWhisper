@@ -29,6 +29,8 @@ html {
     height: auto;
     z-index: 0;
     position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 
@@ -40,10 +42,22 @@ html {
     bottom: -5rem;
 }
 
+@media (max-width: 1000px) {
+    .background{
+        width: 180vw;
+        max-width: none;
+    }
+}
+
 body {
     margin: 0;
     color: var(--ink);
     overflow-x: hidden;
+}
+
+main {
+    width: 100%;
+    min-width: 0;
 }
 
 a {
@@ -53,7 +67,7 @@ a {
 
 .page {
     max-width: 2000px;
-    width: 100vw;
+    width: 100%;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
@@ -65,14 +79,15 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 5rem 5rem;
+    width: 100%;
+    padding: 0 clamp(1.25rem, 5vw, 5rem);
     animation: fadeDown .7s ease both;
-    height: 10vh;
+    height: 90px;
 }
 
 .brand img {
     width: 7.5rem;
-    margin-right: 100rem;
+    margin-right: 0;
 }
 
 .github {
@@ -158,6 +173,7 @@ header {
     border-radius: 8px;
     font: 19px ui-monospace, SFMono-Regular, Menlo, monospace;
     line-height: 100%;
+    overflow-wrap: anywhere;
 }
 
 .install-row:hover {
@@ -193,6 +209,8 @@ header {
     height: 80vh;
     max-height: 50rem;
     width: 100%;
+    min-width: 0;
+    overflow: clip;
     display: grid;
     grid-template-columns: .8fr 1.2fr;
     align-items: center;
@@ -261,6 +279,7 @@ header {
     position: relative;
     height: 330px;
     width: 100%;
+    min-width: 0;
 }
 
 .mock-card {
@@ -291,7 +310,7 @@ header {
 .mock-card.code {
     width: 61%;
     height: 185px;
-    right: -8%;
+    right: 0;
     top: 35px;
     transform: translate(35px, 25px) rotate(-13deg);
     background: #151922;
@@ -504,17 +523,17 @@ footer {
     }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     .page {
-        padding: 0 6%;
+        padding: 0 2%;
     }
 
     header {
-        padding-top: 18px;
+        padding: 0px 2rem;
     }
 
     .hero {
-        padding-top: 42px;
+        padding-top: 0;
         min-height: 510px;
     }
 
@@ -558,6 +577,7 @@ footer {
         left: 0;
         text-align: left;
         font-size: 1.05rem;
+        margin-left: 0;
     }
 
     .mockups {
@@ -569,14 +589,14 @@ footer {
     .mock-card.paper {
         width: 64%;
         height: 220px;
-        left: 2%;
+        left: 4%;
         top: 35px;
     }
 
     .mock-card.code {
         width: 65%;
         height: 155px;
-        right: -3%;
+        right: 0;
         top: -10px;
     }
 
@@ -588,7 +608,7 @@ footer {
     }
 
     .closing {
-        min-height: 300px;
+        height: 60vh;
         padding-bottom: 65px;
     }
 
@@ -718,7 +738,9 @@ footer {
     --ag-muted: #657188;
     --ag-blue: #3268d8;
     position: relative;
+    width: 100%;
     height: 700vh;
+    overflow: clip;
     color: var(--ag-ink);
     background: radial-gradient(ellipse at 82% 42%, rgba(72, 119, 214, .075), transparent 38%),
         linear-gradient(180deg, #fbfcfe 0%, var(--ag-bg) 100%);
@@ -1161,22 +1183,20 @@ footer {
     color: #fff;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
     #agent-graph .ag-heading {
         flex-direction: column;
         align-items: flex-start;
     }
 
     #agent-graph .ag-legend {
-        grid-auto-flow: column;
-        gap: 14px;
-        font-size: .68rem;
+        display: none;
     }
 }
 
 /* ===== Quickstart: zoom-in allo scroll + nota BaseChatModel ===== */
 .quickstart {
-    width: 100vw;
+    width: 100%;
     height: 260vh;
     max-height: none;
     padding: 0;
@@ -1234,7 +1254,11 @@ footer {
 
 #providers-list{
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
 }
 
 #providers-list li{
@@ -1249,7 +1273,7 @@ footer {
     border: 2px solid var(--muted);
     color: var(--ag-ink);
     font-size: 1rem;
-    margin: 0px 10px;
+    margin: 0;
     font-weight: 500;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     transition: 200ms ease-out;
@@ -1358,6 +1382,10 @@ footer {
 }
 
 @media (max-width: 900px) {
+    header {
+        padding: 0 clamp(1.25rem, 5vw, 5rem);
+    }
+
     .feature-label {
         max-width: none;
     }
