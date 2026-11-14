@@ -36,10 +36,11 @@
       <section class="feature">
         <h2 class="feature-title reveal">Spiegazione<br>&amp; codice</h2>
         <div class="feature-label reveal">
-          Unisci la teoria alla pratica in un'unica schermata. Da un lato leggi la <strong>spiegazione architetturale
-            generata dall'IA</strong> per comprendere i concetti chiave, dall'altro esplori il <strong>codice sorgente
-            originale</strong>. I sussurri contestuali ti guidano riga per riga nei passaggi più complessi, per non
-          farti mai perdere il filo.
+          <span class="feature-kicker">COMPRENDI · ESPLORA · IMPARA</span>
+          <p>Teoria e pratica, finalmente nello stesso spazio.</p>
+          <p class="feature-description">Leggi la <strong>spiegazione architetturale generata dall’IA</strong> mentre
+            esplori il <strong>codice sorgente originale</strong>. I suggerimenti contestuali collegano i concetti
+            alle righe di codice e ti aiutano a capire non solo cosa succede, ma anche perché.</p>
         </div>
         <div class="mockups">
           <div class="mock-card paper reveal">
@@ -64,8 +65,6 @@
         </div>
       </section>
 
-
-
       <section class="quickstart" id="quickstart">
         <div class="qs-stage">
           <div class="quickstart-terminal" id="qs-terminal">
@@ -86,16 +85,16 @@
 )</pre>
           </div>
           <aside class="qs-note" id="qs-note">
-            <h3><code>BaseChatModel</code> è la base di LangChain</h3>
-            <p>È la classe base generica di LangChain per i modelli di chat: RepoWhisper funziona con qualsiasi modello
-              che la estende. Scegli il provider e installa il suo extra per avere il modello pronto da passare come <code>llm</code>.</p>
-            <div class="qs-chips" role="group" aria-label="Provider LLM">
-              <button type="button" class="on" data-extra="groq">groq</button>
-              <button type="button" data-extra="openai">openai</button>
-              <button type="button" data-extra="anthropic">anthropic</button>
-              <button type="button" data-extra="ollama">ollama</button>
+            <span class="qs-eyebrow">IL TUO MODELLO, LA TUA SCELTA</span>
+            <h3>Scegli il provider che preferisci</h3>
+            <div>
+              <ul id="providers-list">
+                <li><code class="qs-cmd">pip install repowhiser[groq]</code></li>
+                <li><code class="qs-cmd">pip install repowhiser[openai]</code></li>
+                <li><code class="qs-cmd">pip install repowhiser[anthropic]</code></li>
+                <li><code class="qs-cmd">pip install repowhiser[ollama]</code></li>
+              </ul>
             </div>
-            <code class="qs-cmd" id="qs-cmd">pip install "RepoWhisper[groq]"</code>
           </aside>
           <p class="quickstart-text" id="qs-text">
             Inizializza il motore in poche righe di Python. Configura il repository target, collega il tuo LLM preferito e
@@ -108,7 +107,7 @@
         <div class="ag-stage">
           <div class="ag-heading">
             <div>
-              <span class="ag-eyebrow">SYSTEM ARCHITECTURE <i></i> MULTI-AGENT WORKFLOW</span>
+              <span class="ag-eyebrow">ARCHITETTURA DI SISTEMA <i></i> WORKFLOW MULTI-AGENTE</span>
               <h2 id="ag-title">Un sistema coordinato.<br><span>Un’analisi, passo dopo passo.</span></h2>
               <p class="ag-sub">Un flusso orchestrato in cui ogni agente ha una responsabilità precisa.</p>
             </div>
@@ -389,11 +388,6 @@
         const lead = vh * .4;
         draw(clamp((-r.top + lead) / (sec.offsetHeight - vh + lead)));
       }
-
-      note.querySelectorAll('[data-extra]').forEach(btn => btn.addEventListener('click', () => {
-        note.querySelectorAll('[data-extra]').forEach(b => b.classList.toggle('on', b === btn));
-        cmd.textContent = `pip install "RepoWhisper[${btn.dataset.extra}]"`;
-      }));
 
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
         sec.classList.add('rm', 'qs-on');
