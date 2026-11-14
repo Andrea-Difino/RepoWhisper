@@ -21,11 +21,12 @@ html {
     font-optical-sizing: auto;
     position: relative;
     background-color: var(--bg);
+    overflow-x: clip;
 }
 
 .background {
     width: 100vw;
-    max-width: 140rem;
+    max-width: 100%;
     height: auto;
     z-index: 0;
     position: absolute;
@@ -43,16 +44,21 @@ html {
 }
 
 @media (max-width: 1000px) {
-    .background{
-        width: 180vw;
-        max-width: none;
+    .background {
+        width: 100%;
+        max-width: 100%;
     }
+
+    .bg-top {
+        height: 100vh;
+        object-fit: cover;
+    }
+
 }
 
 body {
     margin: 0;
     color: var(--ink);
-    overflow-x: hidden;
 }
 
 main {
@@ -69,6 +75,7 @@ a {
     max-width: 2000px;
     width: 100%;
     margin: 0 auto;
+    position: relative;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -423,6 +430,18 @@ header {
     opacity: .7;
 }
 
+.bg-bottom {
+    width: 100%;
+    max-width: none;
+    height: 90vh;
+    top: auto;
+    left: 0;
+    object-fit: cover;
+    transform: none;
+    pointer-events: none;
+    z-index: 0;
+}
+
 .closing {
     height: 90vh;
     display: flex;
@@ -432,6 +451,11 @@ header {
     text-align: center;
     z-index: 10;
     position: relative;
+}
+
+.closing > :not(.bg-bottom) {
+    position: relative;
+    z-index: 1;
 }
 
 .scroll-title {
@@ -614,6 +638,10 @@ footer {
         padding-bottom: 65px;
     }
 
+    .bg-bottom {
+        height: 65vh;
+    }
+
     .scroll-title {
         font-size: clamp(1.55rem, 7.5vw, 2.3rem);
     }
@@ -720,6 +748,11 @@ footer {
 }
 
 @media (max-width: 640px) {
+    .bg-bottom {
+        width: 100%;
+        height: 80vh;
+    }
+
     .quickstart {
         padding: 40px 0 0px;
     }
@@ -1108,6 +1141,14 @@ footer {
     #agent-graph .ag-progress {
         margin-top: 14px;
     }
+
+    #agent-graph .ag-footer {
+        height: 6rem;
+    }
+
+    #agent-graph .ag-cap {
+        display: none;
+    }
 }
 
 #agent-graph .n.agent .chip circle {
@@ -1238,6 +1279,7 @@ footer {
 .qs-note {
     width: 100%;
     max-width: 1180px;
+    contain: paint;
     padding: 24px clamp(18px, 3vw, 36px) 28px;
     text-align: center;
     background: rgba(255, 255, 255, .78);
@@ -1280,7 +1322,7 @@ footer {
 
 #qs-note > div {
     width: 100%;
-    overflow: hidden;
+    overflow: clip;
     mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
 }
