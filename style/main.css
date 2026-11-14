@@ -80,9 +80,9 @@ header {
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    padding: 0 clamp(1.25rem, 5vw, 5rem);
+    padding: 24px clamp(1.25rem, 5vw, 5rem) 0;
     animation: fadeDown .7s ease both;
-    height: 90px;
+    height: 114px;
 }
 
 .brand img {
@@ -107,7 +107,7 @@ header {
 }
 
 .hero {
-    height: 80vh;
+    height: 90vh;
     max-height: 80rem;
     width: 100%;
     display: flex;
@@ -533,6 +533,7 @@ footer {
     }
 
     .hero {
+        height: 80vh;
         padding-top: 0;
         min-height: 510px;
     }
@@ -567,6 +568,7 @@ footer {
         top: 0;
         right: auto;
         left: auto;
+        color: #172b4d;
         font-size: clamp(2.3rem, 9vw, 3rem);
         margin-bottom: -15px;
     }
@@ -1121,7 +1123,7 @@ footer {
 #agent-graph .ag-legend {
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 18px 0 0;
     display: grid;
     gap: 10px;
     flex-shrink: 0;
@@ -1216,30 +1218,42 @@ footer {
     justify-content: center;
     gap: 22px;
     overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 34%, rgba(77, 117, 255, .08), transparent 34rem),
+        linear-gradient(180deg, #f8faff 0%, #f1f5fb 100%);
 }
 
 .quickstart-terminal {
     margin: 0;
+    border: 1px solid rgba(135, 157, 196, .28);
+    border-radius: 16px;
+    box-shadow: 0 28px 70px rgba(29, 47, 82, .2), 0 2px 6px rgba(29, 47, 82, .08);
     transform: scale(.5);
     opacity: .25;
     transform-origin: center;
     will-change: transform, opacity;
+    overflow: hidden;
 }
 
 .qs-note {
     width: 100%;
-    padding: 18px 22px;
+    max-width: 1180px;
+    padding: 24px clamp(18px, 3vw, 36px) 28px;
     text-align: center;
-    background: #fff;
-    border-radius: 12px;
+    background: rgba(255, 255, 255, .78);
+    border: 1px solid rgba(194, 207, 228, .9);
+    border-radius: 18px;
+    box-shadow: 0 18px 45px rgba(42, 63, 101, .1);
     color: #354258;
     opacity: 0;
     pointer-events: none;
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
 }
 
 .qs-eyebrow {
     display: block;
-    margin-bottom: 9px;
+    margin-bottom: 10px;
     color: #5278c9;
     font-size: .7rem;
     font-weight: 700;
@@ -1247,7 +1261,7 @@ footer {
 }
 
 .qs-note h3 {
-    margin: 0 0 8px;
+    margin: 0 0 18px;
     font-size: clamp(1.12rem, 2vw, 1.35rem);
     color: #111c32;
 }
@@ -1255,33 +1269,86 @@ footer {
 #providers-list{
     display: flex;
     flex-wrap: wrap;
+    align-items: stretch;
     justify-content: center;
-    gap: 10px;
-    margin: 0;
+    gap: 12px;
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
     padding: 0;
+}
+
+#qs-note > div {
+    width: 100%;
+    overflow: hidden;
+    mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
+}
+
+#providers-list {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    width: max-content;
+    max-width: none;
+    animation: providerMarquee 28s linear infinite;
 }
 
 #providers-list li{
     list-style: none;
     width: fit-content;
+    flex: 0 0 auto;
 }
 
 .qs-cmd {
-    display: block;
-    padding: 10px 14px;
-    border-radius: 8px;
-    border: 2px solid var(--muted);
-    color: var(--ag-ink);
-    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    min-height: 48px;
+    width: fit-content;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px solid #d1dced;
+    color: #284f9e;
+    background: rgba(247, 250, 255, .9);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .95), 0 4px 12px rgba(44, 71, 117, .05);
+    font-size: clamp(.72rem, 1.1vw, .9rem);
+    line-height: 1.35;
+    text-align: center;
+    overflow-wrap: anywhere;
+    white-space: nowrap;
     margin: 0;
     font-weight: 500;
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    transition: 200ms ease-out;
+    transition: border-color 200ms ease, background 200ms ease, box-shadow 200ms ease, transform 200ms ease;
 }
 
 .qs-cmd:hover{
-    transform: scale(1.05);
+    border-color: #7f9fe0;
+    background: #fff;
+    box-shadow: 0 8px 18px rgba(44, 71, 117, .12);
+    transform: translateY(-2px);
     cursor: pointer;
+}
+
+#qs-note > div:hover #providers-list {
+    animation-play-state: paused;
+}
+
+@keyframes providerMarquee {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(calc(-50% - 6px));
+    }
+}
+
+.quickstart-text {
+    max-width: 560px;
+    color: #53627a;
+    text-align: center;
 }
 
 #qs-base {
@@ -1316,14 +1383,65 @@ footer {
     pointer-events: auto;
 }
 
+@media (max-width: 900px) {
+    #providers-list {
+    display: flex;
+    max-width: none;
+    }
+
+.qs-cmd {
+    width: fit-content;
+}
+}
+
 @media (max-width: 640px) {
     .qs-stage {
-        padding: 20px 5vw;
-        gap: 14px;
+        min-height: 620px;
+        padding: 18px 5vw;
+        gap: 16px;
+        background:
+            radial-gradient(circle at 50% 20%, rgba(77, 117, 255, .1), transparent 18rem),
+            linear-gradient(180deg, #f8faff 0%, #eef3fa 100%);
+    }
+
+    .quickstart-terminal {
+        border-radius: 13px;
+    }
+
+    .terminal-header {
+        padding: 10px 13px;
+    }
+
+    .terminal-body {
+        padding: 18px 16px;
+        font-size: 11px;
+        line-height: 1.65;
     }
 
     .qs-note {
-        padding: 14px 16px;
+        padding: 20px 14px 18px;
+        border-radius: 15px;
+    }
+
+    .qs-note h3 {
+        margin-bottom: 15px;
+    }
+
+    #providers-list {
+        gap: 8px;
+    }
+
+    .qs-cmd {
+        min-height: 42px;
+        padding: 9px 10px;
+        font-size: .72rem;
+        white-space: normal;
+        width: min(78vw, 280px);
+    }
+
+    .quickstart-text {
+        max-width: 32ch;
+        font-size: .92rem;
     }
 }
 
@@ -1383,7 +1501,8 @@ footer {
 
 @media (max-width: 900px) {
     header {
-        padding: 0 clamp(1.25rem, 5vw, 5rem);
+        padding: 18px clamp(1.25rem, 5vw, 5rem) 0;
+        height: 108px;
     }
 
     .feature-label {
