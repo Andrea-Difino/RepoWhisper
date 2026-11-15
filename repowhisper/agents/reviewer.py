@@ -33,7 +33,7 @@ class Reviewer(BaseAgent):
 
     def analyze(self, query: str, context: Any) -> str:
 
-        chain = self.prompt_template | self.llm
+        chain = (self.prompt_template | self.llm).with_retry(stop_after_attempt=6)
 
         result = chain.invoke({
             "context": context, 

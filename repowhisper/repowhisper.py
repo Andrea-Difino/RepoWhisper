@@ -13,28 +13,34 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from memory.chroma_db_manager import ChromaDBManager
 from orchestration.state import ProjectState
 from orchestration.workflow import AgentsWorkflow
+from tqdm import tqdm
 from utils.config import UserLevel
 
 
 class RepoWhisper:
     """
     The main Facade for the Excode library.
-    This class orchestrates the entire process from fetching the repository 
+    This class orchestrates the entire process from fetching the repository
     to answering complex questions using AI agents.
-    
-    It follows the Dependency Inversion Principle by accepting any language 
+
+    It follows the Dependency Inversion Principle by accepting any language
     model that adheres to the BaseChatModel interface.
     """
 
-    def __init__(self, source_target: str, llm: BaseChatModel, user_level: UserLevel = UserLevel.JUNIOR):
+    def __init__(
+        self,
+        source_target: str,
+        llm: BaseChatModel,
+        user_level: UserLevel = UserLevel.JUNIOR,
+    ):
         """
         Initializes the Excode engine.
-        
+
         Args:
             source_target (str): The URL of the git repository or local path.
             llm (BaseChatModel): The initialized LangChain chat model.
             user_level (UserLevel): Default JUNIOR. The user level used to tell the llm how the explanation should be\n
-            \tJUNIOR: large explanation 
+            \tJUNIOR: large explanation
             \tMID: mid level explanation
             \tSENIOR: very short explanation
         """
@@ -66,26 +72,40 @@ class RepoWhisper:
                      \ \_\                                            \ \_\               
                       \/_/                                             \/_/               
         """
-                
+
         print(f"\033[94m{ascii_art}\033[0m")
 
     def generate_documentation(self) -> str | None:
         """
-        The main public method. Orchestrates cloning, parsing, database building, 
+        The main public method. Orchestrates cloning, parsing, database building,
         and fully automated LangGraph analysis.
-        
+
         Returns:
             str | None : A formatted JSON string ready for a frontend UI if there is no error, else it returns None
         """
+        init_bar = tqdm(
+            total=3,
+            bar_format="{desc}: {percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
+            colour="CYAN",
+            leave=False
+        )
         try:
+            init_bar.set_description(f"Cloning repo from: {self.source_target}")
             self._repo_path = self._source_manager.get_path()
-            ingestor = Ingestor(self._repo_path)
+            init_bar.update(1)
 
+            init_bar.set_description("Loading and splitting files")
+            ingestor = Ingestor(self._repo_path)
             docs = ingestor.ingest()
+            init_bar.update(1)
+
             if not docs:
                 raise RuntimeError("No parsable code found in target source.")
 
+            init_bar.set_description("Building local vector db")
             self._memory_manager = ChromaDBManager(docs)
+            init_bar.update(1)
+            init_bar.close()
 
             workflow = AgentsWorkflow(
                 root_dir=self._repo_path,
@@ -93,7 +113,7 @@ class RepoWhisper:
                 architect=self._architect,
                 navigator=self._navigator,
                 reviewer=self._reviewer,
-                storyteller=self._storyteller
+                storyteller=self._storyteller,
             )
 
             initial_state: ProjectState = {
@@ -109,7 +129,7 @@ class RepoWhisper:
                 "line_whispers": {},
                 "file_codes": {},
                 "reviewer_feedback": None,
-                "final_output_json": ""
+                "final_output_json": "",
             }
 
             final_state = workflow.graph.invoke(initial_state)
@@ -120,24 +140,22 @@ class RepoWhisper:
         finally:
             self._source_manager.cleanup()
 
-    def serve_ui(self, json_data: str|None = None, port: int=8543) -> None:
+    def serve_ui(self, json_data: str | None = None, port: int = 8543) -> None:
         """
         Execute full analysis, save data and launch react interface locally.
         """
         if not json_data:
             json_data = self.generate_documentation()
-        
+
             if not json_data:
                 print("Impossible to start interface, json generation failed")
                 return
 
         base_dir = os.path.dirname(os.path.abspath(__file__))
         ui_dir = os.path.join(base_dir, "ui_dist")
-        
+
         if not os.path.exists(ui_dir):
-            raise FileNotFoundError(
-                f"ui_dir not found: {ui_dir}. "
-            )
+            raise FileNotFoundError(f"ui_dir not found: {ui_dir}. ")
 
         json_path = os.path.join(ui_dir, "data.json")
         with open(json_path, "w", encoding="utf-8") as f:
@@ -148,13 +166,13 @@ class RepoWhisper:
         class QuietHandler(SimpleHTTPRequestHandler):
             def log_message(self, format, *args):
                 pass
-                
+
         with socketserver.TCPServer(("", port), QuietHandler) as httpd:
             print(f"\nStudio interface available at: http://localhost:{port}")
             print("Press Ctrl+C to stop server and close the app")
-            
+
             webbrowser.open(f"http://localhost:{port}")
-            
+
             try:
                 httpd.serve_forever()
             except KeyboardInterrupt:

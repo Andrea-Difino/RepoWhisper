@@ -166,7 +166,7 @@ class AgentsWorkflow:
         line_whispers: list[LineWhisperData] = []
         for whisper in raw_line_whispers:
             if not isinstance(whisper, dict):
-                raise ValueError("Each Code Navigator line whisper must be an object.")
+                raise TypeError("Each Code Navigator line whisper must be an object.")
 
             line_number = whisper.get("line_number")
             note = whisper.get("note")
