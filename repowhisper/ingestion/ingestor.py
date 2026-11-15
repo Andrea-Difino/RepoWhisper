@@ -57,12 +57,12 @@ class Ingestor:
             if not raw_docs:
                 continue
 
-            python_splitter = RecursiveCharacterTextSplitter.from_language(
+            splitter = RecursiveCharacterTextSplitter.from_language(
                 language=lang_enum,
                 chunk_size=1000,
                 chunk_overlap=150
             )
-            structured_docs = python_splitter.split_documents(raw_docs)
+            structured_docs = splitter.split_documents(raw_docs)
             all_docs.extend(structured_docs)
 
         return all_docs
