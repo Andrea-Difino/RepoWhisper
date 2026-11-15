@@ -39,7 +39,7 @@ export default function CodeViewer({
             {isTreeLine ? 'Project Architecture' : 'Source Code'}
           </span>
           <span className="text-[11px] font-mono text-slate-500 mt-1">
-            {isTreeLine ? 'Struttura ad albero' : 'Clicca sulle righe evidenziate per i dettagli'}
+            {isTreeLine ? 'Tree structure' : 'Click on the highlighted rows to see details'}
           </span>
         </div>
 
@@ -96,7 +96,7 @@ export default function CodeViewer({
         <div className="pt-4 mt-2 border-t border-white/10 min-h-13 flex items-center shrink-0">
           {activeLine !== null && notes[activeLine] ? (
             <div className="text-xs lg:text-sm text-slate-200 flex items-center gap-2">
-              <span className="text-blue-400 font-mono font-bold">Riga {activeLine + 1} →</span>
+              <span className="text-blue-400 font-mono font-bold">Row {activeLine + 1} →</span>
               <span className="whitespace-normal">{notes[activeLine]}</span>
             </div>
           ) : (
@@ -104,7 +104,7 @@ export default function CodeViewer({
               {!isCurrentStudied ? (
                 <>
                   <Lock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                  <span className="whitespace-normal">Explore the code and click on <b>studied</b> on the left to unclock the navigation arrow</span>
+                  <span className="whitespace-normal">Explore the code and click on <b>studied</b> on the left to unlock the navigation arrow</span>
                 </>
               ) : (
                 <span className="whitespace-normal">Module completed! Click the right arrow <b>→</b> to go to the next file.</span>

@@ -7,7 +7,7 @@ import TopBar from './components/TopBar';
 import NavigationPeeks from './components/NavigationPeeks';
 import ExplanationPanel from './components/ExplanationPanel';
 import CodeViewer from './components/CodeViewer';
-import StudyButton from './components/StudyButton';
+import CompletionPage from './components/CompletionPage';
 
 function getLanguageFromPath(path: string): string {
   const extension = path.split('.').pop()?.toLowerCase();
@@ -65,6 +65,7 @@ export default function App() {
     studiedFiles.has(currentIndex === 0 ? "root" : String(currentIndex - 1)) &&
     currentIndex <= totalFiles
   );
+  const isCompletionPage = currentIndex > totalFiles;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -177,6 +178,10 @@ export default function App() {
         canGoNext={canGoNext}
         onPrev={goPrev}
         onNext={goNext}
+        isStudied={isCurrentStudied}
+        isFirstSlide={currentIndex === 0}
+        showStudyButton={!isCompletionPage}
+        onToggleStudy={() => handleToggleStudy(currentIndex === 0 ? "root" : String(currentIndex - 1))}
       />
 
       <div className="flex-1 flex items-center justify-center relative w-full overflow-x-hidden z-10 my-2">
@@ -185,43 +190,53 @@ export default function App() {
           canGoNext={canGoNext}
           onPrev={goPrev}
           onNext={goNext}
-          isLastSlide={currentIndex >= totalFiles}
+          isLastSlide={isCompletionPage}
         />
 
         <div className="w-full max-w-[1700px] mx-auto px-16 xl:px-20 h-[50vh] overflow-hidden flex flex-col justify-center">
           <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={currentIndex === 0 ? "root" : String(currentIndex - 1)}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{ duration: 0.35, ease: "easeOut" }}
-              className="grid grid-cols-12 gap-8 h-full"
-            >
+            {isCompletionPage ? (
+              <motion.div
+                key="completion"
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.35, ease: "easeOut" }}
+              >
+                <CompletionPage
+                  repositoryTitle={data.title}
+                  studiedFiles={rawModules.filter((_, index) => studiedFiles.has(String(index))).length}
+                  totalFiles={totalFiles}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key={currentIndex === 0 ? "root" : String(currentIndex - 1)}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className="grid grid-cols-12 gap-8 h-full"
+              >
+                <div className="col-span-5 flex flex-col h-full min-h-0 justify-between">
+                  <ExplanationPanel module={currentModule} isOverview={currentIndex === 0} />
+                </div>
 
-              <div className="col-span-5 flex flex-col h-full min-h-0 justify-between">
-                <ExplanationPanel module={currentModule} isOverview={currentIndex === 0} />
-                <div className="flex justify-end pt-3 pr-2 shrink-0">
-                  <StudyButton
-                    isStudied={isCurrentStudied}
-                    onClick={() => handleToggleStudy(currentIndex === 0 ? "root" : String(currentIndex - 1))}
-                    isFirstSlide={currentIndex === 0}
+                <div className="col-span-7 h-full min-h-0 flex flex-col">
+                  <CodeViewer
+                    lines={lines}
+                    notes={currentModule.notes}
+                    isTreeLine={currentIndex === 0}
+                    isCurrentStudied={isCurrentStudied}
+                    language={getLanguageFromPath(currentModule.path)}
                   />
                 </div>
-              </div>
-
-              <div className="col-span-7 h-full min-h-0 flex flex-col">
-                <CodeViewer
-                  lines={lines}
-                  notes={currentModule.notes}
-                  isTreeLine={currentIndex === 0}
-                  isCurrentStudied={isCurrentStudied}
-                  language={getLanguageFromPath(currentModule.path)}
-                />
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
       </div>
