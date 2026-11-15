@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import StudyButton from './StudyButton';
 
 interface TopBarProps {
   currentIndex: number;
@@ -7,6 +8,10 @@ interface TopBarProps {
   canGoNext: boolean;
   onPrev: () => void;
   onNext: () => void;
+  isStudied: boolean;
+  isFirstSlide: boolean;
+  showStudyButton: boolean;
+  onToggleStudy: () => void;
 }
 
 export default function TopBar({ 
@@ -15,17 +20,22 @@ export default function TopBar({
   canGoPrev, 
   canGoNext, 
   onPrev, 
-  onNext
+  onNext,
+  isStudied,
+  isFirstSlide,
+  showStudyButton,
+  onToggleStudy
 }: TopBarProps) {
   return (
-    <header className="w-full max-w-360 h-[15vh] mx-auto px-12 flex flex-col items-center justify-end z-10 gap-4">
+    <header className="w-full max-w-360 h-[15vh] mt-6 mx-auto px-12 flex flex-col items-center justify-end z-10 gap-3">
       <div className="flex items-center gap-4">
         <span className="text-[15px] font-mono font-normal bg-black/5 text-black/60 px-4 py-2 rounded-full">
-          {currentIndex === 0 ? 'START' : `${currentIndex} / ${totalFiles}`}
+          {currentIndex > totalFiles ? 'COMPLETATO' : currentIndex === 0 ? 'START' : `${currentIndex} / ${totalFiles}`}
         </span>
       </div>
 
-      <div className="flex items-center gap-4 mb-1">
+      <div className="flex flex-col items-center gap-1">
+        <div className="flex items-center gap-4 mb-1">
         <button
           onClick={onPrev}
           disabled={!canGoPrev}
@@ -49,6 +59,15 @@ export default function TopBar({
         >
           <ArrowRight className="w-5 h-5" strokeWidth={1.8} />
         </button>
+        </div>
+
+        {showStudyButton && (
+          <StudyButton
+            isStudied={isStudied}
+            isFirstSlide={isFirstSlide}
+            onClick={onToggleStudy}
+          />
+        )}
       </div>
     </header>
   );

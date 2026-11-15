@@ -104,7 +104,7 @@ export default function CodeViewer({
               {!isCurrentStudied ? (
                 <>
                   <Lock className="w-3.5 h-3.5 text-slate-500 shrink-0" />
-                  <span className="whitespace-normal">Explore the code and click on <b>studied</b> on the left to unclock the navigation arrow</span>
+                  <span className="whitespace-normal">Explore the code and click on <b>studied</b> on the left to unlock the navigation arrow</span>
                 </>
               ) : (
                 <span className="whitespace-normal">Module completed! Click the right arrow <b>→</b> to go to the next file.</span>
