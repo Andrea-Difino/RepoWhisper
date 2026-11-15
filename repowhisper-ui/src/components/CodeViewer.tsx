@@ -39,7 +39,7 @@ export default function CodeViewer({
             {isTreeLine ? 'Project Architecture' : 'Source Code'}
           </span>
           <span className="text-[11px] font-mono text-slate-500 mt-1">
-            {isTreeLine ? 'Struttura ad albero' : 'Clicca sulle righe evidenziate per i dettagli'}
+            {isTreeLine ? 'Tree structure' : 'Click on the highlighted rows to see details'}
           </span>
         </div>
 
@@ -96,7 +96,7 @@ export default function CodeViewer({
         <div className="pt-4 mt-2 border-t border-white/10 min-h-13 flex items-center shrink-0">
           {activeLine !== null && notes[activeLine] ? (
             <div className="text-xs lg:text-sm text-slate-200 flex items-center gap-2">
-              <span className="text-blue-400 font-mono font-bold">Riga {activeLine + 1} →</span>
+              <span className="text-blue-400 font-mono font-bold">Row {activeLine + 1} →</span>
               <span className="whitespace-normal">{notes[activeLine]}</span>
             </div>
           ) : (
