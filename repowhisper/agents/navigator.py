@@ -85,7 +85,7 @@ class CodeNavigator(BaseAgent):
         """
         Processes the query against the code context using the injected LLM.
         """
-        chain = self.prompt_template | self.llm.with_structured_output(ModuleNavigationOutput)
+        chain = (self.prompt_template | self.llm.with_structured_output(ModuleNavigationOutput)).with_retry(stop_after_attempt=6)
 
         numbered_code = self._format_code_with_line_numbers(context)
 
