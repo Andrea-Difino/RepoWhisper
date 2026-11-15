@@ -1,3 +1,16 @@
+import os
+
+os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"  # Nasconde le barre di download dei file
+os.environ["HF_HUB_VERBOSITY"] = "error"          
+os.environ["TRANSFORMERS_VERBOSITY"] = "error"    
+
+from huggingface_hub.utils import logging as hf_logging
+from transformers.utils import logging as transformers_logging
+
+hf_logging.set_verbosity_error()
+transformers_logging.set_verbosity_error()
+transformers_logging.disable_progress_bar()
+
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEmbeddings
