@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Any
 
+
 class BaseAgent(ABC):
     """
         Abstract base class for all AI agents within the Excode ecosystem.
@@ -9,7 +10,7 @@ class BaseAgent(ABC):
     """
 
     @abstractmethod
-    def analyze(self, query:str, context: Any) -> str:
+    def analyze(self, query:str, context: Any) -> Any:
         """
         Executes the agent's core logic based on the user query and provided context.
 

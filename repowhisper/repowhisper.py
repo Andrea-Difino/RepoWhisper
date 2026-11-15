@@ -103,8 +103,10 @@ class RepoWhisper:
                 "unprocessed_files": [],
                 "current_file": None,
                 "current_draft": "",
+                "current_line_whispers": [],
                 "is_file_reading_error": False,
                 "explanations": {},
+                "line_whispers": {},
                 "file_codes": {},
                 "reviewer_feedback": None,
                 "final_output_json": ""
