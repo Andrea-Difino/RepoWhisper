@@ -222,3 +222,4 @@ __marimo__/
 repowhisper/db/*
 repowhisper/**/*.json
 repowhisper/main.py
+perfomances.txt

@@ -41,7 +41,6 @@ class SourceManager:
         """
         self.temp_dir = tempfile.TemporaryDirectory(prefix="repowhisper_")
         try:
-            print(f"Cloning repository from {self.target}...")
             Repo.clone_from(self.target, self.temp_dir.name)
             return self.temp_dir.name
         except GitCommandError as e:
