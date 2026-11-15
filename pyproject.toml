@@ -36,7 +36,12 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=9.0.0", "pytest-cov>=7.0.0"]
+dev = [
+    "mkdocs>=1.6.1",
+    "mkdocstrings[python]>=1.0.0",
+    "pytest>=9.0.0",
+    "pytest-cov>=7.0.0",
+]
 
 [project.optional-dependencies]
 groq = ["langchain-groq>=1.1.3"]

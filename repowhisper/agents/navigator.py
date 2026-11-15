@@ -33,12 +33,17 @@ class CodeNavigator(BaseAgent):
         Initializes the CodeNavigatorAgent.
         
         Args:
-            llm (BaseChatModel): The language model to be used.
+            llm: The language model to be used.
+            user_level: User level decided by the user
         """
         self.llm = llm
         self.user_level = user_level
         self.user_level_prompt = self._get_code_navigator_prompt(user_level)
-        self.prompt_template = ChatPromptTemplate.from_messages([
+        self._prompt_template = self._get_prompt()
+
+    def _get_prompt(self) -> ChatPromptTemplate:
+
+        prompt = ChatPromptTemplate.from_messages([
             ( 
                 "system", 
                 """You are the Code Navigator for RepoWhisper. Your goal is to guide a **{user_level}** developer through a specific code module so they truly understand how it works and how it fits into the broader system.
@@ -59,6 +64,8 @@ class CodeNavigator(BaseAgent):
             ),
             ("user", "{query}\n\n Code:\n{context}")
         ])
+            
+        return prompt
 
     def _get_code_navigator_prompt(self, user_level:str) -> str:
         level_profiles = {
@@ -85,7 +92,7 @@ class CodeNavigator(BaseAgent):
         """
         Processes the query against the code context using the injected LLM.
         """
-        chain = (self.prompt_template | self.llm.with_structured_output(ModuleNavigationOutput)).with_retry(stop_after_attempt=6)
+        chain = (self._prompt_template | self.llm.with_structured_output(ModuleNavigationOutput)).with_retry(stop_after_attempt=6)
 
         numbered_code = self._format_code_with_line_numbers(context)
 

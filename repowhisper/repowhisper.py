@@ -81,7 +81,7 @@ class RepoWhisper:
         and fully automated LangGraph analysis.
 
         Returns:
-            str | None : A formatted JSON string ready for a frontend UI if there is no error, else it returns None
+            A formatted JSON string ready for a frontend UI if there is no error, else it returns None
         """
         init_bar = tqdm(
             total=3,
