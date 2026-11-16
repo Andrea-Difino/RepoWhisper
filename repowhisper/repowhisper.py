@@ -3,7 +3,7 @@ import os
 import socketserver
 import webbrowser
 from http.server import SimpleHTTPRequestHandler
-from typing import Any, Mapping
+from typing import Any
 
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
@@ -131,7 +131,7 @@ class RepoWhisper:
 
     def serve_ui(
         self,
-        json_data: Mapping[str, Any] | None = None,
+        json_data: dict[str, Any] | None = None,
         port: int = 8543,
     ) -> None:
         """
