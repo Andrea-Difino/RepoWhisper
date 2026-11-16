@@ -6,8 +6,8 @@
 .\.venv\Scripts\python.exe -m pytest
 ```
 
-The tests are under `tests/unit/` and cover agents, the facade, memory,
-ingestion, utilities, and workflow behavior.
+The tests are under `tests/unit/` and cover agents, the facade, source
+management, utilities, and workflow behavior.
 
 ## Build documentation
 
@@ -28,7 +28,6 @@ The generated `site/` directory is ignored by Git.
 To add another source language:
 
 1. register its extension and splitter language in
-   [ingestor.py](https://github.com/Andrea-Difino/RepoWhisper/blob/main/repowhisper/ingestion/ingestor.py);
 2. implement a language-specific tracer derived from
    [BaseLanguageTracer](api.md);
 3. register the tracer in `DependencyTracer`;

@@ -7,10 +7,8 @@ from agents.architect import Architect
 from agents.navigator import CodeNavigator
 from agents.reviewer import Reviewer
 from agents.storyteller import Storyteller
-from ingestion.ingestor import Ingestor
 from ingestion.source_manager import SourceManager
 from langchain_core.language_models.chat_models import BaseChatModel
-from memory.chroma_db_manager import ChromaDBManager
 from orchestration.state import ProjectState
 from orchestration.workflow import AgentsWorkflow
 from tqdm import tqdm
@@ -49,7 +47,6 @@ class RepoWhisper:
         self.llm = llm
 
         self._source_manager = SourceManager(self.source_target)
-        self._memory_manager = None
         self._repo_path: str | None = None
         self.repo_name: str = source_target.split("/")[-1]
 
@@ -77,14 +74,14 @@ class RepoWhisper:
 
     def generate_documentation(self) -> str | None:
         """
-        The main public method. Orchestrates cloning, parsing, database building,
-        and fully automated LangGraph analysis.
+        The main public method. Orchestrates source retrieval and automated
+        LangGraph analysis.
 
         Returns:
             A formatted JSON string ready for a frontend UI if there is no error, else it returns None
         """
         init_bar = tqdm(
-            total=3,
+            total=2,
             bar_format="{desc}: {percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
             colour="CYAN",
             leave=False
@@ -94,22 +91,12 @@ class RepoWhisper:
             self._repo_path = self._source_manager.get_path()
             init_bar.update(1)
 
-            init_bar.set_description("Loading and splitting files")
-            ingestor = Ingestor(self._repo_path)
-            docs = ingestor.ingest()
-            init_bar.update(1)
-
-            if not docs:
-                raise RuntimeError("No parsable code found in target source.")
-
-            init_bar.set_description("Building local vector db")
-            self._memory_manager = ChromaDBManager(docs)
+            init_bar.set_description("Preparing analysis workflow")
             init_bar.update(1)
             init_bar.close()
 
             workflow = AgentsWorkflow(
                 root_dir=self._repo_path,
-                memory_manager=self._memory_manager,
                 architect=self._architect,
                 navigator=self._navigator,
                 reviewer=self._reviewer,

@@ -8,7 +8,7 @@ from git.exc import GitCommandError
 class SourceManager:
     """
     Handles the retrieval and preparation of the source code.
-    Responsible for cloning remote repositories or validating local paths.
+    Responsible for cloning remote repositories.
     """
 
     def __init__(self, target: str):
@@ -17,23 +17,19 @@ class SourceManager:
 
     def get_path(self) -> str:
         """
-        Returns the local path to the source code.
-        Clones the repository if the target is a remote URL.
+        Clones the repository and return the absolute path to the temp folder.
         
         Returns:
-            str: The absolute path to the ready-to-use source code.
+            The absolute path to the ready-to-use source code.
             
         Raises:
-            ValueError: If the local path does not exist.
+            ValueError: If URL is not a valid github URL.
             RuntimeError: If the git cloning process fails.
         """
-        if self.target.startswith(("http://", "https://")):
+        if self.target.startswith(("http://github.com/", "https://github.com/")):
             return self._clone_repo()
-
-        if os.path.exists(self.target):
-            return self.target
-
-        raise ValueError(f"Target path {self.target} does not exist.")
+        else:
+            raise ValueError("The URL you provide is not a valid link to a github repo")
 
     def _clone_repo(self) -> str:
         """

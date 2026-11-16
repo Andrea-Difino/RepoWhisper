@@ -26,11 +26,6 @@ def test_generate_documentation_success(monkeypatch, tmp_path):
     engine._source_manager = cast(
         Any, SimpleNamespace(        get_path=lambda: str(tmp_path), cleanup=lambda: None)
     )
-    monkeypatch.setattr(
-        facade_module, "Ingestor", lambda _path: SimpleNamespace(ingest=lambda: ["doc"])
-    )
-    monkeypatch.setattr(facade_module, "ChromaDBManager", lambda _docs: object())
-
     class Workflow:
         def __init__(self, **_kwargs):
             self.graph = SimpleNamespace(
@@ -43,17 +38,11 @@ def test_generate_documentation_success(monkeypatch, tmp_path):
     assert json.loads(result) == {"ok": True}
 
 
-def test_generate_documentation_no_docs_and_keyboard_interrupt(monkeypatch, tmp_path):
+def test_generate_documentation_handles_keyboard_interrupt(monkeypatch, tmp_path):
     engine = RepoWhisper(str(tmp_path), cast(BaseChatModel, FakeLLM()))
     engine._source_manager = cast(
         Any, SimpleNamespace(        get_path=lambda: str(tmp_path), cleanup=lambda: None)
     )
-    monkeypatch.setattr(
-        facade_module, "Ingestor", lambda _path: SimpleNamespace(ingest=lambda: [])
-    )
-    with pytest.raises(RuntimeError, match="No parsable code"):
-        engine.generate_documentation()
-
     monkeypatch.setattr(
         engine._source_manager,
         "get_path",

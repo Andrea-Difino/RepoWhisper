@@ -16,9 +16,7 @@ The available levels are:
 
 The following sections expose implementation contracts for contributors.
 
-### Ingestion
-
-::: ingestion.ingestor
+### Source management
 
 ::: ingestion.source_manager
 
@@ -39,10 +37,6 @@ The following sections expose implementation contracts for contributors.
 ::: orchestration.state
 
 ::: orchestration.workflow
-
-### Memory
-
-::: memory.chroma_db_manager
 
 ### Utilities
 

@@ -2,10 +2,8 @@
 
 ## Current limitations
 
-- Only Python files are ingested by default.
+- The dependency tracer currently analyzes Python imports.
 - The quality of generated explanations depends on the selected LLM.
-- The default embedding model may require a download on the first run.
-- A local Chroma database is created under `./db`.
 - Large repositories can require substantial time, memory, and model tokens.
 - The bundled HTTP server is intended for local use, not production hosting.
 - `serve_ui()` writes generated source data into the bundled UI directory.

@@ -5,7 +5,7 @@ documentation with a multi-agent workflow.
 
 ## What it does
 
-RepoWhisper accepts a local directory or a Git repository URL, inspects its
+RepoWhisper accepts a Git repository URL, inspects its
 structure and dependencies, reads the supported source files, and produces:
 
 - an architectural summary;
@@ -26,6 +26,5 @@ The public entry point is the [`RepoWhisper`](api.md) facade.
 
 ## Current scope
 
-The ingestion pipeline currently supports Python source files. The dependency
-tracer is designed around language-specific tracer implementations, so other
-languages can be added without changing the public facade.
+The dependency tracer currently analyzes Python imports. Its tracer structure
+allows additional languages to be added without changing the public facade.

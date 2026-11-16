@@ -219,7 +219,10 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-repowhisper/db/*
+
+# Optional legacy modules kept for future ingestion and vector search.
+repowhisper/ingestion/ingestor.py
+repowhisper/memory/chroma_db_manager.py
 repowhisper/**/*.json
 repowhisper/main.py
 perfomances.txt

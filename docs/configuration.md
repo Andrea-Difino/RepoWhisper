@@ -31,12 +31,6 @@ by the application:
 - `RepoWhisper[openai]`
 - `RepoWhisper[anthropic]`
 
-## Local storage
-
-The vector store is created in `./db` by
-[ChromaDBManager](api.md). The default embedding model
-is `all-MiniLM-L6-v2`; the first run may download model files.
-
 The generated frontend data is written to
 `repowhisper/ui_dist/data.json` when `serve_ui()` is used.
 

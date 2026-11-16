@@ -25,7 +25,7 @@ class ModuleNavigationOutput(BaseModel):
 class CodeNavigator(BaseAgent):
     """
         Specialized agent responsible for interpreting and explaining specific 
-        code fragments retrieved from the vector database.
+        code fragments read from the repository.
     """
 
     def __init__(self, llm: BaseChatModel, user_level: str):

@@ -24,17 +24,14 @@ engine = RepoWhisper(
 )
 ```
 
-RepoWhisper clones the repository to a temporary directory before ingestion.
+RepoWhisper clones the repository to a temporary directory before analysis.
 Clone failures are reported as `RuntimeError`; private repositories require Git
 credentials to be configured in the environment.
 
 ## Files included in analysis
 
-The default ingestion path currently processes Python files (`.py`). The
-ingestor parses source code and splits it into language-aware chunks before
-creating embeddings.
-
-The dependency tracer ignores common non-source directories such as:
+The dependency tracer currently analyzes Python imports and ignores common
+non-source directories such as:
 
 - `.git`;
 - virtual environments;

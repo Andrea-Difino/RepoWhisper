@@ -6,6 +6,9 @@ from langchain_core.prompts import ChatPromptTemplate
 
 
 class Reviewer(BaseAgent):
+    """
+    This agent is a quality assurance reviewer for technical documentation. It decide if the code navigator agent provided a correct code explanation respect to some criteria or not.
+    """
     def __init__(self, llm: BaseChatModel) -> None:
         """
         Initializes the ReviewerAgent.

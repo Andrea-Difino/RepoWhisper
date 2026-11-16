@@ -5,7 +5,6 @@
 - Python 3.12.
 - Git, when analyzing a remote repository.
 - An LLM provider supported by LangChain.
-- Enough disk space for the local embedding model and Chroma database.
 
 ## Install the project
 
