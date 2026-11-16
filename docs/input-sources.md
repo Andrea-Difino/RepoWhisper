@@ -1,18 +1,5 @@
 # Input Sources
 
-## Local repositories
-
-Pass an existing directory:
-
-```python
-engine = RepoWhisper(
-    source_target=r"C:\Projects\my-repository",
-    llm=llm,
-)
-```
-
-The path must exist. Otherwise `SourceManager.get_path()` raises `ValueError`.
-
 ## Remote repositories
 
 Pass an HTTP(S) Git URL:
