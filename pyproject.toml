@@ -21,22 +21,23 @@ keywords = ["documentation", "ai", "langgraph", "langchain", "agents", "ast"]
 requires-python = ">=3.12, <3.13"
 dependencies = [
     "chardet>=7.7.0",
-    "chromadb>=1.5.9",
+    "dotenv>=0.9.9",
     "gitpython>=3.2.1",
     "langchain>=1.4.7",
-    "langchain-chroma>=1.1.0",
-    "langchain-community>=0.4.2",
-    "langchain-huggingface>=1.2.3",
     "langgraph>=1.2.18",
     "pydantic>=2.14.2",
-    "sentence-transformers>=6.2.0",
     "tqdm>=4.70.1",
     "tree-sitter>=0.26.0",
     "tree-sitter-languages>=1.10.2",
 ]
 
 [dependency-groups]
-dev = ["pytest>=9.0.0", "pytest-cov>=7.0.0"]
+dev = [
+    "mkdocs>=1.6.1",
+    "mkdocstrings[python]>=1.0.0",
+    "pytest>=9.0.0",
+    "pytest-cov>=7.0.0",
+]
 
 [project.optional-dependencies]
 groq = ["langchain-groq>=1.1.3"]

@@ -7,7 +7,6 @@ from agents.navigator import CodeNavigator
 from agents.reviewer import Reviewer
 from agents.storyteller import Storyteller
 from langgraph.graph import END, START, StateGraph
-from memory.chroma_db_manager import ChromaDBManager
 from orchestration.state import LineWhisperData, ProjectState
 from tqdm import tqdm
 from utils.dependency_tracer import DependencyTracer
@@ -23,14 +22,11 @@ class AgentsWorkflow:
     def __init__(
             self, 
             root_dir: str,
-            memory_manager: ChromaDBManager,
             architect: Architect, 
             navigator: CodeNavigator, 
             reviewer: Reviewer, 
             storyteller: Storyteller):
         self.root_dir = root_dir
-
-        self.memory_manager = memory_manager
 
         self.architect = architect
         self.navigator = navigator

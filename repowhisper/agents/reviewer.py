@@ -6,14 +6,26 @@ from langchain_core.prompts import ChatPromptTemplate
 
 
 class Reviewer(BaseAgent):
-
+    """
+    This agent is a quality assurance reviewer for technical documentation. It decide if the code navigator agent provided a correct code explanation respect to some criteria or not.
+    """
     def __init__(self, llm: BaseChatModel) -> None:
+        """
+        Initializes the ReviewerAgent.
+
+        Args:
+            llm: The language model to be used.
+        """
         self.llm = llm
 
-        self.prompt_template = ChatPromptTemplate.from_messages([
-            (
-                "system",
-                """You are an inflexible Quality Assurance Reviewer for technical documentation.\n
+        self._prompt_template = self._get_prompt()
+
+    def _get_prompt(self) -> ChatPromptTemplate:
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    """You are an inflexible Quality Assurance Reviewer for technical documentation.\n
                 Your ONLY job is to evaluate the provided code explanation and ensure it strictly 
                 describes WHAT the code does and HOW it works.\n\n
                 GOLDEN RULE: The explanation MUST NOT contain attempts to debug the code, report bugs in the code, 
@@ -26,18 +38,18 @@ class Reviewer(BaseAgent):
                     "feedback": "<a very short feedback to fix the explanation if VIOLATION>"
                 }}\n\n
                 If the text violates the Golden Rule, the 'response' field MUST contain VIOLATION and a short advice in the 'feedback' field.\n
-                If the text is right, the 'response' field MUST contain APPROVED and the 'feedback' field an empty string."""
-            ),
-            ("user","Evaluate this explanation:\n\n{context}")
-        ])
+                If the text is right, the 'response' field MUST contain APPROVED and the 'feedback' field an empty string.""",
+                ),
+                ("user", "Evaluate this explanation:\n\n{context}"),
+            ]
+        )
+
+        return prompt
 
     def analyze(self, query: str, context: Any) -> str:
 
-        chain = (self.prompt_template | self.llm).with_retry(stop_after_attempt=6)
+        chain = (self._prompt_template | self.llm).with_retry(stop_after_attempt=6)
 
-        result = chain.invoke({
-            "context": context, 
-            "query": query
-        })
+        result = chain.invoke({"context": context, "query": query})
 
         return str(result.content)

@@ -219,7 +219,8 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-repowhisper/db/*
+
 repowhisper/**/*.json
 repowhisper/main.py
 perfomances.txt
+legacy/

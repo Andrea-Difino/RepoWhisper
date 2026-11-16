@@ -39,15 +39,15 @@ class FakeLLM:
 
 def test_architect_reviewer_and_storyteller_analyze(monkeypatch):
     architect = Architect(object())
-    architect.prompt_template = FakePrompt(SimpleNamespace(content="architecture"))
+    architect._prompt_template = FakePrompt(SimpleNamespace(content="architecture"))
     assert architect.analyze("query", "tree") == "architecture"
 
     reviewer = Reviewer(object())
-    reviewer.prompt_template = FakePrompt(SimpleNamespace(content='{"response":"APPROVED"}'))
+    reviewer._prompt_template = FakePrompt(SimpleNamespace(content='{"response":"APPROVED"}'))
     assert reviewer.analyze("query", "draft") == '{"response":"APPROVED"}'
 
     storyteller = Storyteller(object(), "junior")
-    storyteller.prompt_template = FakePrompt(SimpleNamespace(content="narrative"))
+    storyteller._prompt_template = FakePrompt(SimpleNamespace(content="narrative"))
     assert storyteller.analyze("query", "context") == "narrative"
 
 
@@ -58,7 +58,7 @@ def test_navigator_prompts_formatting_and_analyze():
     assert "architectural trade-offs" in CodeNavigator(FakeLLM(None), "senior").user_level_prompt
     assert "component integration" in CodeNavigator(FakeLLM(None), "other").user_level_prompt
 
-    navigator.prompt_template = FakePrompt(
+    navigator._prompt_template = FakePrompt(
         ModuleNavigationOutput(explanation="explained", line_whispers=[])
     )
     result = navigator.analyze("explain", "line one\nline two")

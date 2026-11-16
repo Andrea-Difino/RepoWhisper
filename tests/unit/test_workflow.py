@@ -20,7 +20,6 @@ class FakeAgent:
 def make_workflow(tmp_path):
     workflow = cast(Any, AgentsWorkflow.__new__(AgentsWorkflow))
     workflow.root_dir = str(tmp_path)
-    workflow.memory_manager = None
     workflow.architect = FakeAgent("summary")
     workflow.navigator = FakeAgent(
         {"explanation": "draft", "line_whispers": [{"line_number": 1, "note": "note"}]}
