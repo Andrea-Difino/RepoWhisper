@@ -6,27 +6,50 @@
 - Git, when analyzing a remote repository.
 - An LLM provider supported by LangChain.
 
-## Install the project
+## Install from PyPI
 
-From the repository root:
+For the standard installation, install the published package from PyPI:
+
+```powershell
+python -m pip install repowhisper
+```
+
+The base package includes RepoWhisper and its core dependencies. To install
+RepoWhisper together with the integration for a specific LLM provider, use
+the corresponding optional dependency:
+
+```powershell
+python -m pip install "repowhisper[groq]"
+python -m pip install "repowhisper[ollama]"
+python -m pip install "repowhisper[openai]"
+python -m pip install "repowhisper[anthropic]"
+```
+
+Each provider extra includes the base RepoWhisper installation and the
+provider-specific LangChain integration.
+
+## Install from the repository
+
+For development, or to work with the source code, clone the repository and
+install the project from its root:
 
 ```powershell
 uv sync
 ```
 
-Or install the package with pip:
+Alternatively, install the local package with pip:
 
 ```powershell
 python -m pip install .
 ```
 
-Optional LLM integrations are declared in `pyproject.toml`:
+Optional LLM integrations can also be installed from the local checkout:
 
 ```powershell
-python -m pip install "RepoWhisper[groq]"
-python -m pip install "RepoWhisper[ollama]"
-python -m pip install "RepoWhisper[openai]"
-python -m pip install "RepoWhisper[anthropic]"
+python -m pip install ".[groq]"
+python -m pip install ".[ollama]"
+python -m pip install ".[openai]"
+python -m pip install ".[anthropic]"
 ```
 
 ## Install documentation dependencies

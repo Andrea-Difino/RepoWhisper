@@ -23,10 +23,34 @@ http://localhost:8543
 Use a custom port with:
 
 ```python
-engine.serve_ui(json_data=json_data, port=9000)
+engine.serve_ui(port=9000)
+```
+
+You can also load an existing `data.json` file and pass the decoded object
+directly. `serve_ui()` serializes it before writing the file used by the UI:
+
+```python
+import json
+
+with open("data.json", encoding="utf-8") as f:
+    json_data = json.load(f)
+
+engine.serve_ui(json_data=json_data)
 ```
 
 The server runs until interrupted with `Ctrl+C`.
+
+In an application entry point, handle failures around `serve_ui()`:
+
+```python
+try:
+    engine.serve_ui()
+except Exception as exc:
+    print(f"RepoWhisper failed: {exc}")
+```
+
+User interruptions are handled by RepoWhisper. Other errors, such as provider,
+repository, or server failures, are propagated to the caller.
 
 ## Frontend data contract
 

@@ -8,7 +8,10 @@ kept outside RepoWhisper:
 ```python
 import os
 
+from dotenv import load_dotenv
 from langchain_groq import ChatGroq
+
+load_dotenv()
 
 llm = ChatGroq(
     api_key=os.environ["GROQ_API_KEY"],
@@ -36,10 +39,16 @@ The generated frontend data is written to
 
 ## Source paths
 
-`source_target` can be:
 
-- an existing local directory;
-- an `http://` or `https://` Git repository URL.
+```python
+engine = RepoWhisper(
+    source_target="https://github.com/...",
+    llm=llm,
+    user_level=UserLevel.JUNIOR,
+)
+```
 
-Remote repositories are cloned into a temporary directory and removed during
+`source_target` is an `http://` or `https://` Git repository URL.
+
+Repositories are cloned into a temporary directory and removed during
 cleanup after analysis.

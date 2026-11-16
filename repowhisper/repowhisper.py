@@ -1,7 +1,9 @@
+import json
 import os
 import socketserver
 import webbrowser
 from http.server import SimpleHTTPRequestHandler
+from typing import Any, Mapping
 
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
@@ -87,7 +89,7 @@ class RepoWhisper:
             leave=False
         )
         try:
-            init_bar.set_description(f"Cloning repo from: {self.source_target}")
+            init_bar.set_description(f"Cloning repo from {self.source_target}")
             self._repo_path = self._source_manager.get_path()
             init_bar.update(1)
 
@@ -127,16 +129,22 @@ class RepoWhisper:
         finally:
             self._source_manager.cleanup()
 
-    def serve_ui(self, json_data: str | None = None, port: int = 8543) -> None:
+    def serve_ui(
+        self,
+        json_data: Mapping[str, Any] | None = None,
+        port: int = 8543,
+    ) -> None:
         """
         Execute full analysis, save data and launch react interface locally.
         """
-        if not json_data:
-            json_data = self.generate_documentation()
+        if json_data is None or json_data == "":
+            json_content = self.generate_documentation()
 
-            if not json_data:
+            if not json_content:
                 print("Impossible to start interface, json generation failed")
                 return
+        else:
+            json_content = json.dumps(json_data)
 
         base_dir = os.path.dirname(os.path.abspath(__file__))
         ui_dir = os.path.join(base_dir, "ui_dist")
@@ -146,7 +154,7 @@ class RepoWhisper:
 
         json_path = os.path.join(ui_dir, "data.json")
         with open(json_path, "w", encoding="utf-8") as f:
-            f.write(json_data)
+            f.write(json_content)
 
         os.chdir(ui_dir)
 
