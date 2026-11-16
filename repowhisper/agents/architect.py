@@ -6,6 +6,9 @@ from langchain_core.prompts import ChatPromptTemplate
 
 
 class Architect(BaseAgent):
+    """
+        Specialized agent that take the project structure and output a project top'view overview
+    """
 
     def __init__(self, llm: BaseChatModel):
         """
