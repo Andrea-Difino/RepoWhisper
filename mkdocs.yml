@@ -1,7 +1,9 @@
-site_name: RepoWhisper
+site_name: RepoWhisper Documentation
+site_url: https://andrea-difino.github.io/RepoWhisper/docs/
+repo_url: https://github.com/Andrea-Difino/RepoWhisper
+repo_name: Andrea-Difino/RepoWhisper
 site_description: AI-powered repository analysis and documentation
-site_url: https://github.com/Andrea-Difino/RepoWhisper
-
+  
 theme:
   name: readthedocs
 
