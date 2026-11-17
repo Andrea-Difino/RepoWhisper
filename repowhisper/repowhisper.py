@@ -13,7 +13,6 @@ from ingestion.source_manager import SourceManager
 from langchain_core.language_models.chat_models import BaseChatModel
 from orchestration.state import ProjectState
 from orchestration.workflow import AgentsWorkflow
-from tqdm import tqdm
 from utils.config import UserLevel
 
 
@@ -82,20 +81,9 @@ class RepoWhisper:
         Returns:
             A formatted JSON string ready for a frontend UI if there is no error, else it returns None
         """
-        init_bar = tqdm(
-            total=2,
-            bar_format="{desc}: {percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
-            colour="CYAN",
-            leave=False
-        )
         try:
-            init_bar.set_description(f"Cloning repo from {self.source_target}")
+            print(f"Cloning repo from {self.source_target}")
             self._repo_path = self._source_manager.get_path()
-            init_bar.update(1)
-
-            init_bar.set_description("Preparing analysis workflow")
-            init_bar.update(1)
-            init_bar.close()
 
             workflow = AgentsWorkflow(
                 root_dir=self._repo_path,
