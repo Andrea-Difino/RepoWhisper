@@ -14,22 +14,42 @@ llm = ChatGroq(
 )
 
 engine = RepoWhisper(
-    source_target="https://github.com/Andrea-Difino/WaveRedact",
+    source_target="repo_url",
     llm=llm,
     user_level=UserLevel.JUNIOR,
 )
 
-json_data = engine.generate_documentation()
+try:
+    json_data = engine.generate_documentation()
+except Exception as exc:
+    print(f"RepoWhisper failed: {exc}")
 ```
 
 `generate_documentation()` returns a JSON string when analysis succeeds and
 `None` when the run is interrupted or cannot produce a result.
+
+The `try/except` is recommended because provider, repository, and processing
+errors are propagated to the caller.
 
 To generate the documentation and open the bundled interface in a browser:
 
 ```python
 engine.serve_ui()
 ```
+
+For an application entry point, wrap the call in `try/except` to handle
+provider, repository, and server errors without an unhandled traceback:
+
+```python
+try:
+    engine.serve_ui()
+except Exception as exc:
+    print(f"RepoWhisper failed: {exc}")
+```
+
+`RepoWhisper` handles user interruptions internally. Other errors are raised
+to the caller so that applications can log them or present an appropriate
+message.
 
 The default server port is `8543`. Pass a different port when needed:
 

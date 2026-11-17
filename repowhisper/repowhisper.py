@@ -1,7 +1,9 @@
+import json
 import os
 import socketserver
 import webbrowser
 from http.server import SimpleHTTPRequestHandler
+from typing import Any
 
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
@@ -11,7 +13,6 @@ from ingestion.source_manager import SourceManager
 from langchain_core.language_models.chat_models import BaseChatModel
 from orchestration.state import ProjectState
 from orchestration.workflow import AgentsWorkflow
-from tqdm import tqdm
 from utils.config import UserLevel
 
 
@@ -51,7 +52,7 @@ class RepoWhisper:
         self.repo_name: str = source_target.split("/")[-1]
 
         self._navigator = CodeNavigator(self.llm, self.user_level.value)
-        self._architect = Architect(self.llm)
+        self._architect = Architect(self.llm, self.user_level.value)
         self._reviewer = Reviewer(self.llm)
         self._storyteller = Storyteller(self.llm, self.user_level.value)
 
@@ -80,20 +81,9 @@ class RepoWhisper:
         Returns:
             A formatted JSON string ready for a frontend UI if there is no error, else it returns None
         """
-        init_bar = tqdm(
-            total=2,
-            bar_format="{desc}: {percentage:3.0f}% |{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]",
-            colour="CYAN",
-            leave=False
-        )
         try:
-            init_bar.set_description(f"Cloning repo from: {self.source_target}")
+            print(f"Cloning repo from {self.source_target}")
             self._repo_path = self._source_manager.get_path()
-            init_bar.update(1)
-
-            init_bar.set_description("Preparing analysis workflow")
-            init_bar.update(1)
-            init_bar.close()
 
             workflow = AgentsWorkflow(
                 root_dir=self._repo_path,
@@ -127,16 +117,22 @@ class RepoWhisper:
         finally:
             self._source_manager.cleanup()
 
-    def serve_ui(self, json_data: str | None = None, port: int = 8543) -> None:
+    def serve_ui(
+        self,
+        json_data: dict[str, Any] | None = None,
+        port: int = 8543,
+    ) -> None:
         """
         Execute full analysis, save data and launch react interface locally.
         """
-        if not json_data:
-            json_data = self.generate_documentation()
+        if json_data is None or json_data == "":
+            json_content = self.generate_documentation()
 
-            if not json_data:
+            if not json_content:
                 print("Impossible to start interface, json generation failed")
                 return
+        else:
+            json_content = json.dumps(json_data)
 
         base_dir = os.path.dirname(os.path.abspath(__file__))
         ui_dir = os.path.join(base_dir, "ui_dist")
@@ -146,7 +142,7 @@ class RepoWhisper:
 
         json_path = os.path.join(ui_dir, "data.json")
         with open(json_path, "w", encoding="utf-8") as f:
-            f.write(json_data)
+            f.write(json_content)
 
         os.chdir(ui_dir)
 
