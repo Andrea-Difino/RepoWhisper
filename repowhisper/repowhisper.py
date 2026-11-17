@@ -52,7 +52,7 @@ class RepoWhisper:
         self.repo_name: str = source_target.split("/")[-1]
 
         self._navigator = CodeNavigator(self.llm, self.user_level.value)
-        self._architect = Architect(self.llm)
+        self._architect = Architect(self.llm, self.user_level.value)
         self._reviewer = Reviewer(self.llm)
         self._storyteller = Storyteller(self.llm, self.user_level.value)
 
