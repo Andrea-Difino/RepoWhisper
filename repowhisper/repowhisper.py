@@ -159,5 +159,5 @@ class RepoWhisper:
             try:
                 httpd.serve_forever()
             except KeyboardInterrupt:
-                print("\n Repowhisper server turned off")
+                print("\nRepowhisper server turned off")
                 httpd.server_close()
