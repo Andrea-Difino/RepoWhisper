@@ -146,7 +146,7 @@ class AgentsWorkflow:
                 self.pbar.update(1)
             return {"file_error": True}
 
-        query = f"Explain the logic of this file. Feedback to fix: {feedback}" if feedback else "Explain this file logically."
+        query = f"Explain the logic of this file. Make a explanation following this feedback: {feedback}" if feedback else "Explain this file logically."
         navigation = self.navigator.analyze(query, context=code_context)
         if not isinstance(navigation, dict):
             raise TypeError("Code Navigator must return a structured dictionary.")
@@ -188,6 +188,8 @@ class AgentsWorkflow:
     def _node_reviewer(self, state: ProjectState) -> dict:
         draft = state.get("current_draft", "")
         file_target = state["current_file"]
+        if self.pbar:
+            self.pbar.set_description(f"Reviewer checking: {os.path.basename(file_target)}") # type: ignore
 
         evaluation = self.reviewer.analyze("Does this explain or debug?", context=draft)
 
