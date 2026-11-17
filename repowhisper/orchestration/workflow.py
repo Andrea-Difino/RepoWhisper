@@ -209,7 +209,8 @@ class AgentsWorkflow:
             feedback = ""
 
         if status == "VIOLATION":
-            tqdm.write(f"❌ Reviewer rejected {os.path.basename(file_target)}. Retrying...") #type: ignore
+            if self.pbar:
+                self.pbar.set_description(f"Reviewer rejected {os.path.basename(file_target)}. Retrying...") #type: ignore
             return {"reviewer_feedback": feedback}
 
         if self.pbar:
