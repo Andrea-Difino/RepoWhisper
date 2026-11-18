@@ -1,5 +1,5 @@
-import os
 import functools
+import os
 import socketserver
 import webbrowser
 from http.server import SimpleHTTPRequestHandler
