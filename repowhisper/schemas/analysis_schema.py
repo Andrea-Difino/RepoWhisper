@@ -3,10 +3,6 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
 
 
-class LineWhisperItem(BaseModel):
-    line_number: int = Field(gt=0)
-    note: str = Field(min_length=1)
-
 class ModuleAnalysisItem(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
