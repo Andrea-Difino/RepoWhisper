@@ -1,24 +1,28 @@
+import re
+import time
 from abc import ABC, abstractmethod
 from typing import Any
 
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import Runnable
+from tqdm import tqdm
 
 
 class BaseAgent(ABC):
     """
-        Abstract base class for all AI agents within the Excode ecosystem.
-        Enforces a strict contract for agent implementation following the 
-        Open/Closed Principle (OCP).
+    Abstract base class for all AI agents within the Excode ecosystem.
+    Enforces a strict contract for agent implementation following the
+    Open/Closed Principle (OCP).
     """
 
     @abstractmethod
-    def analyze(self, query:str, context: Any) -> Any:
+    def analyze(self, query: str, context: Any) -> Any:
         """
         Executes the agent's core logic based on the user query and provided context.
 
         Args:
             query (str): The specific question or task requested by the user.
-            context (Any): The contextual data required for the analysis 
+            context (Any): The contextual data required for the analysis
                            (e.g., retrieved code snippets, file tree).
 
         Returns:
@@ -30,4 +34,51 @@ class BaseAgent(ABC):
         """
         Inject the prompt template inside the class prompt attribute
         """
-    
+
+    def _run_chain(self, chain: Runnable, inputs: dict[str, Any], max_retries: int = 5) -> Any:
+        """
+        Esegue every LangChain chain with rate limit handling (429):
+        """
+        agent_name = self.__class__.__name__
+
+        retry_bar = None
+
+        try:
+            for attempt in range(1, max_retries + 1):
+                try:
+                    return chain.invoke(inputs)
+                except Exception as e:
+                    error_msg = str(e)
+
+                    error_code = "400" if "400" in error_msg else "429" if "429" in error_msg else "General error"
+
+                    if "tokens per day" in error_msg.lower() or "tpd" in error_msg.lower():
+                        tqdm.write(f"[{agent_name}] Daily token limit reached (TPD)!")
+                        raise
+
+                    if attempt == max_retries:
+                        tqdm.write(f"[{agent_name}] Failed after {max_retries} retries.")
+                        raise
+
+                    match = re.search(r"try again in (\d+(?:\.\d+)?)s", error_msg)
+
+                    if error_code == "400":
+                        wait_time = 1.0
+                    else:
+                        wait_time = float(match.group(1)) + 1.5 if match else min(2.0 ** attempt, 30.0)
+
+                    if retry_bar is None:
+                        retry_bar = tqdm(bar_format="{desc}", leave=False)
+
+                    remaining = wait_time
+                    while remaining > 0:
+                        retry_bar.set_description_str(
+                            f"⏳ [{agent_name} - Try {attempt}/{max_retries}] "
+                            f"Error {error_code}. Continue in {remaining:.1f}s..."
+                        )
+                        step = min(0.5, remaining)
+                        time.sleep(step)
+                        remaining -= step
+        finally:
+            if retry_bar is not None:
+                retry_bar.close()

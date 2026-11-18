@@ -56,7 +56,16 @@ class CodeNavigator(BaseAgent):
                 4. ZERO HALLUCINATIONS: Base everything strictly on the provided code.
 
                 USER LEVEL CALIBRATION & STRICT LENGTH BUDGET:
-                {user_level_prompt}""",
+                {user_level_prompt} 
+                
+                REQUIRED JSON OUTPUT FORMAT:
+                You must respond strictly with a valid JSON object matching this exact schema (no markdown fences, no extra keys):
+                {{
+                "explanation": "Your narrative explanation here",
+                "line_whispers": [
+                    {{"line_number": 12, "note": "Your concise note here"}}
+                ]
+                }}""",
             ),
             ("user", "{query}\n\nCode:\n{context}"),
         ])
@@ -90,17 +99,20 @@ class CodeNavigator(BaseAgent):
         """
         Processes the query against the code context using the injected LLM.
         """
+        
         chain = (
             self._prompt_template | self.llm.with_structured_output(ModuleNavigationOutput)
-        ).with_retry(stop_after_attempt=6)
-
+        )
+        
         numbered_code = self._format_code_with_line_numbers(context)
-
-        response: ModuleNavigationOutput = chain.invoke({
-            "context": numbered_code,
-            "query": query,
-            "user_level": self.user_level.upper(),
-            "user_level_prompt": self.user_level_prompt,
-        })  # type: ignore
+        response: ModuleNavigationOutput = self._run_chain(
+            chain,
+            {
+                "context": numbered_code,
+                "query": query,
+                "user_level": self.user_level.upper(),
+                "user_level_prompt": self.user_level_prompt,
+            }
+        )
 
         return response.model_dump()

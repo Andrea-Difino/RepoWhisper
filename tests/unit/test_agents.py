@@ -38,7 +38,7 @@ class FakeLLM:
 
 
 def test_architect_reviewer_and_storyteller_analyze(monkeypatch):
-    architect = Architect(object())
+    architect = Architect(object(), "junior")
     architect._prompt_template = FakePrompt(SimpleNamespace(content="architecture"))
     assert architect.analyze("query", "tree") == "architecture"
 

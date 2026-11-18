@@ -76,10 +76,15 @@ class Storyteller(BaseAgent):
 
     def analyze(self, query: str, context: Any) -> str:
 
-        chain = (self._prompt_template | self.llm).with_retry(stop_after_attempt=6)
+        chain = self._prompt_template | self.llm
 
-        result = chain.invoke(
-            {"query": query, "context": context, "user_level": self.user_level}
+        response = self._run_chain(
+            chain,
+            {
+                "query": query, 
+                "context": context, 
+                "user_level": self.user_level
+            }
         )
 
-        return str(result.content)
+        return str(response.content)

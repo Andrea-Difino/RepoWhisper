@@ -1,9 +1,9 @@
-import json
+import functools
 import os
 import socketserver
 import webbrowser
 from http.server import SimpleHTTPRequestHandler
-from typing import Any
+from pathlib import Path
 
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
@@ -13,6 +13,7 @@ from ingestion.source_manager import SourceManager
 from langchain_core.language_models.chat_models import BaseChatModel
 from orchestration.state import ProjectState
 from orchestration.workflow import AgentsWorkflow
+from schemas.analysis_schema import AnalysisJsonValidator
 from utils.config import UserLevel
 
 
@@ -49,7 +50,6 @@ class RepoWhisper:
 
         self._source_manager = SourceManager(self.source_target)
         self._repo_path: str | None = None
-        self.repo_name: str = source_target.split("/")[-1]
 
         self._navigator = CodeNavigator(self.llm, self.user_level.value)
         self._architect = Architect(self.llm, self.user_level.value)
@@ -110,6 +110,11 @@ class RepoWhisper:
             }
 
             final_state = workflow.graph.invoke(initial_state)
+
+            raw_json = final_state["final_output_json"]
+            
+            _ = AnalysisJsonValidator.validate_string(raw_json)
+
             return final_state["final_output_json"]
         except KeyboardInterrupt:
             print("Program interrupted by the user")
@@ -119,20 +124,25 @@ class RepoWhisper:
 
     def serve_ui(
         self,
-        json_data: dict[str, Any] | None = None,
+        json_path: str | Path | None = None,
         port: int = 8543,
     ) -> None:
         """
-        Execute full analysis, save data and launch react interface locally.
+        Execute full analysis if json_path is None, save data and launch react interface locally. If json_path is passed the analysis is not executed and the interface starts immediately
+
+        Args:
+            json_path (str | Path | None): JSON file path of a previous analysis.
+            port (int): port value for the web interface.
         """
-        if json_data is None or json_data == "":
+        if json_path is None or json_path == "":
             json_content = self.generate_documentation()
 
             if not json_content:
                 print("Impossible to start interface, json generation failed")
                 return
         else:
-            json_content = json.dumps(json_data)
+            report = AnalysisJsonValidator.validate_file(json_path)
+            json_content = report.model_dump_json(indent=2)
 
         base_dir = os.path.dirname(os.path.abspath(__file__))
         ui_dir = os.path.join(base_dir, "ui_dist")
@@ -140,18 +150,18 @@ class RepoWhisper:
         if not os.path.exists(ui_dir):
             raise FileNotFoundError(f"ui_dir not found: {ui_dir}. ")
 
-        json_path = os.path.join(ui_dir, "data.json")
-        with open(json_path, "w", encoding="utf-8") as f:
+        output_json_path = os.path.join(ui_dir, "data.json")
+        with open(output_json_path, "w", encoding="utf-8") as f:
             f.write(json_content)
-
-        os.chdir(ui_dir)
 
         class QuietHandler(SimpleHTTPRequestHandler):
             def log_message(self, format, *args):
                 pass
 
-        with socketserver.TCPServer(("", port), QuietHandler) as httpd:
-            print(f"\nStudio interface available at: http://localhost:{port}")
+        handler = functools.partial(QuietHandler, directory=ui_dir)
+
+        with socketserver.TCPServer(("", port), handler) as httpd:
+            print(f"\nStudy interface available at: http://localhost:{port}")
             print("Press Ctrl+C to stop server and close the app")
 
             webbrowser.open(f"http://localhost:{port}")
@@ -159,5 +169,5 @@ class RepoWhisper:
             try:
                 httpd.serve_forever()
             except KeyboardInterrupt:
-                print("\n Repowhisper server turned off")
+                print("\nRepowhisper server turned off")
                 httpd.server_close()

@@ -72,15 +72,16 @@ class Architect(BaseAgent):
         return prompt
 
     def analyze(self, query: str, context: Any) -> str:
-        chain = (self._prompt_template | self.llm).with_retry(stop_after_attempt=6)
+        chain = self._prompt_template | self.llm
 
-        response = chain.invoke(
+        response = self._run_chain(
+            chain,
             {
                 "query": query,
                 "context": context,
                 "user_level": self.user_level.upper(),
                 "user_level_guidance": self.user_level_guidance,
-            }
+            },
         )
 
         return str(response.content)

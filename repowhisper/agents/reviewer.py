@@ -48,8 +48,14 @@ class Reviewer(BaseAgent):
 
     def analyze(self, query: str, context: Any) -> str:
 
-        chain = (self._prompt_template | self.llm).with_retry(stop_after_attempt=6)
+        chain = self._prompt_template | self.llm
 
-        result = chain.invoke({"context": context, "query": query})
+        response = self._run_chain(
+            chain,
+            {
+                "context": context, 
+                "query": query
+            }
+        )
 
-        return str(result.content)
+        return str(response.content)

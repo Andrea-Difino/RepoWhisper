@@ -17,7 +17,6 @@ def test_facade_initializes():
     engine = RepoWhisper(
         "owner/repository", cast(BaseChatModel, FakeLLM()), UserLevel.SENIOR
     )
-    assert engine.repo_name == "repository"
     assert engine.user_level is UserLevel.SENIOR
 
 
@@ -26,16 +25,30 @@ def test_generate_documentation_success(monkeypatch, tmp_path):
     engine._source_manager = cast(
         Any, SimpleNamespace(        get_path=lambda: str(tmp_path), cleanup=lambda: None)
     )
+    report = {
+        "title": "RepoWhisper Analysis",
+        "tree_structure": "root.py",
+        "narrative": "Documentation narrative",
+        "raw_modules": [
+            {
+                "file": "root.py",
+                "explanation": "Explains root.py",
+                "code_snippet": "print('ok')",
+                "notes": {"1": "Entry point"},
+            }
+        ],
+    }
+
     class Workflow:
         def __init__(self, **_kwargs):
             self.graph = SimpleNamespace(
-                invoke=lambda _state: {"final_output_json": json.dumps({"ok": True})}
+                invoke=lambda _state: {"final_output_json": json.dumps(report)}
             )
 
     monkeypatch.setattr(facade_module, "AgentsWorkflow", Workflow)
     result = engine.generate_documentation()
     assert result is not None
-    assert json.loads(result) == {"ok": True}
+    assert json.loads(result) == report
 
 
 def test_generate_documentation_handles_keyboard_interrupt(monkeypatch, tmp_path):

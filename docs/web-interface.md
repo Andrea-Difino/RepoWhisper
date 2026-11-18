@@ -8,7 +8,7 @@ engine.serve_ui()
 
 The method:
 
-1. runs the analysis when JSON data was not supplied;
+1. runs the analysis when JSON data path is not supplied;
 2. writes the JSON to `repowhisper/ui_dist/data.json`;
 3. changes into the bundled UI directory;
 4. starts a local HTTP server;
@@ -26,16 +26,10 @@ Use a custom port with:
 engine.serve_ui(port=9000)
 ```
 
-You can also load an existing `data.json` file and pass the decoded object
-directly. `serve_ui()` serializes it before writing the file used by the UI:
+You can also load an existing `data.json` file passing the file path. `serve_ui()` serializes it before writing the file used by the UI:
 
 ```python
-import json
-
-with open("data.json", encoding="utf-8") as f:
-    json_data = json.load(f)
-
-engine.serve_ui(json_data=json_data)
+engine.serve_ui(json_path="data.json")
 ```
 
 The server runs until interrupted with `Ctrl+C`.
@@ -61,6 +55,6 @@ line-level annotations for the code viewer.
 ## Operational notes
 
 - Only use this server on trusted local networks.
-- The generated `data.json` can contain source code from the analyzed
+- The generated `data.json` contains source code from the analyzed
   repository.
 - Stop the server with `Ctrl+C`.

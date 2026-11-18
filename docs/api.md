@@ -20,6 +20,10 @@ The following sections expose implementation contracts for contributors.
 
 ::: ingestion.source_manager
 
+### JSON validation
+
+::: schemas.analysis_schema
+
 ### Agents
 
 ::: agents.base_agent
