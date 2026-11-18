@@ -6,6 +6,7 @@ from typing import Any
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
 from tqdm import tqdm
+from utils.exceptions import ProviderError
 
 
 class BaseAgent(ABC):
@@ -54,18 +55,25 @@ class BaseAgent(ABC):
 
                     if "tokens per day" in error_msg.lower() or "tpd" in error_msg.lower():
                         tqdm.write(f"[{agent_name}] Daily token limit reached (TPD)!")
-                        raise
+                        raise ProviderError(
+                            f"{agent_name} cannot continue because the provider's "
+                            "daily token limit was reached."
+                        ) from e
 
                     if attempt == max_retries:
                         tqdm.write(f"[{agent_name}] Failed after {max_retries} retries.")
-                        raise
+                        raise ProviderError(
+                            f"{agent_name} could not complete the request after "
+                            f"{max_retries} attempts. Check the provider, API key "
+                            f"and network connection. Last provider error: {error_msg}"
+                        ) from e
 
                     match = re.search(r"try again in (\d+(?:\.\d+)?)s", error_msg)
 
                     if error_code == "400":
-                        wait_time = 1.0
+                        wait_time = min(2.0 ** attempt, 30.0)
                     else:
-                        wait_time = float(match.group(1)) + 1.5 if match else min(2.0 ** attempt, 30.0)
+                        wait_time = float(match.group(1)) + 3 if match else min(2.0 ** attempt, 30.0)
 
                     if retry_bar is None:
                         retry_bar = tqdm(bar_format="{desc}", leave=False)

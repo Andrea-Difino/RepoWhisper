@@ -7,10 +7,10 @@ from repowhisper.ingestion.source_manager import SourceManager
 
 
 def test_source_manager_rejects_non_github_targets(tmp_path):
-    with pytest.raises(ValueError, match="valid link to a github repo"):
+    with pytest.raises(ValueError, match="valid GitHub HTTP\\(S\\) repository URL"):
         SourceManager(str(tmp_path)).get_path()
 
-    with pytest.raises(ValueError, match="valid link to a github repo"):
+    with pytest.raises(ValueError, match="valid GitHub HTTP\\(S\\) repository URL"):
         SourceManager(str(tmp_path / "missing")).get_path()
 
 

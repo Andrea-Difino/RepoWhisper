@@ -15,6 +15,7 @@ from orchestration.state import ProjectState
 from orchestration.workflow import AgentsWorkflow
 from schemas.analysis_schema import AnalysisJsonValidator
 from utils.config import UserLevel
+from utils.exceptions import InterfaceError, RepoWhisperError
 
 
 class RepoWhisper:
@@ -119,6 +120,12 @@ class RepoWhisper:
         except KeyboardInterrupt:
             print("Program interrupted by the user")
             return None
+        except RepoWhisperError:
+            raise
+        except (TypeError, ValueError) as exc:
+            raise RepoWhisperError(
+                f"The repository analysis could not produce a valid result: {exc}"
+            ) from exc
         finally:
             self._source_manager.cleanup()
 
@@ -148,7 +155,10 @@ class RepoWhisper:
         ui_dir = os.path.join(base_dir, "ui_dist")
 
         if not os.path.exists(ui_dir):
-            raise FileNotFoundError(f"ui_dir not found: {ui_dir}. ")
+            raise InterfaceError(
+                f"The bundled web interface was not found: {ui_dir}. "
+                "Reinstall RepoWhisper or verify the package installation."
+            )
 
         output_json_path = os.path.join(ui_dir, "data.json")
         with open(output_json_path, "w", encoding="utf-8") as f:

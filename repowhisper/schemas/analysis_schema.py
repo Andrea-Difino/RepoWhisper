@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
+from utils.exceptions import ReportError, ReportFileError
 
 
 class ModuleAnalysisItem(BaseModel):
@@ -42,7 +43,9 @@ class AnalysisJsonValidator:
         try:
             return RepoWhisperReport.model_validate_json(raw_json)
         except ValidationError as e:
-            raise ValueError(f"JSON report structure not valid: \n{e}") from e
+            raise ReportError(
+                f"The generated JSON report has an invalid structure:\n{e}"
+            ) from e
 
     @staticmethod
     def validate_file(file_path: str | Path) -> RepoWhisperReport:
@@ -54,7 +57,7 @@ class AnalysisJsonValidator:
         """
         path = Path(file_path)
         if not path.exists() or not path.is_file():
-            raise FileNotFoundError(f"JSON file not found: {path}")
+            raise ReportFileError(f"The report file was not found: {path}")
 
         raw_content = path.read_text(encoding="utf-8")
         return AnalysisJsonValidator.validate_string(raw_content)

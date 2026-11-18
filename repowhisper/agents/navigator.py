@@ -101,7 +101,7 @@ class CodeNavigator(BaseAgent):
         """
         
         chain = (
-            self._prompt_template | self.llm.with_structured_output(ModuleNavigationOutput)
+            self._prompt_template | self.llm.with_structured_output(ModuleNavigationOutput, method="json_mode")
         )
         
         numbered_code = self._format_code_with_line_numbers(context)

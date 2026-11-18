@@ -2,6 +2,7 @@ import tempfile
 
 from git import Repo
 from git.exc import GitCommandError
+from utils.exceptions import InvalidSourceError, RepositoryCloneError
 
 
 class SourceManager:
@@ -28,7 +29,9 @@ class SourceManager:
         if self.target.startswith(("http://github.com/", "https://github.com/")):
             return self._clone_repo()
         else:
-            raise ValueError("The URL you provide is not a valid link to a github repo")
+            raise InvalidSourceError(
+                "The source must be a valid GitHub HTTP(S) repository URL."
+            )
 
     def _clone_repo(self) -> str:
         """
@@ -40,9 +43,10 @@ class SourceManager:
             return self.temp_dir.name
         except GitCommandError as e:
             self.cleanup()
-            raise RuntimeError(
-                f"Failed to clone repository. It might be private or non-existent. "
-                f"Git exit code: {e.status}"
+            raise RepositoryCloneError(
+                "The repository could not be cloned. Check that the URL is correct "
+                "and that the repository is public or Git has access to it "
+                f"(Git exit code: {e.status})."
             )
 
     def cleanup(self) -> None:
