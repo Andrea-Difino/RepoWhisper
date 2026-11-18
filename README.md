@@ -21,7 +21,6 @@
   **Map the architecture. Inspect every file. Learn with your own model.**
 </div>
 
----
 
 ## A new codebase shouldn't feel like a puzzle
 
@@ -31,7 +30,6 @@ Joining a new team or diving into an open-source project usually starts the same
 
 Paste a GitHub repository URL, plug in any LLM you prefer, and pick your seniority level. RepoWhisper analyzes the codebase from top to bottom and launches a **local interactive study interface**—walking you from high-level system boundaries down to line-by-line insights.
 
----
 
 ## One repository. Four specialists. One clear story.
 
@@ -54,7 +52,6 @@ Instead of dumping raw files into a single giant prompt, RepoWhisper orchestrate
 3. **Self-Correct:** The Reviewer loop catches weak explanations automatically before anything reaches the final report.
 4. **Validate & Study:** Enforces a strict Pydantic schema on the output JSON and opens the interactive React viewer in your browser.
 
----
 
 ## Bring Your Own Model. Skip the AI Tax.
 
@@ -145,7 +142,6 @@ engine.serve_ui(json_path="path/to/report.json")
 
 For full setup guides, see the [Quick Start Documentation](https://andrea-difino.github.io/RepoWhisper/docs/).
 
----
 
 ## The Study Experience
 
@@ -177,7 +173,6 @@ Every run produces a structured, interactive learning workspace in your browser:
 }
 ```
 
----
 
 ## Current Scope & Boundaries
 
@@ -188,7 +183,6 @@ RepoWhisper is actively evolving and transparent about its current design:
 * **Token & Rate Limits:** Large repositories require more time and tokens; built-in rate-limit handling automatically paces requests on free tiers.
 * **Local UI:** The React study interface is designed to run locally on your machine.
 
----
 
 ## Contributing & Development
 
