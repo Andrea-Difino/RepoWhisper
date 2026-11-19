@@ -7,7 +7,6 @@ from pathlib import Path
 
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
-from agents.reviewer import Reviewer
 from agents.storyteller import Storyteller
 from ingestion.source_manager import SourceManager
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -54,7 +53,6 @@ class RepoWhisper:
 
         self._navigator = CodeNavigator(self.llm, self.user_level.value)
         self._architect = Architect(self.llm, self.user_level.value)
-        self._reviewer = Reviewer(self.llm)
         self._storyteller = Storyteller(self.llm, self.user_level.value)
 
         self._print_ascii_art()
@@ -90,7 +88,6 @@ class RepoWhisper:
                 root_dir=self._repo_path,
                 architect=self._architect,
                 navigator=self._navigator,
-                reviewer=self._reviewer,
                 storyteller=self._storyteller,
             )
 

@@ -1,10 +1,12 @@
 import codecs
 import os
+from pathlib import Path
 from typing import Literal
 
+import laya
+import torch
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
-from agents.reviewer import Reviewer
 from agents.storyteller import Storyteller
 from langgraph.graph import END, START, StateGraph
 from orchestration.state import LineWhisperData, ProjectState
@@ -12,31 +14,71 @@ from tqdm import tqdm
 from utils.dependency_tracer import DependencyTracer
 from utils.tree_generator import ProjectTreeGenerator
 
+DEFAULT_CALIBRATION_DIR = (
+    Path(__file__).resolve().parent.parent / "laya_reviewer_calibration"
+)
+
+REVIEW_QUESTIONS = {
+    "review_type": {
+        "type": "choice",
+        "instructions": (
+            "Is this text a general architectural explanation "
+            "or a debugging/bug-hunting review?"
+        ),
+        "criteria": {
+            "EXPLANATION": "High-level explanation of how code works, responsibilities and structure",
+            "DEBUG": "Critical debugging analysis hunting for bugs, edge cases, leaks or flaws",
+        },
+    }
+}
 
 class AgentsWorkflow:
     """
     Constructs and executes the LangGraph state machine for analyzing repositories.
-    Connects the Architect, Tracer, Navigator, Reviewer, and Storyteller in a resilient loop.
+    Connects the Architect, Tracer, Navigator, local Laya/Vega Reviewer, and Storyteller in a resilient loop.
     """
+
+    DEBUG_FEEDBACK = (
+        "EXPLAIN this code, don't debug it. Describe what the code does, "
+        "its logic, and its responsibilities without hunting for bugs or flaws."
+    )
 
     def __init__(
             self, 
             root_dir: str,
             architect: Architect, 
-            navigator: CodeNavigator, 
-            reviewer: Reviewer, 
-            storyteller: Storyteller):
+            navigator: CodeNavigator,
+            storyteller: Storyteller,
+            reviewer_agent: laya.Agent | None = None
+        ):
         self.root_dir = root_dir
 
         self.architect = architect
         self.navigator = navigator
-        self.reviewer = reviewer
         self.storyteller = storyteller
         self.tracer = DependencyTracer(self.root_dir)
 
-        self.pbar = None
+        self.pbar: tqdm | None = None
 
+        self.reviewer_agent = reviewer_agent or self._load_calibrated_reviewer(
+            Path(DEFAULT_CALIBRATION_DIR)
+        )
         self.graph = self._build_graph()
+
+    @staticmethod
+    def _load_calibrated_reviewer(calibration_dir: Path) -> laya.Agent:
+        """Loads the local Vega reader and attaches the fitted RepoWhisper review head."""
+        if not calibration_dir.exists():
+            raise FileNotFoundError(
+                f"Laya calibration directory not found at: {calibration_dir}"
+            )
+
+        if not torch.cuda.is_available():
+            torch.set_num_threads(1)
+
+        agent = laya.Agent(vegaml=True)
+        agent.load_calibration(str(calibration_dir))
+        return agent
 
     def _build_graph(self):
         """Compiles the nodes and edges into a runnable LangGraph application."""
@@ -146,7 +188,11 @@ class AgentsWorkflow:
                 self.pbar.update(1)
             return {"file_error": True}
 
-        query = f"Explain the logic of this file. Make a explanation following this feedback: {feedback}" if feedback else "Explain this file logically."
+        query = (
+            f"Explain the logic of this file. Follow this feedback strictly: {feedback}" 
+            if feedback 
+            else "Explain this file logically."
+        )
         navigation = self.navigator.analyze(query, context=code_context)
         if not isinstance(navigation, dict):
             raise TypeError("Code Navigator must return a structured dictionary.")
@@ -186,34 +232,22 @@ class AgentsWorkflow:
         }
 
     def _node_reviewer(self, state: ProjectState) -> dict:
+        """Deterministic System-One review via calibrated Laya/Vega (0 LLM tokens)."""
         draft = state.get("current_draft", "")
         file_target = state["current_file"]
         if self.pbar:
             self.pbar.set_description(f"Reviewer checking: {os.path.basename(file_target)}") # type: ignore
 
-        evaluation = self.reviewer.analyze("Does this explain or debug?", context=draft)
+        prediction = self.reviewer_agent.predict(draft, REVIEW_QUESTIONS)
 
-        clean_str = evaluation.strip()
-        if clean_str.startswith("```json"):
-            clean_str = clean_str[7:]
-        elif clean_str.startswith("```"):
-            clean_str = clean_str[3:]
+        verdict = prediction["answers"]["review_type"]["choice"]
 
-        clean_str = clean_str.removesuffix("```")
-
-        import json
-        try:
-            result: dict = json.loads(clean_str)
-            status = result.get("response", "VIOLATION")
-            feedback = result.get("feedback", "")
-        except json.JSONDecodeError:
-            status = "VIOLATION"
-            feedback = ""
-
-        if status == "VIOLATION":
+        if verdict == "DEBUG":
             if self.pbar:
-                self.pbar.set_description(f"Reviewer rejected {os.path.basename(file_target)}. Retrying...") #type: ignore
-            return {"reviewer_feedback": feedback}
+                self.pbar.set_description(
+                    f"Laya rejected {os.path.basename(file_target)} " # type: ignore
+                )
+            return {"reviewer_feedback": self.DEBUG_FEEDBACK}
 
         if self.pbar:
             self.pbar.update(1)
@@ -222,13 +256,13 @@ class AgentsWorkflow:
             "explanations": {file_target: draft},
             "line_whispers": {
                 file_target: {
-                    whisper["line_number"] - 1: whisper["note"]
+                    whisper["line_number"]: whisper["note"]
                     for whisper in state.get("current_line_whispers", [])
                 }
             },
-            "reviewer_feedback": None
+            "reviewer_feedback": None,
         }
-
+    
     def _node_storyteller(self, state: ProjectState) -> dict:
         if self.pbar:
             self.pbar.set_description("Codebase analyzed")

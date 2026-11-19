@@ -25,6 +25,7 @@ dependencies = [
     "gitpython>=3.2.1",
     "langchain>=1.4.7",
     "langgraph>=1.2.18",
+    "laya>=0.4.38",
     "pydantic>=2.14.2",
     "tqdm>=4.70.1",
     "tree-sitter>=0.26.0",
@@ -55,4 +56,4 @@ include = ["repowhisper"]
 packages = ["repowhisper"]
 
 [tool.setuptools.package-data]
-"repowhisper" = ["ui_dist/**/*", "ui_dist/*"]
+"repowhisper" = ["ui_dist/**/*", "ui_dist/*","laya_reviewer_calibration/*"]
