@@ -14,7 +14,7 @@ By replacing the generative LLM Reviewer with a locally hosted, calibrated **Lay
 
 ---
 
-## 1. Architectural Motivation: Why System-One for Quality Gating?
+## Architectural Motivation: Why System-One for Quality Gating?
 
 Code explanation requires generative reasoning. Detecting whether a generated draft drifted from architectural explanation (`EXPLANATION`) into unsolicited bug-hunting or troubleshooting (`DEBUG`), however, is a **binary classification problem**.
 

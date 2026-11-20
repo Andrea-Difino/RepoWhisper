@@ -1,5 +1,8 @@
 import codecs
 import os
+import contextlib
+import json
+import logging
 from pathlib import Path
 from typing import Literal
 
@@ -76,8 +79,34 @@ class AgentsWorkflow:
         if not torch.cuda.is_available():
             torch.set_num_threads(1)
 
-        agent = laya.Agent(vegaml=True)
-        agent.load_calibration(str(calibration_dir))
+        os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
+        os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+        try:
+            from huggingface_hub.utils import disable_progress_bars
+            disable_progress_bars()
+        except Exception:  # noqa: BLE001, S110
+            pass
+
+        try:
+            from transformers.utils import logging as hf_logging
+            hf_logging.set_verbosity_error()
+            hf_logging.disable_progress_bar()
+        except Exception:  # noqa: BLE001, S110
+            pass
+
+        logging.getLogger("transformers").setLevel(logging.ERROR)
+        logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+
+        with (
+            open(os.devnull, "w", encoding="utf-8") as devnull,
+            contextlib.redirect_stdout(devnull),
+            contextlib.redirect_stderr(devnull),
+        ):
+            agent = laya.Agent(vegaml=True)
+            agent.load_calibration(str(calibration_dir))
+            agent.predict("warm up", REVIEW_QUESTIONS)
         return agent
 
     def _build_graph(self):
@@ -232,7 +261,7 @@ class AgentsWorkflow:
         }
 
     def _node_reviewer(self, state: ProjectState) -> dict:
-        """Deterministic System-One review via calibrated Laya/Vega (0 LLM tokens)."""
+        """Deterministic System-One review via calibrated Laya/Vega."""
         draft = state.get("current_draft", "")
         file_target = state["current_file"]
         if self.pbar:
