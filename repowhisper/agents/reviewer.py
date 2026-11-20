@@ -1,16 +1,20 @@
 import contextlib
+import json
 import logging
 import os
 import signal
 import sys
 import threading
+import time
 import warnings
 from pathlib import Path
 from typing import ClassVar, Literal
 
+import huggingface_hub.constants as hf_constants
 import laya
 import torch
-from huggingface_hub import HfApi, snapshot_download
+from huggingface_hub import HfApi, hf_hub_download, snapshot_download
+from huggingface_hub.utils import validate_repo_id
 from tqdm import tqdm
 
 DEFAULT_CALIBRATION_DIR = (
@@ -22,11 +26,11 @@ VEGA_READER_REPO_ID = "nandakishorm/vega-U"
 class LayaReviewer:
     """
     Deterministic System-1 Reviewer powered by a locally calibrated Laya/Vega classifier.
-    Handles one-time model caching with a unified progress bar, transient loading status,
-    instant Ctrl+C exit, and zero-token classification of CodeNavigator drafts.
+    Handles one-time caching of both the Vega reader and its underlying backbone with a
+    unified progress bar, instant Ctrl+C exit, offline fast-boot, and zero-token inference.
     """
 
-    REVIEW_QUESTIONS: ClassVar = {
+    REVIEW_QUESTIONS: ClassVar[dict] = {
         "review_type": {
             "type": "choice",
             "instructions": (
@@ -40,7 +44,7 @@ class LayaReviewer:
         }
     }
 
-    DEBUG_FEEDBACK = (
+    DEBUG_FEEDBACK: ClassVar[str] = (
         "EXPLAIN this code, don't debug it. Describe what the code does, "
         "its logic, and its responsibilities without hunting for bugs or flaws."
     )
@@ -67,31 +71,100 @@ class LayaReviewer:
         logging.getLogger("transformers").setLevel(logging.ERROR)
 
     @staticmethod
-    def _fetch_total_repo_bytes(repo_id: str) -> int:
-        """Queries Hugging Face metadata to know the exact total download size upfront."""
+    def _is_valid_repo_id(candidate: str) -> bool:
+        """Returns True only if candidate is a valid Hugging Face 'namespace/repo' identifier."""
+        if "/" not in candidate or candidate.startswith("/") or ":" in candidate:
+            return False
         try:
-            info = HfApi().repo_info(repo_id, files_metadata=True)
-            siblings = getattr(info, "siblings", None) or []
-            return sum(int(s.size) for s in siblings if getattr(s, "size", None))
+            validate_repo_id(candidate)
+            return True
         except Exception:
-            return 0
+            return False
 
-    def _ensure_reader_downloaded(self) -> None:
+    @classmethod
+    def _normalize_backbone_repo_id(cls, raw_backbone: str) -> str | None:
         """
-        Checks if the Vega universal reader is already cached locally.
-        If missing (first run ever), downloads it showing ONE unified tqdm bar.
+        Converts either a Hugging Face repo ID or an embedded training path
+        (e.g. '/kaggle/input/.../Qwen3.5-0.8B') into a valid HF repo ID.
         """
-        if self.cache_dir is not None:
-            self.cache_dir.mkdir(parents=True, exist_ok=True)
-            os.environ["HF_HUB_CACHE"] = str(self.cache_dir)
+        cleaned = raw_backbone.strip().rstrip("/\\")
+        if not cleaned:
+            return None
 
+        if cls._is_valid_repo_id(cleaned):
+            return cleaned
+
+        # Estrae il nome finale del modello da percorsi Linux/Windows/Kaggle
+        model_name = cleaned.replace("\\", "/").split("/")[-1]
+        if not model_name:
+            return None
+
+        if model_name.lower().startswith("qwen"):
+            candidate = f"Qwen/{model_name}"
+            if cls._is_valid_repo_id(candidate):
+                return candidate
+
+        return None
+
+    @classmethod
+    def _parse_backbone_from_json_file(cls, cfg_file: Path) -> str | None:
+        """Extracts and normalizes the backbone repo ID from a Vega JSON config file."""
+        if not cfg_file.is_file():
+            return None
         try:
-            snapshot_download(VEGA_READER_REPO_ID, local_files_only=True)
-            return
+            data = json.loads(cfg_file.read_text(encoding="utf-8"))
+            raw_backbone = (
+                data.get("backbone")
+                or data.get("base_model_name_or_path")
+                or (data.get("model") or {}).get("backbone")
+            )
+            if isinstance(raw_backbone, str):
+                return cls._normalize_backbone_repo_id(raw_backbone)
         except Exception:
             pass
+        return None
 
-        known_total_bytes = self._fetch_total_repo_bytes(VEGA_READER_REPO_ID)
+    @classmethod
+    def _discover_backbone_repo_id(cls, vega_local_dir: str | None = None) -> str | None:
+        """
+        Finds the backbone HF repo ID either from the cached Vega folder or by
+        fetching only the tiny config JSON (~2 KB) before starting large downloads.
+        """
+        if vega_local_dir:
+            vega_path = Path(vega_local_dir)
+            for cfg_name in ("config.json", "vega_config.json"):
+                repo_id = cls._parse_backbone_from_json_file(vega_path / cfg_name)
+                if repo_id:
+                    return repo_id
+
+        for cfg_name in ("config.json", "vega_config.json"):
+            try:
+                cfg_path = hf_hub_download(VEGA_READER_REPO_ID, filename=cfg_name)
+                repo_id = cls._parse_backbone_from_json_file(Path(cfg_path))
+                if repo_id:
+                    return repo_id
+            except Exception:
+                continue
+
+        return None
+
+    @staticmethod
+    def _fetch_total_repo_bytes(repo_ids: list[str]) -> int:
+        """Queries Hugging Face metadata to know the exact combined download size upfront."""
+        api = HfApi()
+        total = 0
+        for repo_id in repo_ids:
+            try:
+                info = api.repo_info(repo_id, files_metadata=True)
+                siblings = getattr(info, "siblings", None) or []
+                total += sum(int(s.size) for s in siblings if getattr(s, "size", None))
+            except Exception:
+                pass
+        return total
+
+    def _download_repos_with_single_bar(self, repo_ids: list[str]) -> None:
+        """Downloads one or more Hugging Face repos sequentially under ONE unified tqdm bar."""
+        known_total_bytes = self._fetch_total_repo_bytes(repo_ids)
         bar_lock = threading.RLock()
 
         master_bar = tqdm(
@@ -150,15 +223,74 @@ class LayaReviewer:
 
         download_completed = False
         try:
-            snapshot_download(
-                VEGA_READER_REPO_ID,
-                tqdm_class=_UnifiedDownloadTqdm,
-            )
+            for repo_id in repo_ids:
+                snapshot_download(
+                    repo_id,
+                    tqdm_class=_UnifiedDownloadTqdm,
+                )
             download_completed = True
         finally:
             if download_completed and master_bar.total and master_bar.n < master_bar.total:
                 master_bar.update(master_bar.total - master_bar.n)
             master_bar.close()
+
+    def _ensure_models_cached(self) -> bool:
+        """
+        Ensures both the Vega reader and its backbone model are cached locally.
+        Returns True if every required file is verified in cache (safe for offline mode).
+        """
+        if self.cache_dir is not None:
+            self.cache_dir.mkdir(parents=True, exist_ok=True)
+            os.environ["HF_HUB_CACHE"] = str(self.cache_dir)
+
+        missing_repos: list[str] = []
+        vega_local_dir: str | None = None
+
+        try:
+            vega_local_dir = snapshot_download(VEGA_READER_REPO_ID, local_files_only=True)
+        except Exception:
+            missing_repos.append(VEGA_READER_REPO_ID)
+
+        backbone_id = self._discover_backbone_repo_id(vega_local_dir)
+        if backbone_id:
+            try:
+                snapshot_download(backbone_id, local_files_only=True)
+            except Exception:
+                if backbone_id not in missing_repos:
+                    missing_repos.append(backbone_id)
+
+        if missing_repos:
+            self._download_repos_with_single_bar(missing_repos)
+
+        # Verifica finale che entrambi i modelli siano completi nella cache locale
+        try:
+            vega_dir = snapshot_download(VEGA_READER_REPO_ID, local_files_only=True)
+            resolved_backbone = self._discover_backbone_repo_id(vega_dir)
+            if resolved_backbone:
+                snapshot_download(resolved_backbone, local_files_only=True)
+            return True
+        except Exception:
+            return False
+
+    @staticmethod
+    def _instantiate_vega_agent(use_offline_mode: bool) -> laya.Agent:
+        """Instantiates laya.Agent(vegaml=True), optionally locking Hugging Face to local cache."""
+        prev_offline_env = os.environ.get("HF_HUB_OFFLINE")
+        prev_offline_const = hf_constants.HF_HUB_OFFLINE
+
+        if use_offline_mode:
+            os.environ["HF_HUB_OFFLINE"] = "1"
+            hf_constants.HF_HUB_OFFLINE = True
+
+        try:
+            return laya.Agent(vegaml=True)
+        finally:
+            if use_offline_mode:
+                hf_constants.HF_HUB_OFFLINE = prev_offline_const
+                if prev_offline_env is None:
+                    os.environ.pop("HF_HUB_OFFLINE", None)
+                else:
+                    os.environ["HF_HUB_OFFLINE"] = prev_offline_env
 
     def _load_agent(self) -> laya.Agent:
         """Loads the local Vega reader silently, attaches calibration weights, and warms up."""
@@ -168,9 +300,6 @@ class LayaReviewer:
             )
 
         self._configure_clean_environment()
-
-        if not torch.cuda.is_available():
-            torch.set_num_threads(1)
 
         is_main_thread = threading.current_thread() is threading.main_thread()
         prev_sigint = signal.getsignal(signal.SIGINT) if is_main_thread else None
@@ -184,7 +313,7 @@ class LayaReviewer:
             signal.signal(signal.SIGINT, _instant_cancel_handler)
 
         try:
-            self._ensure_reader_downloaded()
+            all_cached = self._ensure_models_cached()
 
             os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
             os.environ["TRANSFORMERS_VERBOSITY"] = "error"
@@ -204,7 +333,7 @@ class LayaReviewer:
 
             has_cuda = torch.cuda.is_available()
             device_name = torch.cuda.get_device_name(0) if has_cuda else "CPU"
-            print(device_name)
+            t_start = time.perf_counter()
 
             with (
                 open(os.devnull, "w", encoding="utf-8") as devnull,
@@ -212,13 +341,16 @@ class LayaReviewer:
                 contextlib.redirect_stderr(devnull),
                 tqdm(
                     total=0,
-                    desc="Loading Laya Reviewer into memory...",
+                    desc=f"Loading Laya Reviewer into memory ({device_name})...",
                     bar_format="{desc}",
                     leave=False,
                     file=sys.__stderr__,
                 ) as status,
             ):
-                agent = laya.Agent(vegaml=True)
+                try:
+                    agent = self._instantiate_vega_agent(use_offline_mode=all_cached)
+                except OSError:
+                    agent = self._instantiate_vega_agent(use_offline_mode=False)
 
                 status.set_description("Attaching RepoWhisper calibration head...", refresh=True)
                 agent.load_calibration(str(self.calibration_dir))
@@ -226,8 +358,11 @@ class LayaReviewer:
                 if not has_cuda:
                     torch.set_num_threads(1)
 
-                status.set_description("Warming up Laya Reviewer...", refresh=True)
+                status.set_description(f"Warming up Laya Reviewer ({device_name})...", refresh=True)
                 agent.predict("warm up", self.REVIEW_QUESTIONS)
+
+            elapsed = time.perf_counter() - t_start
+            tqdm.write(f"✓ Laya Reviewer ready on {device_name} ({elapsed:.1f}s)")
 
             return agent
         finally:
