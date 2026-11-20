@@ -1,9 +1,5 @@
 import codecs
 import os
-import contextlib
-import json
-import logging
-from pathlib import Path
 from typing import Literal
 
 import laya
@@ -11,29 +7,13 @@ import torch
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
 from agents.storyteller import Storyteller
+from agents.reviewer import LayaReviewer
 from langgraph.graph import END, START, StateGraph
 from orchestration.state import LineWhisperData, ProjectState
 from tqdm import tqdm
 from utils.dependency_tracer import DependencyTracer
 from utils.tree_generator import ProjectTreeGenerator
 
-DEFAULT_CALIBRATION_DIR = (
-    Path(__file__).resolve().parent.parent / "laya_reviewer_calibration"
-)
-
-REVIEW_QUESTIONS = {
-    "review_type": {
-        "type": "choice",
-        "instructions": (
-            "Is this text a general architectural explanation "
-            "or a debugging/bug-hunting review?"
-        ),
-        "criteria": {
-            "EXPLANATION": "High-level explanation of how code works, responsibilities and structure",
-            "DEBUG": "Critical debugging analysis hunting for bugs, edge cases, leaks or flaws",
-        },
-    }
-}
 
 class AgentsWorkflow:
     """
@@ -41,73 +21,25 @@ class AgentsWorkflow:
     Connects the Architect, Tracer, Navigator, local Laya/Vega Reviewer, and Storyteller in a resilient loop.
     """
 
-    DEBUG_FEEDBACK = (
-        "EXPLAIN this code, don't debug it. Describe what the code does, "
-        "its logic, and its responsibilities without hunting for bugs or flaws."
-    )
-
     def __init__(
             self, 
             root_dir: str,
             architect: Architect, 
             navigator: CodeNavigator,
             storyteller: Storyteller,
-            reviewer_agent: laya.Agent | None = None
+            reviewer_agent: LayaReviewer
         ):
         self.root_dir = root_dir
 
         self.architect = architect
         self.navigator = navigator
         self.storyteller = storyteller
+        self.reviewer_agent = reviewer_agent
         self.tracer = DependencyTracer(self.root_dir)
 
         self.pbar: tqdm | None = None
-
-        self.reviewer_agent = reviewer_agent or self._load_calibrated_reviewer(
-            Path(DEFAULT_CALIBRATION_DIR)
-        )
+        
         self.graph = self._build_graph()
-
-    @staticmethod
-    def _load_calibrated_reviewer(calibration_dir: Path) -> laya.Agent:
-        """Loads the local Vega reader and attaches the fitted RepoWhisper review head."""
-        if not calibration_dir.exists():
-            raise FileNotFoundError(
-                f"Laya calibration directory not found at: {calibration_dir}"
-            )
-
-        if not torch.cuda.is_available():
-            torch.set_num_threads(1)
-
-        os.environ["HF_HUB_DISABLE_PROGRESS_BARS"] = "1"
-        os.environ["TRANSFORMERS_VERBOSITY"] = "error"
-        os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
-        try:
-            from huggingface_hub.utils import disable_progress_bars
-            disable_progress_bars()
-        except Exception:  # noqa: BLE001, S110
-            pass
-
-        try:
-            from transformers.utils import logging as hf_logging
-            hf_logging.set_verbosity_error()
-            hf_logging.disable_progress_bar()
-        except Exception:  # noqa: BLE001, S110
-            pass
-
-        logging.getLogger("transformers").setLevel(logging.ERROR)
-        logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
-
-        with (
-            open(os.devnull, "w", encoding="utf-8") as devnull,
-            contextlib.redirect_stdout(devnull),
-            contextlib.redirect_stderr(devnull),
-        ):
-            agent = laya.Agent(vegaml=True)
-            agent.load_calibration(str(calibration_dir))
-            agent.predict("warm up", REVIEW_QUESTIONS)
-        return agent
 
     def _build_graph(self):
         """Compiles the nodes and edges into a runnable LangGraph application."""
@@ -267,16 +199,14 @@ class AgentsWorkflow:
         if self.pbar:
             self.pbar.set_description(f"Reviewer checking: {os.path.basename(file_target)}") # type: ignore
 
-        prediction = self.reviewer_agent.predict(draft, REVIEW_QUESTIONS)
+        feedback = self.reviewer_agent.review(draft)
 
-        verdict = prediction["answers"]["review_type"]["choice"]
-
-        if verdict == "DEBUG":
+        if feedback is not None:
             if self.pbar:
                 self.pbar.set_description(
                     f"Laya rejected {os.path.basename(file_target)} " # type: ignore
                 )
-            return {"reviewer_feedback": self.DEBUG_FEEDBACK}
+            return {"reviewer_feedback": feedback}
 
         if self.pbar:
             self.pbar.update(1)

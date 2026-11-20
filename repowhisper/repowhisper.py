@@ -7,6 +7,7 @@ from pathlib import Path
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
 from agents.storyteller import Storyteller
+from agents.reviewer import LayaReviewer
 from ingestion.source_manager import SourceManager
 from langchain_core.language_models.chat_models import BaseChatModel
 from orchestration.state import ProjectState
@@ -43,6 +44,8 @@ class RepoWhisper:
             \tMID: mid level explanation
             \tSENIOR: very short explanation
         """
+        self._print_ascii_art()
+
         self.source_target = source_target
         self.user_level = user_level
         self.llm = llm
@@ -52,9 +55,9 @@ class RepoWhisper:
 
         self._navigator = CodeNavigator(self.llm, self.user_level.value)
         self._architect = Architect(self.llm, self.user_level.value)
+        self._reviewer = LayaReviewer()
         self._storyteller = Storyteller(self.llm, self.user_level.value)
-
-        self._print_ascii_art()
+        
 
     def _print_ascii_art(self):
         ascii_art = r"""
@@ -88,6 +91,7 @@ class RepoWhisper:
                 architect=self._architect,
                 navigator=self._navigator,
                 storyteller=self._storyteller,
+                reviewer_agent=self._reviewer
             )
 
             initial_state: ProjectState = {
