@@ -147,7 +147,7 @@ class AgentsWorkflow:
             tqdm.write(f"⚠️ Error reading file {absolute_target}: {e}")
             if self.pbar:
                 self.pbar.update(1)
-            return {"file_error": True}
+            return {"is_file_reading_error": True}
 
         query = (
             f"Explain the logic of this file. Follow this feedback strictly: {feedback}" 
@@ -188,7 +188,7 @@ class AgentsWorkflow:
         return {
             "current_draft": explanation, 
             "current_line_whispers": line_whispers,
-            "file_error": False, 
+            "is_file_reading_error": False, 
             "file_codes": {file_target:code_context}
         }
 
