@@ -37,7 +37,7 @@ Instead of dumping raw files into a single giant prompt, RepoWhisper orchestrate
 
 * **Architect** — Inspects the repository structure and builds a grounded architectural overview without hallucinating missing components.
 * **Navigator** — Reads source files in dependency order, writing flowing technical explanations and pinpointing critical lines (`notes`).
-* **Reviewer** — Acts as a quality gate: challenges vague or superficial drafts and sends them back for revision before approval.
+* **Laya Reviewer** — A local, calibrated Laya/Vega classifier acts as a zero-token quality gate and sends debugging-focused drafts back for revision.
 * **Storyteller** — Weaves the approved findings into a cohesive, human-readable architectural narrative.
 
 > [!TIP]
@@ -49,7 +49,7 @@ Instead of dumping raw files into a single giant prompt, RepoWhisper orchestrate
 
 1. **Clone & Index:** Fetches the repository and resolves Python import dependencies so core modules are analyzed in logical order.
 2. **Architect & Navigate:** Deduces system layers and explains every file with targeted line-level annotations.
-3. **Self-Correct:** The Reviewer loop catches weak explanations automatically before anything reaches the final report.
+3. **Self-Correct:** The local Laya Reviewer rejects explanations that drift into debugging and requests a revision from the Navigator.
 4. **Validate & Study:** Enforces a strict Pydantic schema on the output JSON and opens the interactive React viewer in your browser.
 
 
@@ -75,6 +75,7 @@ Based on typical frontier API pricing (~\$4–\$5 / 1M input tokens and \$20–\
 ## Get started in minutes
 
 **Prerequisites:** Python 3.12, Git, and an API key (or local Ollama instance) for any LangChain-compatible provider.
+On the first run, the Laya Reviewer downloads and caches its Vega reader and backbone model. Review itself runs locally and does not consume LLM tokens.
 
 ### 1. Install from PyPI
 
@@ -106,7 +107,7 @@ import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from pydantic import SecretStr
-from repowhisper import RepoWhisper, UserLevel
+from repowhisper import RepoWhisper, RepoWhisperError, UserLevel
 
 load_dotenv()
 
@@ -126,7 +127,7 @@ engine = RepoWhisper(
 # Generates the validated report and opens http://localhost:8543
 try:
   engine.serve_ui()
-except Exception:
+except RepoWhisperError as e:
   print(f"An error occured during the analysis: {e}")
 ```
 
