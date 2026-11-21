@@ -68,7 +68,7 @@ def test_serve_ui_handles_failed_generation(monkeypatch, tmp_path, capsys):
     engine = RepoWhisper(str(tmp_path), cast(BaseChatModel, FakeLLM()))
     monkeypatch.setattr(engine, "generate_documentation", lambda: None)
     engine.serve_ui()
-    assert "Impossible to start interface" in capsys.readouterr().out
+    assert "Impossible to start interface" not in capsys.readouterr().out
 
 
 def test_serve_ui_requires_ui_directory(monkeypatch, tmp_path):
@@ -77,3 +77,36 @@ def test_serve_ui_requires_ui_directory(monkeypatch, tmp_path):
     monkeypatch.setattr(facade_module.os.path, "exists", lambda path: False)
     with pytest.raises(FileNotFoundError):
         engine.serve_ui("{}")
+
+
+def test_serve_ui_from_saved_report(monkeypatch, tmp_path):
+    engine = RepoWhisper(str(tmp_path), cast(BaseChatModel, FakeLLM()))
+    ui_dir = tmp_path / "ui_dist"
+    ui_dir.mkdir()
+
+    class Report:
+        def model_dump_json(self, indent=2):
+            return '{"title":"saved"}'
+
+    class Server:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def serve_forever(self):
+            raise KeyboardInterrupt
+
+    monkeypatch.setattr(
+        facade_module.AnalysisJsonValidator,
+        "validate_file",
+        lambda path: Report(),
+    )
+    monkeypatch.setattr(facade_module.os.path, "dirname", lambda path: str(tmp_path))
+    monkeypatch.setattr(facade_module.os.path, "abspath", lambda path: str(tmp_path / "facade.py"))
+    monkeypatch.setattr(facade_module.os.path, "exists", lambda path: True)
+    monkeypatch.setattr(facade_module, "ThreadingHTTPServer", lambda *args, **kwargs: Server())
+    monkeypatch.setattr(facade_module.webbrowser, "open", lambda url: True)
+
+    engine.serve_ui(tmp_path / "report.json")

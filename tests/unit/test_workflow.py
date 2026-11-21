@@ -17,6 +17,14 @@ class FakeAgent:
         return self.response
 
 
+class FakeLayaReviewer:
+    def __init__(self, feedback=None):
+        self.feedback = feedback
+
+    def review(self, draft):
+        return self.feedback
+
+
 def make_workflow(tmp_path):
     workflow = cast(Any, AgentsWorkflow.__new__(AgentsWorkflow))
     workflow.root_dir = str(tmp_path)
@@ -24,7 +32,7 @@ def make_workflow(tmp_path):
     workflow.navigator = FakeAgent(
         {"explanation": "draft", "line_whispers": [{"line_number": 1, "note": "note"}]}
     )
-    workflow.reviewer = FakeAgent('{"response":"APPROVED","feedback":""}')
+    workflow.reviewer_agent = FakeLayaReviewer()
     workflow.storyteller = FakeAgent("narrative")
     workflow.tracer = SimpleNamespace(
         build_graph=lambda: {"file.py": []},
@@ -61,7 +69,7 @@ def test_workflow_dispatch_navigator_reviewer_and_storyteller(tmp_path):
         {**selected, **navigation, "current_line_whispers": navigation["current_line_whispers"]}
     )
     assert reviewed["explanations"] == {"file.py": "draft"}
-    assert reviewed["line_whispers"] == {"file.py": {0: "note"}}
+    assert reviewed["line_whispers"] == {"file.py": {1: "note"}}
 
     final = workflow._node_storyteller(
         {
@@ -90,17 +98,15 @@ def test_workflow_error_and_routing_validation(tmp_path):
 
 
 @pytest.mark.parametrize(
-    "response, expected",
+    "feedback, expected",
     [
-        ('{"response":"VIOLATION","feedback":"fix it"}', {"reviewer_feedback": "fix it"}),
-        ("not json", {"reviewer_feedback": ""}),
-        ("```json\n{\"response\":\"APPROVED\",\"feedback\":\"\"}\n```", {"reviewer_feedback": None}),
-        ("```\n{\"response\":\"APPROVED\",\"feedback\":\"\"}\n```", {"reviewer_feedback": None}),
+        ("fix it", {"reviewer_feedback": "fix it"}),
+        (None, {"reviewer_feedback": None}),
     ],
 )
-def test_reviewer_response_formats(tmp_path, response, expected):
+def test_laya_reviewer_feedback(tmp_path, feedback, expected):
     workflow = make_workflow(tmp_path)
-    workflow.reviewer.response = response
+    workflow.reviewer_agent = FakeLayaReviewer(feedback)
     result = workflow._node_reviewer(
         {"current_draft": "draft", "current_file": "file.py", "current_line_whispers": []}
     )
