@@ -2,7 +2,6 @@ from types import SimpleNamespace
 
 from repowhisper.agents.architect import Architect
 from repowhisper.agents.navigator import CodeNavigator, ModuleNavigationOutput
-from repowhisper.agents.reviewer import Reviewer
 from repowhisper.agents.storyteller import Storyteller
 
 
@@ -41,10 +40,6 @@ def test_architect_reviewer_and_storyteller_analyze(monkeypatch):
     architect = Architect(object(), "junior")
     architect._prompt_template = FakePrompt(SimpleNamespace(content="architecture"))
     assert architect.analyze("query", "tree") == "architecture"
-
-    reviewer = Reviewer(object())
-    reviewer._prompt_template = FakePrompt(SimpleNamespace(content='{"response":"APPROVED"}'))
-    assert reviewer.analyze("query", "draft") == '{"response":"APPROVED"}'
 
     storyteller = Storyteller(object(), "junior")
     storyteller._prompt_template = FakePrompt(SimpleNamespace(content="narrative"))

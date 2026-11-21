@@ -2,10 +2,12 @@ import codecs
 import os
 from typing import Literal
 
+import laya
+import torch
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
-from agents.reviewer import Reviewer
 from agents.storyteller import Storyteller
+from agents.reviewer import LayaReviewer
 from langgraph.graph import END, START, StateGraph
 from orchestration.state import LineWhisperData, ProjectState
 from tqdm import tqdm
@@ -16,26 +18,27 @@ from utils.tree_generator import ProjectTreeGenerator
 class AgentsWorkflow:
     """
     Constructs and executes the LangGraph state machine for analyzing repositories.
-    Connects the Architect, Tracer, Navigator, Reviewer, and Storyteller in a resilient loop.
+    Connects the Architect, Tracer, Navigator, local Laya/Vega Reviewer, and Storyteller in a resilient loop.
     """
 
     def __init__(
             self, 
             root_dir: str,
             architect: Architect, 
-            navigator: CodeNavigator, 
-            reviewer: Reviewer, 
-            storyteller: Storyteller):
+            navigator: CodeNavigator,
+            storyteller: Storyteller,
+            reviewer_agent: LayaReviewer
+        ):
         self.root_dir = root_dir
 
         self.architect = architect
         self.navigator = navigator
-        self.reviewer = reviewer
         self.storyteller = storyteller
+        self.reviewer_agent = reviewer_agent
         self.tracer = DependencyTracer(self.root_dir)
 
-        self.pbar = None
-
+        self.pbar: tqdm | None = None
+        
         self.graph = self._build_graph()
 
     def _build_graph(self):
@@ -146,7 +149,11 @@ class AgentsWorkflow:
                 self.pbar.update(1)
             return {"file_error": True}
 
-        query = f"Explain the logic of this file. Make a explanation following this feedback: {feedback}" if feedback else "Explain this file logically."
+        query = (
+            f"Explain the logic of this file. Follow this feedback strictly: {feedback}" 
+            if feedback 
+            else "Explain this file logically."
+        )
         navigation = self.navigator.analyze(query, context=code_context)
         if not isinstance(navigation, dict):
             raise TypeError("Code Navigator must return a structured dictionary.")
@@ -186,33 +193,19 @@ class AgentsWorkflow:
         }
 
     def _node_reviewer(self, state: ProjectState) -> dict:
+        """Deterministic System-One review via calibrated Laya/Vega."""
         draft = state.get("current_draft", "")
         file_target = state["current_file"]
         if self.pbar:
             self.pbar.set_description(f"Reviewer checking: {os.path.basename(file_target)}") # type: ignore
 
-        evaluation = self.reviewer.analyze("Does this explain or debug?", context=draft)
+        feedback = self.reviewer_agent.review(draft)
 
-        clean_str = evaluation.strip()
-        if clean_str.startswith("```json"):
-            clean_str = clean_str[7:]
-        elif clean_str.startswith("```"):
-            clean_str = clean_str[3:]
-
-        clean_str = clean_str.removesuffix("```")
-
-        import json
-        try:
-            result: dict = json.loads(clean_str)
-            status = result.get("response", "VIOLATION")
-            feedback = result.get("feedback", "")
-        except json.JSONDecodeError:
-            status = "VIOLATION"
-            feedback = ""
-
-        if status == "VIOLATION":
+        if feedback is not None:
             if self.pbar:
-                self.pbar.set_description(f"Reviewer rejected {os.path.basename(file_target)}. Retrying...") #type: ignore
+                self.pbar.set_description(
+                    f"Laya rejected {os.path.basename(file_target)} " # type: ignore
+                )
             return {"reviewer_feedback": feedback}
 
         if self.pbar:
@@ -222,13 +215,13 @@ class AgentsWorkflow:
             "explanations": {file_target: draft},
             "line_whispers": {
                 file_target: {
-                    whisper["line_number"] - 1: whisper["note"]
+                    whisper["line_number"]: whisper["note"]
                     for whisper in state.get("current_line_whispers", [])
                 }
             },
-            "reviewer_feedback": None
+            "reviewer_feedback": None,
         }
-
+    
     def _node_storyteller(self, state: ProjectState) -> dict:
         if self.pbar:
             self.pbar.set_description("Codebase analyzed")

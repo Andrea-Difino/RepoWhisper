@@ -1,14 +1,13 @@
 import functools
 import os
-import socketserver
 import webbrowser
-from http.server import SimpleHTTPRequestHandler
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
-from agents.reviewer import Reviewer
 from agents.storyteller import Storyteller
+from agents.reviewer import LayaReviewer
 from ingestion.source_manager import SourceManager
 from langchain_core.language_models.chat_models import BaseChatModel
 from orchestration.state import ProjectState
@@ -45,6 +44,8 @@ class RepoWhisper:
             \tMID: mid level explanation
             \tSENIOR: very short explanation
         """
+        self._print_ascii_art()
+
         self.source_target = source_target
         self.user_level = user_level
         self.llm = llm
@@ -54,10 +55,9 @@ class RepoWhisper:
 
         self._navigator = CodeNavigator(self.llm, self.user_level.value)
         self._architect = Architect(self.llm, self.user_level.value)
-        self._reviewer = Reviewer(self.llm)
+        self._reviewer = LayaReviewer()
         self._storyteller = Storyteller(self.llm, self.user_level.value)
-
-        self._print_ascii_art()
+        
 
     def _print_ascii_art(self):
         ascii_art = r"""
@@ -90,8 +90,8 @@ class RepoWhisper:
                 root_dir=self._repo_path,
                 architect=self._architect,
                 navigator=self._navigator,
-                reviewer=self._reviewer,
                 storyteller=self._storyteller,
+                reviewer_agent=self._reviewer
             )
 
             initial_state: ProjectState = {
@@ -118,7 +118,7 @@ class RepoWhisper:
 
             return final_state["final_output_json"]
         except KeyboardInterrupt:
-            print("Program interrupted by the user")
+            print("\nProgram interrupted by the user")
             return None
         except RepoWhisperError:
             raise
@@ -141,11 +141,13 @@ class RepoWhisper:
             json_path (str | Path | None): JSON file path of a previous analysis.
             port (int): port value for the web interface.
         """
-        if json_path is None or json_path == "":
-            json_content = self.generate_documentation()
+        if json_path is None or str(json_path).strip() == "":
+            try:
+                json_content = self.generate_documentation()
+            except KeyboardInterrupt:
+                return
 
             if not json_content:
-                print("Impossible to start interface, json generation failed")
                 return
         else:
             report = AnalysisJsonValidator.validate_file(json_path)
@@ -161,8 +163,13 @@ class RepoWhisper:
             )
 
         output_json_path = os.path.join(ui_dir, "data.json")
-        with open(output_json_path, "w", encoding="utf-8") as f:
-            f.write(json_content)
+        try:
+            with open(output_json_path, "w", encoding="utf-8") as f:
+                f.write(json_content)
+        except OSError as e:
+            raise InterfaceError(
+                f"Failed to write analysis data to {output_json_path}: {e}"
+            ) from e
 
         class QuietHandler(SimpleHTTPRequestHandler):
             def log_message(self, format, *args):
@@ -170,14 +177,21 @@ class RepoWhisper:
 
         handler = functools.partial(QuietHandler, directory=ui_dir)
 
-        with socketserver.TCPServer(("", port), handler) as httpd:
-            print(f"\nStudy interface available at: http://localhost:{port}")
+        try:
+            httpd = ThreadingHTTPServer(("", port), handler)
+        except OSError as e:
+            raise InterfaceError(
+                f"Could not start web interface on port {port} (already in use?): {e}"
+            ) from e
+
+        with httpd:
+            url = f"http://localhost:{port}"
+            print(f"\nStudy interface available at: {url}")
             print("Press Ctrl+C to stop server and close the app")
 
-            webbrowser.open(f"http://localhost:{port}")
+            webbrowser.open(url)
 
             try:
                 httpd.serve_forever()
             except KeyboardInterrupt:
-                print("\nRepowhisper server turned off")
-                httpd.server_close()
+                print("\nRepoWhisper server turned off")
