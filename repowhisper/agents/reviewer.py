@@ -94,7 +94,6 @@ class LayaReviewer:
         if cls._is_valid_repo_id(cleaned):
             return cleaned
 
-        # Estrae il nome finale del modello da percorsi Linux/Windows/Kaggle
         model_name = cleaned.replace("\\", "/").split("/")[-1]
         if not model_name:
             return None
@@ -262,7 +261,6 @@ class LayaReviewer:
         if missing_repos:
             self._download_repos_with_single_bar(missing_repos)
 
-        # Verifica finale che entrambi i modelli siano completi nella cache locale
         try:
             vega_dir = snapshot_download(VEGA_READER_REPO_ID, local_files_only=True)
             resolved_backbone = self._discover_backbone_repo_id(vega_dir)
@@ -305,8 +303,8 @@ class LayaReviewer:
         prev_sigint = signal.getsignal(signal.SIGINT) if is_main_thread else None
 
         def _instant_cancel_handler(signum, frame) -> None:
-            sys.__stderr__.write("\nInitialization interrupted by user.\n")
-            sys.__stderr__.flush()
+            sys.__stderr__.write("\nInitialization interrupted by user.\n") # type: ignore
+            sys.__stderr__.flush() # type: ignore
             os._exit(130)
 
         if is_main_thread:
@@ -321,14 +319,14 @@ class LayaReviewer:
             try:
                 from huggingface_hub.utils import disable_progress_bars
                 disable_progress_bars()
-            except Exception:
+            except Warning:
                 pass
 
             try:
                 from transformers.utils import logging as hf_logging
                 hf_logging.set_verbosity_error()
                 hf_logging.disable_progress_bar()
-            except Exception:
+            except Exception: # noqa: BLE001, S110
                 pass
 
             has_cuda = torch.cuda.is_available()
