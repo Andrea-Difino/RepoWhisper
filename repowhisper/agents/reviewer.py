@@ -201,7 +201,7 @@ class LayaReviewer:
                             master_bar.update(self.n)
                         master_bar.refresh()
 
-            def update(self, n: int | float | None = 1) -> bool | None:
+            def update(self, n: float | None = 1) -> bool | None:
                 res = super().update(n)
                 if self._track_bytes and n:
                     with bar_lock:
@@ -212,7 +212,7 @@ class LayaReviewer:
                             master_bar.update(step)
                 return res
 
-            def reset(self, total: int | float | None = None) -> None:
+            def reset(self, total: float | None = None) -> None:
                 if self._track_bytes and known_total_bytes == 0 and total is not None:
                     with bar_lock:
                         diff = int(total) - int(self.total or 0)
@@ -225,8 +225,8 @@ class LayaReviewer:
             for repo_id in repo_ids:
                 snapshot_download(
                     repo_id,
-                    tqdm_class=_UnifiedDownloadTqdm,
-                )
+                    tqdm_class=_UnifiedDownloadTqdm, # pyright: ignore[reportArgumentType]
+                ) # type: ignore
             download_completed = True
         finally:
             if download_completed and master_bar.total and master_bar.n < master_bar.total:
