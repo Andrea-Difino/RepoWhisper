@@ -55,6 +55,7 @@ export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [studiedFiles, setStudiedFiles] = useState<Set<string>>(new Set());
+  const [lastStudiedIndex, setLastStudiedIndex] = useState<number | null>(null);
 
   const rawModules = data?.raw_modules || [];
   const totalFiles = rawModules.length;
@@ -83,11 +84,30 @@ export default function App() {
 
   const handleToggleStudy = (pathOrId: string) => {
     const updated = new Set(studiedFiles);
+    const targetIndex = pathOrId === "root" ? 0 : Number(pathOrId) + 1;
+
     if (updated.has(pathOrId)) {
       updated.delete(pathOrId);
     } else {
       updated.add(pathOrId);
+      setLastStudiedIndex(targetIndex);
     }
+
+    if (!updated.has(pathOrId) && lastStudiedIndex === targetIndex) {
+      const remainingIndexes: number[] = [];
+      if (updated.has("root")) {
+        remainingIndexes.push(0);
+      }
+      updated.forEach((value) => {
+        if (value !== "root") {
+          remainingIndexes.push(Number(value) + 1);
+        }
+      });
+      setLastStudiedIndex(
+        remainingIndexes.length > 0 ? Math.max(...remainingIndexes) : null
+      );
+    }
+
     setStudiedFiles(updated);
   };
 
@@ -102,6 +122,20 @@ export default function App() {
     if (canGoPrev) {
       setDirection(-1);
       setCurrentIndex((prev) => prev - 1);
+    }
+  };
+
+  const goToFirst = () => {
+    if (currentIndex !== 0) {
+      setDirection(-1);
+      setCurrentIndex(0);
+    }
+  };
+
+  const goToLastStudied = () => {
+    if (lastStudiedIndex !== null && currentIndex !== lastStudiedIndex) {
+      setDirection(lastStudiedIndex > currentIndex ? 1 : -1);
+      setCurrentIndex(lastStudiedIndex);
     }
   };
 
@@ -176,8 +210,11 @@ export default function App() {
         totalFiles={totalFiles}
         canGoPrev={canGoPrev}
         canGoNext={canGoNext}
+        lastStudiedIndex={lastStudiedIndex}
         onPrev={goPrev}
         onNext={goNext}
+        onGoToFirst={goToFirst}
+        onGoToLastStudied={goToLastStudied}
         isStudied={isCurrentStudied}
         isFirstSlide={currentIndex === 0}
         showStudyButton={!isCompletionPage}

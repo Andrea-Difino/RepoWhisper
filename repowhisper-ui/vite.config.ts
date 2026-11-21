@@ -7,4 +7,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  build: {
+    outDir: '../repowhisper/ui_dist',
+    emptyOutDir: true,
+  },
 })
