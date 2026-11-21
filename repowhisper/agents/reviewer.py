@@ -165,6 +165,8 @@ class LayaReviewer:
         """Downloads one or more Hugging Face repos sequentially under ONE unified tqdm bar."""
         known_total_bytes = self._fetch_total_repo_bytes(repo_ids)
         bar_lock = threading.RLock()
+        has_aggregate_bar = False
+        switched_to_finalizing = False
 
         master_bar = tqdm(
             total=known_total_bytes or None,
@@ -178,18 +180,37 @@ class LayaReviewer:
         )
 
         class _UnifiedDownloadTqdm(tqdm):
-            """Silent native tqdm subclass forwarding byte progress to master_bar."""
+            """Silent native tqdm subclass forwarding aggregate byte progress to master_bar."""
 
             def __init__(self, *args, **kwargs):
+                nonlocal has_aggregate_bar
+
                 caller_disabled = bool(kwargs.get("disable", False))
-                desc = str(kwargs.get("desc") or "")
+                desc = str(kwargs.get("desc") or "").strip()
+                desc_lower = desc.lower()
                 unit = kwargs.get("unit")
 
-                self._track_bytes = (
+                is_aggregate_download = (
                     not caller_disabled
                     and unit == "B"
-                    and "reconstruction" not in desc.lower()
+                    and desc_lower == "download complete"
                 )
+                if is_aggregate_download:
+                    has_aggregate_bar = True
+
+                # Evita il doppio conteggio: se esiste la barra aggregata "Download complete",
+                # ignora le barre per singolo file (es. "model.safetensors") e "Reconstruction complete".
+                if is_aggregate_download:
+                    self._track_bytes = True
+                elif (
+                    not has_aggregate_bar
+                    and not caller_disabled
+                    and unit == "B"
+                    and "reconstruction" not in desc_lower
+                ):
+                    self._track_bytes = True
+                else:
+                    self._track_bytes = False
 
                 kwargs["disable"] = True
                 super().__init__(*args, **kwargs)
@@ -202,6 +223,8 @@ class LayaReviewer:
                         master_bar.refresh()
 
             def update(self, n: float | None = 1) -> bool | None:
+                nonlocal switched_to_finalizing
+
                 res = super().update(n)
                 if self._track_bytes and n:
                     with bar_lock:
@@ -210,6 +233,17 @@ class LayaReviewer:
                             step = max(0, master_bar.total - master_bar.n)
                         if step:
                             master_bar.update(step)
+
+                        if (
+                            not switched_to_finalizing
+                            and master_bar.total
+                            and master_bar.n >= master_bar.total
+                        ):
+                            switched_to_finalizing = True
+                            master_bar.set_description(
+                                "Finalizing Laya Reviewer cache",
+                                refresh=True,
+                            )
                 return res
 
             def reset(self, total: float | None = None) -> None:
@@ -223,10 +257,11 @@ class LayaReviewer:
         download_completed = False
         try:
             for repo_id in repo_ids:
+                has_aggregate_bar = False
                 snapshot_download(
                     repo_id,
-                    tqdm_class=_UnifiedDownloadTqdm, # pyright: ignore[reportArgumentType]
-                ) # type: ignore
+                    tqdm_class=_UnifiedDownloadTqdm,  # pyright: ignore[reportArgumentType]
+                )  # type: ignore
             download_completed = True
         finally:
             if download_completed and master_bar.total and master_bar.n < master_bar.total:
@@ -303,8 +338,8 @@ class LayaReviewer:
         prev_sigint = signal.getsignal(signal.SIGINT) if is_main_thread else None
 
         def _instant_cancel_handler(signum, frame) -> None:
-            sys.__stderr__.write("\nInitialization interrupted by user.\n") # type: ignore
-            sys.__stderr__.flush() # type: ignore
+            sys.__stderr__.write("\nInitialization interrupted by user.\n")  # type: ignore
+            sys.__stderr__.flush()  # type: ignore
             os._exit(130)
 
         if is_main_thread:
@@ -326,7 +361,7 @@ class LayaReviewer:
                 from transformers.utils import logging as hf_logging
                 hf_logging.set_verbosity_error()
                 hf_logging.disable_progress_bar()
-            except Exception: # noqa: BLE001, S110
+            except Exception:  # noqa: BLE001, S110
                 pass
 
             has_cuda = torch.cuda.is_available()
