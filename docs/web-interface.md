@@ -39,8 +39,8 @@ In an application entry point, handle failures around `serve_ui()`:
 ```python
 try:
     engine.serve_ui()
-except Exception as exc:
-    print(f"RepoWhisper failed: {exc}")
+except RepoWhisperError as e:
+    print(f"RepoWhisperError failed: {e}")
 ```
 
 User interruptions are handled by RepoWhisper. Other errors, such as provider,

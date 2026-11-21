@@ -12,7 +12,7 @@ engine = RepoWhisper(
 ```
 
 RepoWhisper clones the repository to a temporary directory before analysis.
-Clone failures are reported as `RuntimeError`; private repositories require Git
+Clone failures are reported as `RepositoryCloneError`; private repositories require Git
 credentials to be configured in the environment.
 
 ## Files included in analysis

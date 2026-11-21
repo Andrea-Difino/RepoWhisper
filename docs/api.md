@@ -12,9 +12,19 @@ The available levels are:
 - `UserLevel.MID`: medium-depth explanations.
 - `UserLevel.SENIOR`: concise explanations.
 
+## Custom Exceptions
+
+Below are listed all the custom exceptions that the user can encounter during the use of the library.
+  
+### Exceptions
+
+::: utils.exceptions
+
+
 ## Internal components
 
 The following sections expose implementation contracts for contributors.
+
 
 ### Source management
 

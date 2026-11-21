@@ -5,7 +5,7 @@ optional explanation level.
 
 ```python
 from langchain_groq import ChatGroq
-from repowhisper import RepoWhisper, UserLevel
+from repowhisper import RepoWhisper, UserLevel, RepoWhisperError
 
 llm = ChatGroq(
     api_key="read this from an environment variable",
@@ -21,15 +21,16 @@ engine = RepoWhisper(
 
 try:
     json_data = engine.generate_documentation()
-except Exception as exc:
-    print(f"RepoWhisper failed: {exc}")
+except RepoWhisperError as e:
+    print(f"RepoWhisper failed: {e}")
 ```
 
 `generate_documentation()` returns a JSON string when analysis succeeds and
 `None` when the run is interrupted or cannot produce a result.
 
-The `try/except` is recommended because provider, repository, and processing
-errors are propagated to the caller.
+The configured LLM generates the Architect, Navigator, and Storyteller output.
+The module review step uses the local Laya/Vega classifier and does not consume
+LLM tokens.
 
 To generate the documentation and open the bundled interface in a browser:
 
@@ -43,8 +44,8 @@ provider, repository, and server errors without an unhandled traceback:
 ```python
 try:
     engine.serve_ui()
-except Exception as exc:
-    print(f"RepoWhisper failed: {exc}")
+except RepoWhisperError as e:
+    print(f"RepoWhisper failed: {e}")
 ```
 
 `RepoWhisper` handles user interruptions internally. Other errors are raised

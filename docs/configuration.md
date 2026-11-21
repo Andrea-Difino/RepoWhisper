@@ -37,6 +37,13 @@ by the application:
 The generated frontend data is written to
 `repowhisper/ui_dist/data.json` when `serve_ui()` is used.
 
+## Laya Reviewer
+
+The Reviewer is local and is not configured through LangChain. On first use,
+RepoWhisper downloads and caches the Vega reader, its backbone model, and the
+RepoWhisper calibration files. The review step requires no provider API key and
+does not consume tokens.
+
 ## Source paths
 
 

@@ -5,6 +5,7 @@
 - Python 3.12.
 - Git, when analyzing a remote repository.
 - An LLM provider supported by LangChain.
+- Network access and cache space for the first-run Laya/Vega reviewer download.
 
 ## Install from PyPI
 

@@ -13,6 +13,10 @@ structure and dependencies, reads the supported source files, and produces:
 - targeted line-level notes;
 - a JSON document consumed by the bundled web interface.
 
+Architectural explanations and narration are produced by the configured
+LangChain model. Module-draft review is handled separately by the local,
+calibrated Laya/Vega Reviewer.
+
 The public entry point is the [`RepoWhisper`](api.md) facade.
 
 ## Documentation map

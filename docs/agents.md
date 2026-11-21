@@ -20,11 +20,12 @@ contains:
 The workflow converts those line numbers to zero-based indexes for the final
 JSON consumed by the frontend.
 
-## Reviewer
+## Laya Reviewer
 
-The Reviewer evaluates whether an explanation describes the code accurately
-without attempting to debug it or propose unrelated fixes. A rejected
-explanation is sent back to the Navigator with feedback.
+The Reviewer is a locally calibrated Laya/Vega classifier, not an LLM agent.
+It predicts whether a Navigator draft is an `EXPLANATION` or a debugging-oriented
+`DEBUG`. A `DEBUG` result returns corrective feedback and sends the draft back
+to the Navigator. This review step runs locally and consumes no LLM tokens.
 
 ## Storyteller
 
@@ -33,7 +34,7 @@ explanations into the final narrative and JSON payload.
 
 ## Retry behavior
 
-The Navigator and Reviewer form a feedback loop:
+The Navigator and Laya Reviewer form a feedback loop:
 
 ```text
 Navigator -> Reviewer -> approved -> next file
