@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronsLeft, History } from 'lucide-react';
 import StudyButton from './StudyButton';
 
 interface TopBarProps {
@@ -6,8 +6,11 @@ interface TopBarProps {
   totalFiles: number;
   canGoPrev: boolean;
   canGoNext: boolean;
+  lastStudiedIndex: number | null;
   onPrev: () => void;
   onNext: () => void;
+  onGoToFirst: () => void;
+  onGoToLastStudied: () => void;
   isStudied: boolean;
   isFirstSlide: boolean;
   showStudyButton: boolean;
@@ -19,8 +22,11 @@ export default function TopBar({
   totalFiles, 
   canGoPrev, 
   canGoNext, 
+  lastStudiedIndex,
   onPrev, 
   onNext,
+  onGoToFirst,
+  onGoToLastStudied,
   isStudied,
   isFirstSlide,
   showStudyButton,
@@ -36,6 +42,20 @@ export default function TopBar({
 
       <div className="flex flex-col items-center gap-1">
         <div className="flex items-center gap-4 mb-1">
+        <button
+          onClick={onGoToFirst}
+          disabled={currentIndex === 0}
+          className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-200 ${
+            currentIndex !== 0
+              ? 'border-[#11151C] text-[#11151C] hover:bg-[#11151C] hover:text-white cursor-pointer active:scale-95'
+              : 'border-black/20 text-black/20 cursor-not-allowed'
+          }`}
+          aria-label="Return at the beginning"
+          title="Return at the beginning"
+        >
+          <ChevronsLeft className="w-5 h-5" strokeWidth={1.8} />
+        </button>
+
         <button
           onClick={onPrev}
           disabled={!canGoPrev}
@@ -58,6 +78,20 @@ export default function TopBar({
           }`}
         >
           <ArrowRight className="w-5 h-5" strokeWidth={1.8} />
+        </button>
+
+        <button
+          onClick={onGoToLastStudied}
+          disabled={lastStudiedIndex === null || currentIndex === lastStudiedIndex}
+          className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all duration-200 ${
+            lastStudiedIndex !== null && currentIndex !== lastStudiedIndex
+              ? 'border-[#4E7D34] text-[#4E7D34] hover:bg-[#4E7D34] hover:text-white cursor-pointer shadow-sm active:scale-95'
+              : 'border-black/20 text-black/20 cursor-not-allowed'
+          }`}
+          aria-label="Go to the last studied module"
+          title="Go to the last studied module"
+        >
+          <History className="w-5 h-5" strokeWidth={1.8} />
         </button>
         </div>
 
