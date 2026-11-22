@@ -16,6 +16,10 @@ class LineWhisper(BaseModel):
 
 
 class ModuleNavigationOutput(BaseModel):
+    one_liner: str = Field(
+        default="",
+        description="One factual sentence (max 20 words) stating the module's role. Used to build the repository overview.",
+    )
     explanation: str = Field(
         description="Engaging, flowing technical prose explaining the module's role and data flow, strictly respecting the target length for the user level."
     )
@@ -54,6 +58,7 @@ class CodeNavigator(BaseAgent):
                 2. VISUAL ANCHORS: Use **bold text** strategically to highlight key classes, state transitions, and core concepts so the text is easy to scan.
                 3. EXACT LINE MATCHING: In `line_whispers`, the input code is prefixed with line numbers (e.g., `12 | ...`). Always use that exact integer for `line_number`.
                 4. ZERO HALLUCINATIONS: Base everything strictly on the provided code.
+                5. ONE-LINER: `one_liner` is a single factual sentence (max 20 words) naming what this module is responsible for. It must not start with "This module" or "This file".
 
                 USER LEVEL CALIBRATION & STRICT LENGTH BUDGET:
                 {user_level_prompt} 
@@ -61,6 +66,7 @@ class CodeNavigator(BaseAgent):
                 REQUIRED JSON OUTPUT FORMAT:
                 You must respond strictly with a valid JSON object matching this exact schema (no markdown fences, no extra keys):
                 {{
+                "one_liner": "One short factual sentence about the module's role",
                 "explanation": "Your narrative explanation here",
                 "line_whispers": [
                     {{"line_number": 12, "note": "Your concise note here"}}

@@ -5,8 +5,10 @@ The workflow is implemented by
 
 ## Architect
 
-The Architect receives the generated directory tree and produces an executive
-architectural summary. It should describe only evidence present in the tree.
+The Architect runs after the per-file analysis. It receives a budgeted directory
+tree, a facts sheet computed by static analysis, and short per-module notes, and
+produces an executive architectural summary. It must mention only names that appear
+in that evidence, written in `backticks` so they can be verified.
 
 ## Navigator
 
@@ -14,6 +16,8 @@ The Navigator receives one source file at a time. Its structured output
 contains:
 
 - a prose explanation;
+- a one-line summary (`one_liner`, optional: the first sentence of the explanation
+  is used when a model omits it);
 - selected line-level notes;
 - one-based line numbers in its model response.
 
@@ -29,8 +33,22 @@ to the Navigator. This review step runs locally and consumes no LLM tokens.
 
 ## Storyteller
 
-The Storyteller combines the architecture summary and accepted module
-explanations into the final narrative and JSON payload.
+The Storyteller combines the facts sheet, the module notes and the Architect draft
+into the final narrative and JSON payload. When facts and draft disagree, the facts
+win.
+
+## Package summarizer
+
+A small helper agent used only when the module notes do not fit `context_budget`.
+It compresses the notes of one directory into at most three factual sentences and
+never sees raw source code.
+
+## Grounding verifier
+
+Not an agent: a deterministic check (no tokens). It extracts every `code reference`
+from the generated text and verifies it against the names found in the repository
+(files, classes, functions, arguments, libraries, flags, environment variables). It
+catches invented names, not incorrect descriptions of behaviour.
 
 ## Retry behavior
 
@@ -43,4 +61,4 @@ Navigator -> Reviewer -> approved -> next file
 ```
 
 The workflow continues until all files in the dependency order have been
-processed, then invokes the Storyteller.
+processed, then builds the facts and invokes the Architect and the Storyteller.

@@ -7,8 +7,9 @@ from langchain_core.prompts import ChatPromptTemplate
 
 class Architect(BaseAgent):
     """
-    Specialized agent that takes the project directory structure and outputs
-    a clean, grounded architectural overview tailored to the user's level.
+    Specialized agent that takes grounded evidence about the project (directory tree,
+    statically extracted facts and short per-module notes) and outputs a clean,
+    architectural overview tailored to the user's level.
     """
 
     def __init__(self, llm: BaseChatModel, user_level: str):
@@ -46,24 +47,24 @@ class Architect(BaseAgent):
             [
                 (
                     "system",
-                    """You are an elite Software Architect. Analyze the provided project directory tree and deduce the core architecture of the software.
+                    """You are an elite Software Architect. You receive EVIDENCE extracted from a repository: a directory tree, a facts sheet computed by static analysis of the code (authoritative), and short per-module notes. Deduce the core architecture of the software from this evidence ONLY.
 
                     STRICT FORMATTING & GROUNDING RULES (ZERO TOLERANCE):
                     1. NO MARKDOWN TABLES: NEVER use Markdown tables (`| ... |`). Tables overflow the UI container. Always use clean, scannable bulleted lists with **bold** labels instead.
                     2. NO WIDE ASCII DIAGRAMS: Do NOT draw multi-column ASCII box diagrams that risk horizontal overflow. If needed, use simple single-line arrow flows (e.g., `Input -> Transcription -> Extraction -> Output`).
-                    3. ZERO HALLUCINATIONS ON CODE INTERNALS: You are only seeing the directory tree, NOT the source code inside the files. NEVER invent class names, function signatures, CLI flags, or file paths that do not appear verbatim in the provided tree. Refer only to actual directories and filenames visible in the tree.
+                    3. GROUND EVERY CLAIM IN THE EVIDENCE: You do NOT see the source code. Mention only directories, files, classes, functions, libraries, CLI flags and environment variables that appear verbatim in the evidence, and write each of them inside `backticks` exactly as written there. If something is not in the evidence, do not mention it and do not guess: say nothing rather than speculate.
                     4. NO META-HEADERS OR FOOTERS: Do NOT include lines like "Target audience: ..." or "End of architectural overview".
 
                     FOCUS AREAS:
-                    - Primary programming languages, runtimes, and build/packaging tools visible in config files.
-                    - Architectural pattern and layer organization based strictly on existing directories.
-                    - Core domain purpose of the application.
-                    - CI/CD or infrastructure components strictly if visible in the tree.
+                    - Primary programming languages, runtimes, and build/packaging tools listed in the facts sheet.
+                    - Architectural pattern and layer organization based strictly on the existing modules and on which modules import which.
+                    - Core domain purpose of the application (use the README excerpt and the module notes).
+                    - CI/CD or infrastructure components strictly if listed in the facts sheet.
 
                     CALIBRATION FOR {user_level} LEVEL:
                     {user_level_guidance}
 
-                    Project Structure:
+                    EVIDENCE:
                     {context}""",
                 ),
                 ("user", "{query}"),
