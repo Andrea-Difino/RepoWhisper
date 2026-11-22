@@ -6,6 +6,7 @@ from pathlib import Path
 
 from agents.architect import Architect
 from agents.navigator import CodeNavigator
+from agents.package_summarizer import PackageSummarizer
 from agents.reviewer import LayaReviewer
 from agents.storyteller import Storyteller
 from ingestion.source_manager import SourceManager
@@ -15,6 +16,7 @@ from orchestration.workflow import AgentsWorkflow
 from schemas.analysis_schema import AnalysisJsonValidator
 from utils.config import UserLevel
 from utils.exceptions import InterfaceError, RepoWhisperError
+from utils.token_budget import TokenUtilities
 
 
 class RepoWhisper:
@@ -32,6 +34,7 @@ class RepoWhisper:
         source_target: str,
         llm: BaseChatModel,
         user_level: UserLevel = UserLevel.JUNIOR,
+        context_budget: int = TokenUtilities.DEFAULT_CONTEXT_BUDGET,
     ):
         """
         Initializes the Excode engine.
@@ -43,12 +46,16 @@ class RepoWhisper:
             \tJUNIOR: large explanation
             \tMID: mid level explanation
             \tSENIOR: very short explanation
+            context_budget (int): Maximum estimated tokens of evidence (static facts, module notes,
+            directory tree) handed to the Architect and the Storyteller. Lower it for small context
+            windows or strict rate limits; the pipeline compresses the notes to fit.
         """
         self._print_ascii_art()
 
         self.source_target = source_target
         self.user_level = user_level
         self.llm = llm
+        self.context_budget = context_budget
 
         self._source_manager = SourceManager(self.source_target)
         self._repo_path: str | None = None
@@ -57,6 +64,7 @@ class RepoWhisper:
         self._architect = Architect(self.llm, self.user_level.value)
         self._reviewer = LayaReviewer()
         self._storyteller = Storyteller(self.llm, self.user_level.value)
+        self._package_summarizer = PackageSummarizer(self.llm)
         
 
     def _print_ascii_art(self):
@@ -91,19 +99,27 @@ class RepoWhisper:
                 architect=self._architect,
                 navigator=self._navigator,
                 storyteller=self._storyteller,
-                reviewer_agent=self._reviewer
+                reviewer_agent=self._reviewer,
+                package_summarizer=self._package_summarizer,
+                context_budget=self.context_budget,
             )
 
             initial_state: ProjectState = {
                 "architecture_summary": "",
                 "tree_structure": "",
+                "tree_prompt": "",
+                "repo_facts": None,
+                "facts_sheet": "",
+                "evidence_pack": "",
                 "dependency_graph": {},
                 "unprocessed_files": [],
                 "current_file": None,
                 "current_draft": "",
+                "current_one_liner": "",
                 "current_line_whispers": [],
                 "is_file_reading_error": False,
                 "explanations": {},
+                "one_liners": {},
                 "line_whispers": {},
                 "file_codes": {},
                 "reviewer_feedback": None,

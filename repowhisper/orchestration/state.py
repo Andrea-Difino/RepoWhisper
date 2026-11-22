@@ -1,5 +1,5 @@
 import operator
-from typing import Annotated, TypedDict
+from typing import Annotated, Any, TypedDict
 
 
 class LineWhisperData(TypedDict):
@@ -16,15 +16,22 @@ class ProjectState(TypedDict):
 
     architecture_summary: str
     tree_structure: str
+    tree_prompt: str
     dependency_graph: dict[str, list[str]]
+
+    repo_facts: Any
+    facts_sheet: str
+    evidence_pack: str
 
     unprocessed_files: list[str]
     current_file: str | None
     current_draft: str
+    current_one_liner: str
     current_line_whispers: list[LineWhisperData]
     is_file_reading_error: bool
 
     explanations: Annotated[dict[str, str], operator.ior]
+    one_liners: Annotated[dict[str, str], operator.ior]
     line_whispers: Annotated[dict[str, dict[int, str]], operator.ior]
     file_codes: Annotated[dict[str, str], operator.ior]
 
