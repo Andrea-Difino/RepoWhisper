@@ -86,10 +86,6 @@ class EvidencePacker:
     call bounded by `chunk_budget`). Without a summarizer, or if it fails, a
     deterministic summary (key files + file names) is used, so packing never crashes
     the pipeline.
-
-    Complexity: with N cards and P directories, the number of LLM calls is O(P) in the
-    worst case (0 when the cards already fit), and every call is bounded by
-    `chunk_budget` tokens regardless of the size of the repository.
     """
 
     def __init__(
@@ -157,7 +153,7 @@ class EvidencePacker:
             try:
                 summary = self._llm_summary(f"{block.name}/", block.body)
             except Exception as exc:  # noqa: BLE001 - packing must degrade, never crash the run
-                tqdm.write(f"⚠️ Could not summarize `{block.name}/` ({exc}); using a deterministic summary.")
+                tqdm.write(f"Could not summarize `{block.name}/` ({exc}); using a deterministic summary.")
                 summary = None
 
         if summary:

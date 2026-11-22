@@ -8,8 +8,6 @@ from utils.facts_extractor import RepoFacts
 
 _FENCED_BLOCK_RE = re.compile(r"```.*?```", re.DOTALL)
 _CODE_SPAN_RE = re.compile(r"`([^`\n]+)`")
-# A span is "checkable" only if it looks like ONE code reference (a path, a dotted
-# name, a flag, a call such as `run()`); commands, sentences and snippets are skipped.
 _CHECKABLE_RE = re.compile(r"[-A-Za-z_./][\w\-./:]*(?:\(\))?")
 _WORD_RE = re.compile(r"[A-Za-z_][\w\-]*")
 
@@ -18,7 +16,6 @@ _FILE_EXTENSIONS = {
     "ts", "tsx", "js", "jsx", "css", "html", "png", "svg", "npz", "sh", "env",
 }
 
-# Ubiquitous names that are fine to mention even if the repository never defines them.
 _COMMON_TERMS = {
     "pip", "uv", "git", "python", "python3", "pytest", "docker", "npm", "pnpm", "yarn",
     "node", "bash", "sh", "http", "https", "json", "yaml", "toml", "markdown", "html",
@@ -72,8 +69,6 @@ class GroundingVerifier:
         self._known |= {w.replace("-", "_") for w in self._known if "-" in w}
         self._known |= set(dir(builtins)) | set(keyword.kwlist) | set(sys.stdlib_module_names)
         self._known |= _COMMON_TERMS
-        # Brand names are usually written with different casing than the import
-        # (`LangGraph` vs `langgraph`), so words are also matched case-insensitively.
         self._known_lower = {w.lower() for w in self._known}
 
         self._flags = set(facts.known_flags)
