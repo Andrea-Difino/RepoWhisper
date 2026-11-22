@@ -327,7 +327,7 @@ class AgentsWorkflow:
             },
             "line_whispers": {
                 file_target: {
-                    whisper["line_number"]: whisper["note"]
+                    whisper["line_number"] - 1: whisper["note"]
                     for whisper in state.get("current_line_whispers", [])
                 }
             },

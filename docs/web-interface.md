@@ -10,7 +10,7 @@ The method:
 
 1. runs the analysis when JSON data path is not supplied;
 2. writes the JSON to `repowhisper/ui_dist/data.json`;
-3. changes into the bundled UI directory;
+3. writes the report into the bundled UI data file;
 4. starts a local HTTP server;
 5. opens the default browser.
 

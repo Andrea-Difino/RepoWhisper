@@ -4,7 +4,7 @@ from repo_fixture import make_repo, write
 
 from repowhisper.orchestration.workflow import AgentsWorkflow
 from repowhisper.schemas.analysis_schema import AnalysisJsonValidator
-from repowhisper.utils.token_budget import estimate_tokens
+from repowhisper.utils.token_budget import TokenUtilities
 
 
 class Log:
@@ -151,7 +151,7 @@ def test_small_budget_collapses_notes_with_bounded_calls_and_keeps_the_budget(tm
 
     class FakeSummarizer:
         def analyze(self, query, context):
-            summaries.append((query, estimate_tokens(context)))
+            summaries.append((query, TokenUtilities.estimate_tokens(context)))
             return f"Summary of {query}"
 
     budget = 900
@@ -162,12 +162,12 @@ def test_small_budget_collapses_notes_with_bounded_calls_and_keeps_the_budget(tm
     assert summaries, "notes did not fit, so directories must have been collapsed"
     assert len(summaries) <= 13 * 2  # O(directories)
     assert all(tokens <= 2500 + 50 for _, tokens in summaries)  # every call is small
-    assert estimate_tokens(final["evidence_pack"]) <= budget
-    assert estimate_tokens(final["tree_prompt"]) <= budget // 4 + 1
+    assert TokenUtilities.estimate_tokens(final["evidence_pack"]) <= budget
+    assert TokenUtilities.estimate_tokens(final["tree_prompt"]) <= budget // 4 + 1
     assert "pkg0" in final["tree_structure"]  # the UI still gets the complete tree
     # architect + storyteller inputs stay O(budget), not O(repo size)
-    assert estimate_tokens(architect.calls[0][1]) < budget * 2
-    assert estimate_tokens(storyteller.calls[0][1]) < budget * 2
+    assert TokenUtilities.estimate_tokens(architect.calls[0][1]) < budget * 2
+    assert TokenUtilities.estimate_tokens(storyteller.calls[0][1]) < budget * 2
 
 
 def test_everything_fitting_the_budget_makes_zero_summarizer_calls(tmp_path):

@@ -16,8 +16,8 @@ class ModuleAnalysisItem(BaseModel):
     @classmethod
     def validate_line_numbers(cls, value: dict[str, str]) -> dict[str, str]:
         for line_key, note_text in value.items():
-            if not line_key.isdigit() or int(line_key) <= 0:
-                raise ValueError(f"Raw number not valid in 'notes': '{line_key}'")
+            if not line_key.isdigit():
+                raise ValueError(f"Line index not valid in 'notes': '{line_key}'")
             if not note_text.strip():
                 raise ValueError(f"Note for row {line_key} can't be empty")
         return value
@@ -53,7 +53,7 @@ class AnalysisJsonValidator:
         Read and validate a JSON file before being passed to React interface.
 
         Args:
-            file_path (str | Path) : path of the JSON file to be validated
+            file_path (str | Path): Path of the JSON file to validate.
         """
         path = Path(file_path)
         if not path.exists() or not path.is_file():

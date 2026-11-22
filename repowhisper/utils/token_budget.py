@@ -1,4 +1,5 @@
 import math
+from collections.abc import Callable
 from typing import ClassVar
 
 
@@ -27,7 +28,7 @@ class TokenUtilities:
         return math.ceil(len(text) / cls.CHARS_PER_TOKEN)
 
 
-def arrange_edges_first(items: list, key) -> list:
+def arrange_edges_first(items: list, key: Callable[[object], float]) -> list:
     """
     Reorder items so the most important ones sit at the START and at the END of the
     list while the least important end up in the middle.
@@ -38,7 +39,7 @@ def arrange_edges_first(items: list, key) -> list:
 
     Args:
         items (list): items to reorder.
-        key: function returning the importance of an item (higher = more important).
+        key: Function returning the importance of an item (higher = more important).
 
     Returns:
         list: the reordered list (a new list, the input is not modified).

@@ -69,7 +69,7 @@ def test_workflow_dispatch_navigator_reviewer_and_storyteller(tmp_path):
         {**selected, **navigation, "current_line_whispers": navigation["current_line_whispers"]}
     )
     assert reviewed["explanations"] == {"file.py": "draft"}
-    assert reviewed["line_whispers"] == {"file.py": {1: "note"}}
+    assert reviewed["line_whispers"] == {"file.py": {0: "note"}}
 
     final = workflow._node_storyteller(
         {

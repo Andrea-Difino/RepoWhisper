@@ -3,7 +3,7 @@
 
   # RepoWhisper
 
-  ### Turn any unfamiliar repository into an interactive, AI-guided study journey.
+  ### Turn an unfamiliar Python repository into an interactive, AI-guided study journey.
 
   <p>
     <a href="https://pypi.org/project/repowhisper/"><img src="https://static.pepy.tech/personalized-badge/repowhisper?period=total&units=INTERNATIONAL_SYSTEM&left_color=GRAY&right_color=yellow&left_text=downloads" alt="PyPI downloads"></a>
@@ -28,17 +28,20 @@ Joining a new team or diving into an open-source project usually starts the same
 
 **RepoWhisper gives you the map before you take the first step.**
 
-Paste a GitHub repository URL, plug in any LLM you prefer, and pick your seniority level. RepoWhisper analyzes the codebase from top to bottom and launches a **local interactive study interface**—walking you from high-level system boundaries down to line-by-line insights.
+Paste a public GitHub repository URL, plug in any LangChain-compatible LLM you prefer, and pick your seniority level. RepoWhisper currently analyzes **Python (`.py`) codebases** and launches a **local interactive study interface**—walking you from high-level system boundaries down to line-by-line insights.
+
+> [!IMPORTANT]
+> **Python only for now.** RepoWhisper supports Python source and Python import analysis. It does not currently provide equivalent analysis for JavaScript, TypeScript, Java, Go, Rust, or other languages.
 
 
 ## One repository. Four specialists. One clear story.
 
 Instead of dumping raw files into a single giant prompt, RepoWhisper orchestrates a **LangGraph multi-agent pipeline** where specialized agents collaborate and verify each other's work:
 
-* **Architect** — Inspects the repository structure and builds a grounded architectural overview without hallucinating missing components.
-* **Navigator** — Reads source files in dependency order, writing flowing technical explanations and pinpointing critical lines (`notes`).
+* **Architect** — Builds a grounded architectural overview from static facts, the project tree, and budgeted module notes.
+* **Navigator** — Reads selected Python source files in dependency order, writing technical explanations and pinpointing critical lines (`notes`).
 * **Laya Reviewer** — A local, calibrated Laya/Vega classifier acts as a zero-token quality gate and sends debugging-focused drafts back for revision.
-* **Storyteller** — Weaves the approved findings into a cohesive, human-readable architectural narrative.
+* **Storyteller** — Weaves the static facts, approved module findings, and architect draft into a cohesive, human-readable narrative.
 
 > [!TIP]
 > **Adaptive Depth (`UserLevel`):** Tailor the entire analysis to your background—choose **`JUNIOR`** for step-by-step mental models, **`MID`** for data contracts and error boundaries, or **`SENIOR`** for concise, high-signal architectural trade-offs.
@@ -47,10 +50,11 @@ Instead of dumping raw files into a single giant prompt, RepoWhisper orchestrate
 
 ## How it works under the hood
 
-1. **Clone & Index:** Fetches the repository and resolves Python import dependencies so core modules are analyzed in logical order.
-2. **Architect & Navigate:** Deduces system layers and explains every file with targeted line-level annotations.
-3. **Self-Correct:** The local Laya Reviewer rejects explanations that drift into debugging and requests a revision from the Navigator.
-4. **Validate & Study:** Enforces a strict Pydantic schema on the output JSON and opens the interactive React viewer in your browser.
+1. **Clone & Trace:** Fetches the GitHub repository and resolves Python import dependencies so Python modules are analyzed in logical order.
+2. **Navigate & Review:** Explains each selected Python file, shares dependency summaries with later modules, and uses the local Laya Reviewer to flag debugging-oriented drafts.
+3. **Extract & Ground:** Computes static Python facts, import centrality, package metadata, README context, and CI workflow facts; then packs module evidence into a bounded token context.
+4. **Architect & Narrate:** Builds a grounded architecture overview and final narrative, regenerating once if code references cannot be verified.
+5. **Validate & Study:** Enforces a strict Pydantic schema on the output JSON and opens the interactive React viewer in your browser.
 
 
 ## Bring Your Own Model. Skip the AI Tax.
@@ -167,7 +171,7 @@ Every run produces a structured, interactive learning workspace in your browser:
       "explanation": "Flowing technical explanation tailored to your UserLevel...",
       "code_snippet": "def process(data):\n    ...",
       "notes": {
-        "12": "Important implementation detail or edge case."
+        "11": "Important implementation detail or edge case."
       }
     }
   ]
@@ -179,8 +183,8 @@ Every run produces a structured, interactive learning workspace in your browser:
 
 RepoWhisper is actively evolving and transparent about its current design:
 
-* **Repository Sources:** Supports public remote **GitHub HTTP(S) URLs**.
-* **Dependency Ordering:** Import-graph sorting currently focuses on **Python** codebases.
+* **Language Support:** RepoWhisper is currently for **Python code analysis only**. Dependency tracing and static facts are Python-specific.
+* **Repository Sources:** Supports public **GitHub HTTP(S) repository URLs**. Local paths are not accepted by the source manager.
 * **Token & Rate Limits:** Large repositories require more time and tokens; built-in rate-limit handling automatically paces requests on free tiers.
 * **Local UI:** The React study interface is designed to run locally on your machine.
 

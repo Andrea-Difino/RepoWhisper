@@ -5,7 +5,8 @@ and orchestration layer.
 
 ## Execution phases
 
-1. `SourceManager` resolves the source to a local path.
+1. `SourceManager` clones a GitHub HTTP(S) repository URL into a temporary local
+   directory.
 2. `DependencyTracer` builds a dependency graph and processing order.
 3. `CodeNavigator` explains each file and returns line-level notes plus a one-line
    summary. It also receives the one-line summaries of the already analysed modules

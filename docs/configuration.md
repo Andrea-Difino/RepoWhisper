@@ -68,7 +68,8 @@ engine = RepoWhisper(
 )
 ```
 
-`source_target` is an `http://` or `https://` Git repository URL.
+`source_target` is an `http://github.com/` or `https://github.com/` repository
+URL. The source manager does not accept local filesystem paths.
 
 Repositories are cloned into a temporary directory and removed during
 cleanup after analysis.

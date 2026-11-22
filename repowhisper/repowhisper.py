@@ -40,15 +40,16 @@ class RepoWhisper:
         Initializes the Excode engine.
 
         Args:
-            source_target (str): The URL of the git repository or local path.
+            source_target (str): A public GitHub HTTP(S) repository URL.
             llm (BaseChatModel): The initialized LangChain chat model.
             user_level (UserLevel): Default JUNIOR. The user level used to tell the llm how the explanation should be\n
             \tJUNIOR: large explanation
             \tMID: mid level explanation
             \tSENIOR: very short explanation
-            context_budget (int): Maximum estimated tokens of evidence (static facts, module notes,
-            directory tree) handed to the Architect and the Storyteller. Lower it for small context
-            windows or strict rate limits; the pipeline compresses the notes to fit.
+            context_budget (int): Maximum estimated tokens of evidence (static facts, module
+                notes, directory tree) handed to the Architect and the Storyteller.
+                Lower it for small context windows or strict rate limits; the pipeline
+                compresses the notes to fit.
         """
         self._print_ascii_art()
 
