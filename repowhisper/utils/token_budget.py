@@ -1,6 +1,6 @@
 import math
 from collections.abc import Callable
-from typing import ClassVar, TypeVar
+from typing import ClassVar
 
 
 class TokenUtilities:
