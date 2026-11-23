@@ -11,8 +11,18 @@ _ENV_RE = re.compile(r"[A-Z][A-Z0-9_]{2,}")
 _DEP_NAME_RE = re.compile(r"\s*([A-Za-z0-9][A-Za-z0-9._\-]*)")
 
 _WALK_IGNORE = {
-    ".git", "node_modules", "venv", ".venv", "__pycache__", "dist", "build",
-    ".idea", ".vscode", ".mypy_cache", ".pytest_cache", ".ruff_cache",
+    ".git",
+    "node_modules",
+    "venv",
+    ".venv",
+    "__pycache__",
+    "dist",
+    "build",
+    ".idea",
+    ".vscode",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
 }
 _MAX_WALKED_ENTRIES = 50_000
 
@@ -47,7 +57,9 @@ def pagerank(
     if n == 0:
         return {}
 
-    outgoing = {node: [t for t in dict.fromkeys(graph[node]) if t in graph] for node in nodes}
+    outgoing = {
+        node: [t for t in dict.fromkeys(graph[node]) if t in graph] for node in nodes
+    }
     rank = dict.fromkeys(nodes, 1.0 / n)
 
     for _ in range(iterations):
@@ -74,7 +86,7 @@ class FileFacts:
 
     path: str
     docstring: str = ""
-    symbols: list[str] = field(default_factory=list)
+    symbols: list[str] = field(default_factory=list) #each string is a class with its methods or a function with its arguments
     external_imports: set[str] = field(default_factory=set)
     has_main_guard: bool = False
 
@@ -116,14 +128,16 @@ class FactsExtractor:
     def extract(self, files: list[str], graph: dict[str, list[str]]) -> RepoFacts:
         """
         Args:
-            files (list[str]): analysed source files (paths relative to the root, posix).
+            files (list[str]): analysed source files (paths relative to the root).
             graph (dict[str, list[str]]): resolved internal dependency graph.
 
         Returns:
             RepoFacts: the facts sheet plus the vocabulary used for verification.
         """
         file_set = set(files)
-        internal_names = self._internal_names(files)
+        internal_names = self._internal_names(
+            files
+        )  # Tutti i nomi di ogni singola cartella, incluso il file senza estensione
 
         file_facts: dict[str, FileFacts] = {}
         identifiers: set[str] = set()
@@ -155,7 +169,9 @@ class FactsExtractor:
                 identifiers.add(part)
                 identifiers.add(posixpath.splitext(part)[0])
 
-        sheet = self._render_sheet(file_facts, restricted, rank, fan_in, project, workflows, flags)
+        sheet = self._render_sheet(
+            file_facts, restricted, rank, fan_in, project, workflows, flags
+        )
 
         return RepoFacts(
             files=file_facts,
@@ -184,33 +200,58 @@ class FactsExtractor:
         flags: set[str] = set()
 
         try:
-            with open(os.path.join(self.root_dir, rel_path), encoding="utf-8", errors="ignore") as f:
+            with open(
+                os.path.join(self.root_dir, rel_path), encoding="utf-8", errors="ignore"
+            ) as f:
                 tree = ast.parse(f.read(), filename=rel_path)
         except (OSError, SyntaxError, ValueError):
             return facts, ids, flags
 
         doc = ast.get_docstring(tree) or ""
-        facts.docstring = next((line.strip() for line in doc.splitlines() if line.strip()), "")[:140]
+        facts.docstring = next(
+            (line.strip() for line in doc.splitlines() if line.strip()), ""
+        )[:140]
+
+        ids, flags = self._collect_identifiers(tree)
+        self._collect_import(tree, internal_names, facts)
+
+        self._collect_symbols(tree, facts)
+
+        return facts, ids, flags
+
+    @staticmethod
+    def _collect_identifiers(tree: ast.AST) -> tuple[set[str], set[str]]:
+        ids: set[str] = set()
+        flags: set[str] = set()
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Name):
                 ids.add(node.id)
+ 
             elif isinstance(node, ast.Attribute):
                 ids.add(node.attr)
+
             elif isinstance(node, ast.arg):
                 ids.add(node.arg)
+
             elif isinstance(node, ast.keyword):
                 if node.arg:
                     ids.add(node.arg)
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+
+            elif isinstance(
+                node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)
+            ):
                 ids.add(node.name)
+
             elif isinstance(node, ast.alias):
                 ids.update(node.name.split("."))
                 if node.asname:
                     ids.add(node.asname)
+
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
                     ids.update(node.module.split("."))
+
             elif isinstance(node, ast.Constant) and isinstance(node.value, str):
                 value = node.value
                 if _FLAG_RE.fullmatch(value):
@@ -218,12 +259,18 @@ class FactsExtractor:
                 elif _ENV_RE.fullmatch(value):
                     ids.add(value)
 
+        return ids, flags
+
+    def _collect_import(self, tree: ast.AST, internal_names: set[str], facts: FileFacts) -> None:
+        for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     self._register_import(alias.name, internal_names, facts)
-            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
-                self._register_import(node.module, internal_names, facts)
 
+            elif isinstance(node, ast.ImportFrom) and node.level == 0 and node.module:
+                    self._register_import(node.module, internal_names, facts)
+
+    def _collect_symbols(self, tree: ast.Module, facts: FileFacts) -> None:
         for node in tree.body:
             if isinstance(node, ast.ClassDef):
                 methods = [
@@ -234,22 +281,29 @@ class FactsExtractor:
                 ][:_MAX_METHODS_PER_CLASS]
                 suffix = f" [{', '.join(methods)}]" if methods else ""
                 facts.symbols.append(f"class {node.name}{suffix}")
-            elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and not node.name.startswith("_"):
+            elif isinstance(
+                node, (ast.FunctionDef, ast.AsyncFunctionDef)
+            ) and not node.name.startswith("_"):
                 args = [a.arg for a in node.args.args if a.arg not in ("self", "cls")]
-                facts.symbols.append(f"def {node.name}({', '.join(args[:_MAX_ARGS_PER_FUNCTION])})")
+                facts.symbols.append(
+                    f"def {node.name}({', '.join(args[:_MAX_ARGS_PER_FUNCTION])})"
+                )
             elif isinstance(node, ast.If) and self._is_main_guard(node):
                 facts.has_main_guard = True
-
+        
         if len(facts.symbols) > _MAX_SYMBOLS_PER_FILE:
-            extra = len(facts.symbols) - _MAX_SYMBOLS_PER_FILE
-            facts.symbols = [*facts.symbols[:_MAX_SYMBOLS_PER_FILE], f"+{extra} more"]
-
-        return facts, ids, flags
+            facts.symbols = [*facts.symbols[:_MAX_SYMBOLS_PER_FILE], f"+{len(facts.symbols) - _MAX_SYMBOLS_PER_FILE} more"]
 
     @staticmethod
-    def _register_import(module: str, internal_names: set[str], facts: FileFacts) -> None:
+    def _register_import(
+        module: str, internal_names: set[str], facts: FileFacts
+    ) -> None:
         top = module.split(".")[0]
-        if top in sys.stdlib_module_names or top == "__future__" or top in internal_names:
+        if (
+            top in sys.stdlib_module_names
+            or top == "__future__"
+            or top in internal_names
+        ):
             return
         facts.external_imports.add(top)
 
@@ -260,7 +314,10 @@ class FactsExtractor:
             isinstance(test, ast.Compare)
             and isinstance(test.left, ast.Name)
             and test.left.id == "__name__"
-            and any(isinstance(c, ast.Constant) and c.value == "__main__" for c in test.comparators)
+            and any(
+                isinstance(c, ast.Constant) and c.value == "__main__"
+                for c in test.comparators
+            )
         )
 
     def _read_pyproject(self) -> dict:
@@ -275,7 +332,9 @@ class FactsExtractor:
     def _list_workflows(self) -> list[str]:
         directory = os.path.join(self.root_dir, ".github", "workflows")
         try:
-            names = sorted(n for n in os.listdir(directory) if n.endswith((".yml", ".yaml")))
+            names = sorted(
+                n for n in os.listdir(directory) if n.endswith((".yml", ".yaml"))
+            )
         except OSError:
             return []
         return names
@@ -303,7 +362,9 @@ class FactsExtractor:
                 names.append(match.group(1))
         return names
 
-    def _project_vocabulary(self, project: dict, files: list[str], workflows: list[str]) -> set[str]:
+    def _project_vocabulary(
+        self, project: dict, files: list[str], workflows: list[str]
+    ) -> set[str]:
         vocab: set[str] = set()
         name = str(project.get("name", ""))
         if name:
@@ -366,12 +427,16 @@ class FactsExtractor:
         flags: set[str],
     ) -> str:
         cap = self.MAX_LIST_ITEMS
-        lines = ["PROJECT FACTS (computed by static analysis of the code; treat as ground truth):"]
+        lines = [
+            "PROJECT FACTS (computed by static analysis of the code; treat as ground truth):"
+        ]
 
         name = project.get("name")
         description = project.get("description")
         if name or description:
-            lines.append(f"- Project: {name or ''}{' - ' if name and description else ''}{description or ''}")
+            lines.append(
+                f"- Project: {name or ''}{' - ' if name and description else ''}{description or ''}"
+            )
         readme = self._read_readme_excerpt()
         if readme:
             lines.append(f"- README excerpt: {readme}")
@@ -394,7 +459,10 @@ class FactsExtractor:
 
         runnable = [p for p, f in files.items() if f.has_main_guard]
         if runnable:
-            lines.append("- Run-as-script modules: " + ", ".join(f"`{p}`" for p in runnable[:cap]))
+            lines.append(
+                "- Run-as-script modules: "
+                + ", ".join(f"`{p}`" for p in runnable[:cap])
+            )
 
         roots = [p for p in files if fan_in.get(p, 0) == 0]
         roots.sort(key=lambda p: -rank.get(p, 0.0))
@@ -413,12 +481,18 @@ class FactsExtractor:
                 + ", ".join(f"`{p}` ({fan_in[p]})" for p in central[:8])
             )
 
-        third_party = sorted({lib for f in files.values() for lib in f.external_imports})
+        third_party = sorted(
+            {lib for f in files.values() for lib in f.external_imports}
+        )
         if third_party:
             lines.append(
                 "- Third-party libraries imported by the code: "
                 + ", ".join(f"`{x}`" for x in third_party[: self.MAX_THIRD_PARTY])
-                + (f" (+{len(third_party) - self.MAX_THIRD_PARTY} more)" if len(third_party) > self.MAX_THIRD_PARTY else "")
+                + (
+                    f" (+{len(third_party) - self.MAX_THIRD_PARTY} more)"
+                    if len(third_party) > self.MAX_THIRD_PARTY
+                    else ""
+                )
             )
 
         declared = self._dependency_names(project.get("dependencies", []))
@@ -429,11 +503,19 @@ class FactsExtractor:
             )
         extras = list((project.get("optional-dependencies") or {}).keys())
         if extras:
-            lines.append("- Optional extras: " + ", ".join(f"`{e}`" for e in extras[:cap]))
+            lines.append(
+                "- Optional extras: " + ", ".join(f"`{e}`" for e in extras[:cap])
+            )
 
         if flags:
-            lines.append("- CLI-style flags found in code: " + ", ".join(f"`{x}`" for x in sorted(flags)[:cap]))
+            lines.append(
+                "- CLI-style flags found in code: "
+                + ", ".join(f"`{x}`" for x in sorted(flags)[:cap])
+            )
         if workflows:
-            lines.append("- CI workflows (.github/workflows): " + ", ".join(f"`{w}`" for w in workflows[:cap]))
+            lines.append(
+                "- CI workflows (.github/workflows): "
+                + ", ".join(f"`{w}`" for w in workflows[:cap])
+            )
 
         return "\n".join(lines)
