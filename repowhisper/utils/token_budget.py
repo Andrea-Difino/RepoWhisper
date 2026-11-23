@@ -1,15 +1,12 @@
 import math
 from collections.abc import Callable
-from typing import ClassVar
+from typing import ClassVar, TypeVar
 
 
 class TokenUtilities:
 
-    # Default number of tokens reserved for the *evidence* (facts + module notes + tree)
-    # that is handed to the Architect and the Storyteller. 
     DEFAULT_CONTEXT_BUDGET: ClassVar[int] = 6000
-
-    # Conservative chars-per-token ratio for mixed code/prose
+    # chars-per-token ratio
     CHARS_PER_TOKEN: ClassVar[float] = 3.5
 
     @classmethod
@@ -28,18 +25,16 @@ class TokenUtilities:
         return math.ceil(len(text) / cls.CHARS_PER_TOKEN)
 
 
-def arrange_edges_first(items: list, key: Callable[[object], float]) -> list:
+type ImportanceScorer[T] = Callable[[T], float]
+
+def arrange_edges_first[T](items: list[T], key: ImportanceScorer[T]) -> list[T]:
     """
     Reorder items so the most important ones sit at the START and at the END of the
-    list while the least important end up in the middle.
-
-    LLMs use information at the beginning and at the end of a long prompt better than
-    information in the middle ("lost in the middle"), so this is applied to the order
-    in which evidence is placed in a prompt.
+    list while the least important end up in the middle. (prevent "lost in the middle" effect)
 
     Args:
         items (list): items to reorder.
-        key: Function returning the importance of an item (higher = more important).
+        key (ImportanceScorer): Function returning the importance of an item (higher = more important).
 
     Returns:
         list: the reordered list (a new list, the input is not modified).
