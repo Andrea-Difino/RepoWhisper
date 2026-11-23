@@ -36,33 +36,109 @@
         </div>
       </section>
 
-      <section class="feature">
-        <h2 class="feature-title reveal">Spiegazione<br>&amp; codice</h2>
-        <div class="feature-label reveal">
-          <span class="feature-kicker">COMPRENDI · ESPLORA · IMPARA</span>
-          <p>Teoria e pratica, finalmente nello stesso spazio.</p>
-          <p class="feature-description">Leggi la <strong>spiegazione architetturale generata dall’IA</strong> mentre
-            esplori il <strong>codice sorgente originale</strong>. I suggerimenti contestuali collegano i concetti
-            alle righe di codice e ti aiutano a capire non solo cosa succede, ma anche perché.</p>
+      <section class="feature" id="feature">
+        <div class="feature-glow" aria-hidden="true"></div>
+
+        <div class="feature-header">
+          <span class="feature-kicker reveal"><i class="kicker-dot"></i> L'INTERFACCIA DI STUDIO · UN PASSO ALLA VOLTA</span>
+          <h2 class="feature-title reveal">Spiegazione &amp; codice,<br><span class="gradient">fianco a fianco.</span></h2>
+          <p class="feature-subtitle reveal">
+            RepoWhisper trasforma la codebase in un percorso di studio guidato: a sinistra la <strong>spiegazione concettuale generata dall’IA</strong>, a destra il <strong>codice sorgente originale</strong> con righe evidenziate e annotazioni contestuali.
+          </p>
         </div>
-        <div class="mockups">
-          <div class="mock-card paper reveal">
-            <div class="placeholder">
-              <span class="tiny">FIRST CLASS / OVERVIEW</span>
-              <h3>FIRST CLASS</h3>
-              <p>Questa classe rappresenta un componente centrale del progetto. La spiegazione accompagna il codice e
-                chiarisce responsabilità e comportamento.</p>
-              <p><strong>• __init__</strong> — inizializza lo stato<br><strong>• process()</strong> — esegue la logica
-                principale</p>
-              <p class="tiny">Esempio di contenuto illustrativo</p>
+
+        <!-- REPLICA DELL'INTERFACCIA (FORMATO AMPIO WIDESCREEN) -->
+        <div class="rw-app-container reveal">
+          <!-- TOP APP BAR: LOGO REALE -->
+          <div class="rw-app-topbar">
+            <div class="rw-app-brand" title="RepoWhisper Web Studio">
+              <img src="imgs/logo_sfondo_blu.png" alt="RepoWhisper" class="rw-app-logo-img">
+            </div>
+            <div class="rw-app-badge-tag">
+              <span class="rw-live-dot"></span> Studio Mode &middot; Side by Side
             </div>
           </div>
-          <div class="mock-card code reveal">
-            <div class="placeholder">
-              <h3>source.py</h3>
-              <div class="code-lines">
-                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+
+          <!-- DUAL DECK: CARDS AFFIANCATE (WIDE & COMPACT) -->
+          <div class="rw-study-viewport">
+            <div class="rw-peeking-card left" aria-hidden="true"></div>
+
+            <div class="rw-dual-deck">
+              <!-- SCHEDA SINISTRA: Spiegazione Architetturale -->
+              <div class="rw-card rw-card-doc">
+                <div class="rw-doc-header">
+                  <span class="rw-doc-path">waveredact/models/model.py</span>
+                  <h3 class="rw-doc-title">MODEL.PY</h3>
+                </div>
+                <div class="rw-doc-body">
+                  <p>
+                    The <strong>Model</strong> class declares a contract for language-model backends that surface sensitive indices in tokenized text. By inheriting from <strong>ABC</strong> and marking <strong>run_model</strong> with <strong>@abstractmethod</strong>, the framework guarantees that each concrete implementation supplies the core inference routine while allowing callers to treat all models polymorphically. The signature <code>chunk: dict[int, str]</code> expects a zero-based index map of tokens, and <code>ambiguous_idx: list[int] | None</code> gives the extractor a chance to hand off uncertain positions; a None value simply skips the secondary pass. Returning <code>dict[int, str]</code> ties each flagged index to an entity label. This design balances type safety with flexibility but relies on Python 3.9+ dict-type annotations and assumes token indices are contiguous, which may not hold for sub-word tokenizers.
+                  </p>
+                </div>
               </div>
+
+              <!-- SCHEDA DESTRA: Source Code Viewer -->
+              <div class="rw-card rw-card-code">
+                <div class="rw-code-top">
+                  <div class="rw-code-meta">
+                    <span class="rw-code-label">Source Code</span>
+                    <span class="rw-code-hint">click on the highlighted rows to see details</span>
+                  </div>
+                  <button class="rw-expand-btn" aria-label="Espandi codice" title="Espandi visualizzazione">&#x2922;</button>
+                </div>
+
+                <div class="rw-code-body">
+                  <div class="rw-code-row"><span class="rw-ln">1</span><span class="rw-code-line"><span class="c-kw">from</span> abc <span class="c-kw">import</span> ABC, abstractmethod</span></div>
+                  <div class="rw-code-row"><span class="rw-ln">2</span><span class="rw-code-line"></span></div>
+                  <div class="rw-code-row"><span class="rw-ln">3</span><span class="rw-code-line"></span></div>
+                  <div class="rw-code-row rw-row-active" id="rwRow4" title="Clicca per visualizzare il Line Whisper">
+                    <span class="rw-ln">4</span>
+                    <span class="rw-code-line"><span class="c-kw">class</span> <span class="c-cls">Model</span>(ABC):</span>
+                    <span class="rw-row-tag">1 note</span>
+                  </div>
+                  <div class="rw-code-row"><span class="rw-ln">5</span><span class="rw-code-line">    <span class="c-doc">"""</span></span></div>
+                  <div class="rw-code-row"><span class="rw-ln">6</span><span class="rw-code-line">    <span class="c-doc">Abstract base class for all language models used for extraction.</span></span></div>
+                  <div class="rw-code-row"><span class="rw-ln">7</span><span class="rw-code-line">    <span class="c-doc">"""</span></span></div>
+                  <div class="rw-code-row"><span class="rw-ln">8</span><span class="rw-code-line"></span></div>
+                  <div class="rw-code-row"><span class="rw-ln">9</span><span class="rw-code-line"></span></div>
+                  <div class="rw-code-row rw-row-highlight" id="rwRow10" title="Riga evidenziata: metodo astratto">
+                    <span class="rw-ln">10</span>
+                    <span class="rw-code-line">    <span class="c-dec">@abstractmethod</span></span>
+                  </div>
+
+                  <!-- LINE WHISPER CALLOUT -->
+                  <div class="rw-whisper-callout" id="rwWhisperPopup">
+                    <div class="whisper-pop-header">
+                      <span class="whisper-pop-dot"></span>
+                      <span class="whisper-pop-title">LINE WHISPER &middot; Riga 4</span>
+                      <span class="whisper-pop-badge">Core Interface</span>
+                    </div>
+                    <p class="whisper-pop-desc">
+                      Definisce il contratto unificato per tutti i provider supportati (Groq, OpenAI, Anthropic, Ollama). Tutte le chiamate di inferenza implementano questo pattern polimorfico.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rw-peeking-card right" aria-hidden="true"></div>
+          </div>
+        </div>
+
+        <!-- BADGES INFORMATIVI INFERIORI -->
+        <div class="feature-pillars reveal">
+          <div class="pillar-item">
+            <span class="pillar-icon">&#9889;</span>
+            <div>
+              <strong>Spiegazioni Grounded</strong>
+              <p>Zero allucinazioni: ogni classe, funzione ed import è verificato sul codice effettivo.</p>
+            </div>
+          </div>
+          <div class="pillar-item">
+            <span class="pillar-icon">&#127919;</span>
+            <div>
+              <strong>Line Whispers Contestuali</strong>
+              <p>Note mirate ancorate direttamente alle righe di codice per guidare la comprensione.</p>
             </div>
           </div>
         </div>
@@ -124,7 +200,7 @@
             </ul>
           </div>
           <div class="ag-view">
-            <svg id="ag-svg" viewBox="0 0 1200 380" role="img"
+            <svg id="ag-svg" viewBox="0 0 1250 400" role="img"
               aria-label="Architettura multi-agente di RepoWhisper"></svg>
           </div>
           <div class="ag-footer">
@@ -169,13 +245,14 @@
       };
 
       const steps = [
-        { t: '01 / ARCHITECT', k: 'agent', p: 'L’architect esamina la repository nel suo insieme: struttura delle cartelle, linguaggi e punti d’ingresso. Produce una mappa ad alto livello che verrà utilizzata dallo storyteller.' },
-        { t: '02 / TRACER', k: 'helper', p: 'Il tracer ricostruisce le relazioni tra i componenti: import, chiamate tra funzioni e dipendenze tra moduli. Da questa mappa ricava i file da analizzare e il loro ordine.' },
-        { t: '03 / DISPATCHER', k: 'helper', p: 'Il dispatcher coordina il flusso. Non analizza direttamente il codice: valuta lo stato dell’elaborazione e instrada ogni passaggio verso l’agente appropriato.' },
-        { t: '04 / NAVIGATOR', k: 'agent', p: 'Con l’evento <code>process_file</code>, il navigator apre il file selezionato e ne analizza struttura, classi, funzioni e responsabilità all’interno del progetto.' },
-        { t: '05 / REVIEWER', k: 'agent', p: 'Il reviewer verifica il risultato del navigator. In caso di esito positivo il flusso prosegue; se l’analisi non è soddisfacente, <code>fail_retry</code> richiede un nuovo tentativo.' },
-        { t: '06 / CONTROL FLOW', p: 'Il dispatcher gestisce i percorsi di ritorno: <code>file_error</code> consente di proseguire quando un file non è leggibile, mentre <code>pass_next</code> avvia l’analisi del file successivo.' },
-        { t: '07 / STORYTELLER', k: 'agent', p: 'Quando non restano file da elaborare, <code>finish_analysis</code> attiva lo storyteller. L’agente consolida i risultati e li trasforma in una spiegazione coerente della repository.' }
+        { t: '01 / TRACER', k: 'helper', p: 'Il tracer ricostruisce le relazioni tra i componenti: import, chiamate tra funzioni e dipendenze tra moduli. Da questa mappa ricava i file da analizzare e il loro ordine.' },
+        { t: '02 / DISPATCHER', k: 'helper', p: 'Il dispatcher coordina il flusso. Non analizza direttamente il codice: valuta lo stato dell’elaborazione e instrada ogni passaggio verso l’agente appropriato.' },
+        { t: '03 / NAVIGATOR', k: 'agent', p: 'Con l’evento <code>process_file</code>, il navigator apre il file selezionato e ne analizza struttura, classi, funzioni e responsabilità all’interno del progetto.' },
+        { t: '04 / REVIEWER', k: 'agent', p: 'Il reviewer verifica il risultato del navigator. In caso di esito positivo il flusso prosegue; se l’analisi non è soddisfacente, <code>fail_retry</code> richiede un nuovo tentativo.' },
+        { t: '05 / CONTROL FLOW', p: 'Il dispatcher gestisce i percorsi di ritorno: <code>file_error</code> consente di proseguire quando un file non è leggibile, mentre <code>pass_next</code> avvia l’analisi del file successivo.' },
+        { t: '06 / FACTS', k: 'helper', p: 'Quando non restano file da elaborare, <code>finish_analysis</code> attiva il nodo facts. Estrae dati verificabili dal codice e compatta le note per-file nel budget di token disponibile.' },
+        { t: '07 / ARCHITECT', k: 'agent', p: 'L’architect riceve i fatti estratti, l’albero della directory e le note dei moduli. Produce un riassunto architetturale basato su evidenze concrete, non sulla struttura grezza.' },
+        { t: '08 / STORYTELLER', k: 'agent', p: 'Lo storyteller consolida l’analisi architettonica e le evidenze in una documentazione coerente e leggibile della repository.' }
       ];
 
       const N = steps.length;
@@ -235,22 +312,24 @@
 
       node('start', 28, 170, 0, 0, '', 0, 0, .2, 'start');
       edge('M 38 170 H 70', 0, .1, .4);
-      node('architect', 70, 140, 130, 60, 'architect_node', 0, .35, .7);
+      node('tracer', 70, 140, 130, 60, 'tracer_node', 0, .35, .7, 'helper');
       edge('M 200 170 H 245', 1, 0, .4);
-      node('tracer', 245, 140, 130, 60, 'tracer_node', 1, .35, .7, 'helper');
-      edge('M 375 170 H 440', 2, 0, .4);
-      node('dispatcher', 440, 140, 150, 60, 'file_dispatcher_node', 2, .35, .7, 'helper');
-      edge('M 515 140 V 96 Q 515 80 531 80 H 700', 3, 0, .5, 'process_file', 615, 80, true);
-      node('navigator', 700, 50, 140, 60, 'navigator_node', 3, .45, .8);
-      node('reviewer', 1030, 50, 140, 60, 'reviewer_node', 4, 0, .3);
-      edge('M 840 62 H 1030', 4, .3, .65, 'no_file_error', 935, 62, true);
-      edge('M 1030 98 H 840', 4, .55, .9, 'fail_retry', 935, 98, true);
-      edge('M 740 110 V 138 Q 740 158 720 158 H 592', 5, 0, .5, 'file_error', 656, 158, true);
-      edge('M 1100 110 V 324 Q 1100 340 1084 340 H 506 Q 490 340 490 324 V 202', 5, .35, 1, 'pass_next', 800, 340, true);
-      edge('M 590 184 H 610 Q 620 184 620 194 V 230 Q 620 240 630 240 H 800', 6, 0, .45, 'finish_analysis', 715, 240, true);
-      node('storyteller', 800, 210, 140, 60, 'storyteller_node', 6, .4, .7);
-      edge('M 940 240 H 997', 6, .65, .85);
-      node('end', 1010, 240, 0, 0, '', 6, .8, 1, 'end');
+      node('dispatcher', 245, 140, 150, 60, 'file_dispatcher_node', 1, .35, .7, 'helper');
+      edge('M 320 140 V 96 Q 320 80 336 80 H 530', 2, 0, .5, 'process_file', 433, 80, true);
+      node('navigator', 530, 50, 140, 60, 'navigator_node', 2, .45, .8);
+      node('reviewer', 860, 50, 140, 60, 'reviewer_node', 3, 0, .3);
+      edge('M 670 62 H 860', 3, .3, .65, 'no_file_error', 765, 62, true);
+      edge('M 860 98 H 670', 3, .55, .9, 'fail_retry', 765, 98, true);
+      edge('M 570 110 V 138 Q 570 158 550 158 H 397', 4, 0, .5, 'file_error', 480, 158, true);
+      edge('M 930 110 V 334 Q 930 350 914 350 H 311 Q 295 350 295 334 V 202', 4, .35, 1, 'pass_next', 620, 350, true);
+      edge('M 395 184 H 415 Q 425 184 425 194 V 240 Q 425 250 435 250 H 610', 5, 0, .45, 'finish_analysis', 515, 250, true);
+      node('facts', 610, 220, 120, 60, 'facts_node', 5, .4, .7, 'helper');
+      edge('M 730 250 H 780', 6, 0, .4);
+      node('architect', 780, 220, 130, 60, 'architect_node', 6, .35, .7);
+      edge('M 910 250 H 960', 7, 0, .4);
+      node('storyteller', 960, 220, 140, 60, 'storyteller_node', 7, .35, .7);
+      edge('M 1100 250 H 1152', 7, .65, .85);
+      node('end', 1165, 250, 0, 0, '', 7, .8, 1, 'end');
 
       function fitLabels() {
         items.forEach(item => {
@@ -404,6 +483,56 @@
         addEventListener('scroll', () => { if (!t) { t = true; requestAnimationFrame(() => { t = false; onScroll(); }); } }, { passive: true });
         addEventListener('resize', onScroll);
         onScroll();
+      }
+    })();
+  </script>
+
+  <script>
+    (function () {
+      const row4 = document.getElementById('rwRow4');
+      const row10 = document.getElementById('rwRow10');
+      const popup = document.getElementById('rwWhisperPopup');
+
+      const notes = {
+        4: {
+          title: 'LINE WHISPER · Riga 4',
+          badge: 'Core Interface',
+          desc: 'Definisce il contratto unificato per tutti i provider supportati (Groq, OpenAI, Anthropic, Ollama). Tutte le chiamate di inferenza implementano questo pattern polimorfico.'
+        },
+        10: {
+          title: 'LINE WHISPER · Riga 10',
+          badge: 'Abstract Hook',
+          desc: 'Decoratore di metodo astratto: obbliga ogni backend ad implementare il loop di estrazione dei token e a mappare le entità sensibili.'
+        }
+      };
+
+      function showNote(lineNum) {
+        if (!popup) return;
+        const data = notes[lineNum];
+        if (!data) return;
+        const titleEl = popup.querySelector('.whisper-pop-title');
+        const badgeEl = popup.querySelector('.whisper-pop-badge');
+        const descEl = popup.querySelector('.whisper-pop-desc');
+        if (titleEl) titleEl.textContent = data.title;
+        if (badgeEl) badgeEl.textContent = data.badge;
+        if (descEl) descEl.textContent = data.desc;
+        popup.style.display = 'block';
+      }
+
+      if (row4) {
+        row4.addEventListener('click', () => {
+          if (row10) row10.classList.remove('rw-row-active');
+          row4.classList.add('rw-row-active');
+          showNote(4);
+        });
+      }
+
+      if (row10) {
+        row10.addEventListener('click', () => {
+          if (row4) row4.classList.remove('rw-row-active');
+          row10.classList.add('rw-row-active');
+          showNote(10);
+        });
       }
     })();
   </script>
