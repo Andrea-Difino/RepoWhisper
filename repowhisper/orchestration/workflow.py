@@ -28,10 +28,6 @@ class AgentsWorkflow:
     run AFTER the per-file analysis so they work on grounded evidence instead of on the
     bare directory tree.
     """
-
-    package_summarizer: PackageSummarizer | None = None
-    context_budget: int = TokenUtilities.DEFAULT_CONTEXT_BUDGET
-
     MAX_DEPENDENCY_NOTES = 8
 
     def __init__(
@@ -41,7 +37,7 @@ class AgentsWorkflow:
             navigator: CodeNavigator,
             storyteller: Storyteller,
             reviewer_agent: LayaReviewer,
-            package_summarizer: PackageSummarizer | None = None,
+            package_summarizer: PackageSummarizer,
             context_budget: int = TokenUtilities.DEFAULT_CONTEXT_BUDGET,
         ):
         self.root_dir = root_dir
