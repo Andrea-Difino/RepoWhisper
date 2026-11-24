@@ -65,7 +65,7 @@ class DependencyTracer:
         Advanced DFS with states WHITE (0), GRAY (1), BLACK (2) 
         to safely detect circular dependencies.
         """
-        visited = {}  # 0: WHITE, 1: GRAY, 2: BLACK
+        visited = {}
         ordered_list = []
 
         def dfs(node: str):

@@ -37,6 +37,19 @@ by the application:
 The generated frontend data is written to
 `repowhisper/ui_dist/data.json` when `serve_ui()` is used.
 
+## Context budget
+
+```python
+engine = RepoWhisper(source_target, llm, UserLevel.MID, context_budget=4000)
+```
+
+`context_budget` (default `6000`) is the maximum estimated number of tokens of
+evidence given to the Architect and the Storyteller. Lower it for models with a
+small context window or strict per-minute token limits: the per-file notes are
+compressed to fit. The model still needs room for its own instructions and output on
+top of the budget. Token counts are estimated (about 3.5 characters per token), so
+they are intentionally conservative rather than tokenizer-exact.
+
 ## Laya Reviewer
 
 The Reviewer is local and is not configured through LangChain. On first use,
@@ -55,7 +68,8 @@ engine = RepoWhisper(
 )
 ```
 
-`source_target` is an `http://` or `https://` Git repository URL.
+`source_target` is an `http://github.com/` or `https://github.com/` repository
+URL. The source manager does not accept local filesystem paths.
 
 Repositories are cloned into a temporary directory and removed during
 cleanup after analysis.

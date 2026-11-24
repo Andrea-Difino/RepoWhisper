@@ -2,8 +2,15 @@
 
 ## Current limitations
 
-- The dependency tracer currently analyzes Python imports.
+- RepoWhisper currently supports **Python code analysis only**. It is not a
+  general-purpose analyzer for JavaScript, TypeScript, Java, Go, Rust, or other
+  languages.
+- The dependency tracer currently analyzes Python imports and final file processing
+  excludes `__init__.py`, test directories, virtual environments, build output,
+  and source-control directories.
 - The quality of generated explanations depends on the selected LLM.
+- The grounding verifier detects invented names (files, classes, functions, libraries, flags), not incorrect descriptions of behaviour.
+- Static facts (symbols, imports, entry points) are extracted from Python only.
 - The local Laya Reviewer requires an initial model download and Hugging Face cache space.
 - Large repositories can require substantial time, memory, and model tokens.
 - The bundled HTTP server is intended for local use, not production hosting.

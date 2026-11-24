@@ -3,10 +3,15 @@
 RepoWhisper analyzes a software repository and generates navigable technical
 documentation with a multi-agent workflow.
 
+> **Python scope:** RepoWhisper is currently a Python code-analysis library.
+> Python source files and Python import graphs are supported. It does not yet
+> provide equivalent analysis for JavaScript, TypeScript, Java, Go, Rust, or
+> other languages.
+
 ## What it does
 
-RepoWhisper accepts a Git repository URL, inspects its
-structure and dependencies, reads the supported source files, and produces:
+RepoWhisper accepts a public GitHub repository URL, inspects its Python
+structure and dependencies, reads supported Python source files, and produces:
 
 - an architectural summary;
 - a file-by-file explanation;

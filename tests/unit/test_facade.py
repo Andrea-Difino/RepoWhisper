@@ -13,6 +13,15 @@ class FakeLLM:
     pass
 
 
+@pytest.fixture(autouse=True)
+def isolate_facade_console_and_reviewer(monkeypatch):
+    class DummyReviewer:
+        pass
+
+    monkeypatch.setattr(RepoWhisper, "_print_ascii_art", lambda _self: None)
+    monkeypatch.setattr(facade_module, "LayaReviewer", DummyReviewer)
+
+
 def test_facade_initializes():
     engine = RepoWhisper(
         "owner/repository", cast(BaseChatModel, FakeLLM()), UserLevel.SENIOR

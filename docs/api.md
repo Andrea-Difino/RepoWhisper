@@ -58,6 +58,14 @@ The following sections expose implementation contracts for contributors.
 
 ::: utils.tree_generator
 
+::: utils.facts_extractor
+
+::: utils.evidence_packer
+
+::: utils.grounding_verifier
+
+::: utils.token_budget
+
 ::: utils.tracers.base_tracer
 
 ::: utils.tracers.python_tracer

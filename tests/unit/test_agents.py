@@ -1,13 +1,13 @@
-from types import SimpleNamespace
 import time
+from types import SimpleNamespace
+
 import pytest
+from utils.exceptions import ProviderError
 
 from repowhisper.agents.architect import Architect
-from repowhisper.agents.navigator import CodeNavigator, ModuleNavigationOutput
+from repowhisper.agents.base_agent import BaseAgent
 from repowhisper.agents.reviewer import LayaReviewer
 from repowhisper.agents.storyteller import Storyteller
-from repowhisper.agents.base_agent import BaseAgent
-from utils.exceptions import ProviderError
 
 
 class FakeChain:

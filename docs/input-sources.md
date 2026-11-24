@@ -17,6 +17,9 @@ credentials to be configured in the environment.
 
 ## Files included in analysis
 
+RepoWhisper is currently for **Python code analysis only**. It does not provide
+equivalent support for JavaScript, TypeScript, Java, Go, Rust, or other languages.
+
 The dependency tracer currently analyzes Python imports and ignores common
 non-source directories such as:
 

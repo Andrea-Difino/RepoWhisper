@@ -1,5 +1,9 @@
 # Quick Start
 
+> RepoWhisper is currently designed for **Python code analysis**. Source retrieval
+> and static analysis are Python-oriented, and other languages are not yet
+> supported as analysis targets.
+
 The facade accepts a source target, an initialized LangChain chat model, and an
 optional explanation level.
 

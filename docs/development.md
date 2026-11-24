@@ -25,14 +25,16 @@ The generated `site/` directory is ignored by Git.
 
 ## Add a supported language
 
-To add another source language:
+RepoWhisper is currently Python-only. Adding another source language requires
+coordinated changes rather than a tracer-only extension:
 
-1. register its extension and splitter language in
-2. implement a language-specific tracer derived from
+1. implement a language-specific tracer derived from
    [BaseLanguageTracer](api.md);
-3. register the tracer in `DependencyTracer`;
-4. add focused tests;
-5. document the language and its limitations.
+2. register the tracer in `DependencyTracer`;
+3. add language-specific static facts extraction and grounding vocabulary;
+4. teach the tree and source-selection rules about the new file types;
+5. add focused tests for parsing, ordering, facts, and grounding;
+6. document the language and its limitations.
 
 ## Add an agent
 

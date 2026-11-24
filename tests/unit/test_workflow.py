@@ -69,7 +69,7 @@ def test_workflow_dispatch_navigator_reviewer_and_storyteller(tmp_path):
         {**selected, **navigation, "current_line_whispers": navigation["current_line_whispers"]}
     )
     assert reviewed["explanations"] == {"file.py": "draft"}
-    assert reviewed["line_whispers"] == {"file.py": {1: "note"}}
+    assert reviewed["line_whispers"] == {"file.py": {0: "note"}}
 
     final = workflow._node_storyteller(
         {
@@ -88,7 +88,7 @@ def test_workflow_dispatch_navigator_reviewer_and_storyteller(tmp_path):
 def test_workflow_error_and_routing_validation(tmp_path):
     workflow = make_workflow(tmp_path)
     missing = workflow._node_navigator({"current_file": "missing.py", "reviewer_feedback": None})
-    assert missing["file_error"] is True
+    assert missing["is_file_reading_error"] is True
     assert workflow._skip_file({"is_file_reading_error": True}) == "file_error"
     assert workflow._skip_file({}) == "no_file_error"
     assert workflow._dispatch_routing({"current_file": "file.py"}) == "process_file"
