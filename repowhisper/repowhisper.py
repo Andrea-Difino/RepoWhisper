@@ -146,7 +146,7 @@ class RepoWhisper:
         finally:
             self._source_manager.cleanup()
 
-    def serve_ui(
+    def analyze(
         self,
         json_path: str | Path | None = None,
         port: int = 8543,

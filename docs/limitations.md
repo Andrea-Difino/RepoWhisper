@@ -14,7 +14,7 @@
 - The local Laya Reviewer requires an initial model download and Hugging Face cache space.
 - Large repositories can require substantial time, memory, and model tokens.
 - The bundled HTTP server is intended for local use, not production hosting.
-- `serve_ui()` writes generated source data into the bundled UI directory.
+- `analyze()` writes generated source data into the bundled UI directory.
 
 ## Common issues
 

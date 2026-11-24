@@ -37,7 +37,7 @@ class AgentsWorkflow:
             navigator: CodeNavigator,
             storyteller: Storyteller,
             reviewer_agent: LayaReviewer,
-            package_summarizer: PackageSummarizer,
+            package_summarizer: PackageSummarizer | None = None,
             context_budget: int = TokenUtilities.DEFAULT_CONTEXT_BUDGET,
         ):
         self.root_dir = root_dir

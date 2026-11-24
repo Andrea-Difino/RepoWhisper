@@ -35,7 +35,7 @@ by the application:
 - `RepoWhisper[anthropic]`
 
 The generated frontend data is written to
-`repowhisper/ui_dist/data.json` when `serve_ui()` is used.
+`repowhisper/ui_dist/data.json` when `analyze()` is used.
 
 ## Context budget
 

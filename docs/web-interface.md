@@ -1,9 +1,9 @@
 # Web Interface
 
-`RepoWhisper.serve_ui()` serves the bundled frontend locally.
+`RepoWhisper.analyze()` serves the bundled frontend locally.
 
 ```python
-engine.serve_ui()
+engine.analyze()
 ```
 
 The method:
@@ -23,22 +23,22 @@ http://localhost:8543
 Use a custom port with:
 
 ```python
-engine.serve_ui(port=9000)
+engine.analyze(port=9000)
 ```
 
-You can also load an existing `data.json` file passing the file path. `serve_ui()` serializes it before writing the file used by the UI:
+You can also load an existing `data.json` file passing the file path. `analyze()` serializes it before writing the file used by the UI:
 
 ```python
-engine.serve_ui(json_path="data.json")
+engine.analyze(json_path="data.json")
 ```
 
 The server runs until interrupted with `Ctrl+C`.
 
-In an application entry point, handle failures around `serve_ui()`:
+In an application entry point, handle failures around `analyze()`:
 
 ```python
 try:
-    engine.serve_ui()
+    engine.analyze()
 except RepoWhisperError as e:
     print(f"RepoWhisperError failed: {e}")
 ```

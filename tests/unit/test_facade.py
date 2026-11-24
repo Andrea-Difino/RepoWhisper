@@ -73,22 +73,22 @@ def test_generate_documentation_handles_keyboard_interrupt(monkeypatch, tmp_path
     assert engine.generate_documentation() is None
 
 
-def test_serve_ui_handles_failed_generation(monkeypatch, tmp_path, capsys):
+def test_analyze_handles_failed_generation(monkeypatch, tmp_path, capsys):
     engine = RepoWhisper(str(tmp_path), cast(BaseChatModel, FakeLLM()))
     monkeypatch.setattr(engine, "generate_documentation", lambda: None)
-    engine.serve_ui()
+    engine.analyze()
     assert "Impossible to start interface" not in capsys.readouterr().out
 
 
-def test_serve_ui_requires_ui_directory(monkeypatch, tmp_path):
+def test_analyze_requires_ui_directory(monkeypatch, tmp_path):
     engine = RepoWhisper(str(tmp_path), cast(BaseChatModel, FakeLLM()))
     monkeypatch.setattr(facade_module.os.path, "dirname", lambda path: str(tmp_path))
     monkeypatch.setattr(facade_module.os.path, "exists", lambda path: False)
     with pytest.raises(FileNotFoundError):
-        engine.serve_ui("{}")
+        engine.analyze("{}")
 
 
-def test_serve_ui_from_saved_report(monkeypatch, tmp_path):
+def test_analyze_from_saved_report(monkeypatch, tmp_path):
     engine = RepoWhisper(str(tmp_path), cast(BaseChatModel, FakeLLM()))
     ui_dir = tmp_path / "ui_dist"
     ui_dir.mkdir()
@@ -118,4 +118,4 @@ def test_serve_ui_from_saved_report(monkeypatch, tmp_path):
     monkeypatch.setattr(facade_module, "ThreadingHTTPServer", lambda *args, **kwargs: Server())
     monkeypatch.setattr(facade_module.webbrowser, "open", lambda url: True)
 
-    engine.serve_ui(tmp_path / "report.json")
+    engine.analyze(tmp_path / "report.json")
