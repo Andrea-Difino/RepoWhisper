@@ -1,8 +1,6 @@
 <div align="center">
   <img src="imgs/badge_2.png" alt="RepoWhisper" width="700">
 
-  # RepoWhisper
-
   ### Turn an unfamiliar Python repository into an interactive, AI-guided study journey.
 
   <p>
