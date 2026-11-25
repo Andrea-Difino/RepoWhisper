@@ -18,7 +18,7 @@ Below are listed all the custom exceptions that the user can encounter during th
   
 ### Exceptions
 
-::: utils.exceptions
+::: repowhisper.utils.exceptions
 
 
 ## Internal components
@@ -28,48 +28,48 @@ The following sections expose implementation contracts for contributors.
 
 ### Source management
 
-::: ingestion.source_manager
+::: repowhisper.ingestion.source_manager
 
 ### JSON validation
 
-::: schemas.analysis_schema
+::: repowhisper.schemas.analysis_schema
 
 ### Agents
 
-::: agents.base_agent
+::: repowhisper.agents.base_agent
 
-::: agents.architect
+::: repowhisper.agents.architect
 
-::: agents.navigator
+::: repowhisper.agents.navigator
 
-::: agents.reviewer
+::: repowhisper.agents.reviewer
 
-::: agents.storyteller
+::: repowhisper.agents.storyteller
 
 ### Orchestration
 
-::: orchestration.state
+::: repowhisper.orchestration.state
 
-::: orchestration.workflow
+::: repowhisper.orchestration.workflow
 
 ### Analysis
 
-::: analysis.dependency_tracer
+::: repowhisper.analysis.dependency_tracer
 
-::: analysis.tree_generator
+::: repowhisper.analysis.tree_generator
 
-::: analysis.facts_extractor
+::: repowhisper.analysis.facts_extractor
 
 ### Grounding
 
-::: utils.evidence_packer
+::: repowhisper.grounding.evidence_packer
 
-::: utils.grounding_verifier
+::: repowhisper.grounding.grounding_verifier
 
 ### Utilities
 
-::: utils.token_budget
+::: repowhisper.utils.token_budget
 
-::: utils.tracers.base_tracer
+::: repowhisper.analysis.tracers.base_tracer
 
-::: utils.tracers.python_tracer
+::: repowhisper.analysis.tracers.python_tracer

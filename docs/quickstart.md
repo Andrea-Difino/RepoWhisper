@@ -62,8 +62,10 @@ The default server port is `8543`. Pass a different port when needed:
 engine.analyze(port=9000)
 ```
 
-For a complete runnable example, see
-[repowhisper/main.py](https://github.com/Andrea-Difino/RepoWhisper/blob/main/repowhisper/main.py).
+Place this code in your application entry point. If the entry point is a
+module inside the `repowhisper` package, run it from the repository root in
+module mode (for example, `python -m repowhisper.<module>`), rather than
+running its file directly from inside the package directory.
 
 ## Explanation levels
 

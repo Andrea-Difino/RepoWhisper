@@ -1,7 +1,7 @@
 import os
 from typing import ClassVar
 
-from utils.token_budget import TokenUtilities
+from ..utils.token_budget import TokenUtilities
 
 
 class ProjectTreeGenerator:

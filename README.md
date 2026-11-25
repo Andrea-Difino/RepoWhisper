@@ -126,7 +126,7 @@ engine = RepoWhisper(
     user_level=UserLevel.MID,
 )
 
-# Generates the validated report and opens http://localhost:8543
+# Generates the validated report and opens http://127.0.0.1:8543
 try:
   engine.analyze()
 except RepoWhisperError as e:

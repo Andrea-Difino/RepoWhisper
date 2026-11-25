@@ -200,9 +200,7 @@ class LayaReviewer:
 
                 # Evita il doppio conteggio: se esiste la barra aggregata "Download complete",
                 # ignora le barre per singolo file (es. "model.safetensors") e "Reconstruction complete".
-                if is_aggregate_download:
-                    self._track_bytes = True
-                elif (
+                if is_aggregate_download or (
                     not has_aggregate_bar
                     and not caller_disabled
                     and unit == "B"

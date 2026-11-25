@@ -21,7 +21,7 @@ keywords = ["documentation", "ai", "langgraph", "langchain", "agents", "ast"]
 requires-python = ">=3.12, <3.13"
 dependencies = [
     "chardet>=7.7.0",
-    "dotenv>=0.9.9",
+    "python-dotenv>=1.0.0",
     "gitpython>=3.2.1",
     "langchain>=1.4.7",
     "langgraph>=1.2.18",
@@ -51,10 +51,7 @@ anthropic = ["langchain-anthropic>=1.7.10"]
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["repowhisper"]
-
-[tool.hatch.build.targets.wheel]
-packages = ["repowhisper"]
+include = ["repowhisper", "repowhisper.*"]
 
 [tool.setuptools.package-data]
 "repowhisper" = ["ui_dist/**/*", "ui_dist/*","laya_reviewer_calibration/*"]

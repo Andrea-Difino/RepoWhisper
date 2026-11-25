@@ -1,7 +1,8 @@
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, field_validator
-from utils.exceptions import ReportError, ReportFileError
+
+from ..utils.exceptions import ReportError, ReportFileError
 
 
 class ModuleAnalysisItem(BaseModel):

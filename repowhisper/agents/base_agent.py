@@ -6,7 +6,8 @@ from typing import Any
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import Runnable
 from tqdm import tqdm
-from utils.exceptions import ProviderError
+
+from ..utils.exceptions import ProviderError
 
 
 class BaseAgent(ABC):

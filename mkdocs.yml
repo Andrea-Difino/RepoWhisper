@@ -12,7 +12,7 @@ plugins:
   - mkdocstrings:
       handlers:
         python:
-          paths: [repowhisper]
+          paths: ["."]
           options:
             docstring_style: google
             members_order: source

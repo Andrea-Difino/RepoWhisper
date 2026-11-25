@@ -2,7 +2,8 @@ import tempfile
 
 from git import Repo
 from git.exc import GitCommandError
-from utils.exceptions import InvalidSourceError, RepositoryCloneError
+
+from ..utils.exceptions import InvalidSourceError, RepositoryCloneError
 
 
 class SourceManager:
