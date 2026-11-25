@@ -4,7 +4,7 @@ import re
 import sys
 from dataclasses import dataclass
 
-from utils.facts_extractor import RepoFacts
+from analysis.facts_extractor import RepoFacts
 
 _FENCED_BLOCK_RE = re.compile(r"```.*?```", re.DOTALL)
 _CODE_SPAN_RE = re.compile(r"`([^`\n]+)`")

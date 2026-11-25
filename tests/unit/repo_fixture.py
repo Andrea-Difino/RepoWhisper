@@ -1,7 +1,7 @@
 """Shared helpers: builds a tiny but realistic Python repository on disk."""
 import textwrap
 
-from repowhisper.utils.dependency_tracer import DependencyTracer
+from repowhisper.analysis.dependency_tracer import DependencyTracer
 
 
 def write(path, content):

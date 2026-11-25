@@ -1,6 +1,6 @@
 from repo_fixture import analysed_files, make_repo, write
 
-from repowhisper.utils.facts_extractor import FactsExtractor, pagerank
+from repowhisper.analysis.facts_extractor import FactsExtractor, pagerank
 
 
 def extract(tmp_path):

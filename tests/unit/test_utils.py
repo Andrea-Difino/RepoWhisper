@@ -1,8 +1,8 @@
 
+from repowhisper.analysis.dependency_tracer import DependencyTracer
+from repowhisper.analysis.tracers.python_tracer import PythonTracer
+from repowhisper.analysis.tree_generator import ProjectTreeGenerator
 from repowhisper.utils.config import UserLevel
-from repowhisper.utils.dependency_tracer import DependencyTracer
-from repowhisper.utils.tracers.python_tracer import PythonTracer
-from repowhisper.utils.tree_generator import ProjectTreeGenerator
 
 
 def test_user_levels():
@@ -32,7 +32,7 @@ def test_tree_generator_handles_permission_error(monkeypatch, tmp_path):
     def blocked_listdir(path):
         raise PermissionError
 
-    monkeypatch.setattr("repowhisper.utils.tree_generator.os.listdir", blocked_listdir)
+    monkeypatch.setattr("repowhisper.analysis.tree_generator.os.listdir", blocked_listdir)
     assert original(str(tmp_path)) == ""
 
 

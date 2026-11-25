@@ -8,15 +8,15 @@ from agents.navigator import CodeNavigator
 from agents.package_summarizer import PackageSummarizer
 from agents.reviewer import LayaReviewer
 from agents.storyteller import Storyteller
+from analysis.dependency_tracer import DependencyTracer
+from analysis.facts_extractor import FactsExtractor
+from analysis.tree_generator import ProjectTreeGenerator
+from grounding.evidence_packer import EvidencePacker, FileCard
+from grounding.grounding_verifier import GroundingVerifier
 from langgraph.graph import END, START, StateGraph
 from orchestration.state import LineWhisperData, ProjectState
 from tqdm import tqdm
-from utils.dependency_tracer import DependencyTracer
-from utils.evidence_packer import EvidencePacker, FileCard
-from utils.facts_extractor import FactsExtractor
-from utils.grounding_verifier import GroundingVerifier
 from utils.token_budget import TokenUtilities
-from utils.tree_generator import ProjectTreeGenerator
 
 
 class AgentsWorkflow:

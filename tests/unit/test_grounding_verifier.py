@@ -1,7 +1,7 @@
 from repo_fixture import analysed_files, make_repo
 
-from repowhisper.utils.facts_extractor import FactsExtractor
-from repowhisper.utils.grounding_verifier import GroundingReport, GroundingVerifier
+from repowhisper.analysis.facts_extractor import FactsExtractor
+from repowhisper.grounding.grounding_verifier import GroundingReport, GroundingVerifier
 
 
 def make_verifier(tmp_path, evidence=""):
