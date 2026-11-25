@@ -52,17 +52,21 @@ The following sections expose implementation contracts for contributors.
 
 ::: orchestration.workflow
 
-### Utilities
+### Analysis
 
-::: utils.dependency_tracer
+::: analysis.dependency_tracer
 
-::: utils.tree_generator
+::: analysis.tree_generator
 
-::: utils.facts_extractor
+::: analysis.facts_extractor
+
+### Grounding
 
 ::: utils.evidence_packer
 
 ::: utils.grounding_verifier
+
+### Utilities
 
 ::: utils.token_budget
 
