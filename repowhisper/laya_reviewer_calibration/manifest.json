@@ -1,7 +1,7 @@
 {
   "engine_sha256": "78f96be7c6a06abb873e573fcf9e43ef467010a30c72cd6cac32538cd7078db8",
   "files": {
-    "calibration.json": "1e191e7374051d72eb8f9ce36a7902a4eb2e12152693f859edff56f4dd7b07e9",
+    "calibration.json": "9e5aa653da4229bfe0cedb4c107e19048fe9b87f39e906e95ee8a08bd58bd9e9",
     "heads.npz": "9a01e1501e0436e429fbcbb216996c08f7cb3a10425648f19cb289ce80a2e302"
   },
   "format": "laya-policy/1",
