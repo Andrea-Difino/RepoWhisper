@@ -1,0 +1,44 @@
+name: Build & Deploy MkDocs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yaml'
+      - 'repowhisper/**'
+      - 'pyproject.toml'
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python 3.12
+        run: uv python install 3.12
+
+      - name: Install project and MkDocs dependencies
+        run: |
+          uv sync
+          uv pip install mkdocs mkdocs-material "mkdocstrings[python]"
+
+      - name: Build MkDocs static site
+        run: uv run mkdocs build --clean --site-dir ./site
+
+      - name: Deploy to gh-pages/docs
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./site
+          destination_dir: docs
+          keep_files: true

@@ -1,0 +1,40 @@
+site_name: RepoWhisper Documentation
+site_url: https://andrea-difino.github.io/RepoWhisper/docs/
+repo_url: https://github.com/Andrea-Difino/RepoWhisper
+repo_name: Andrea-Difino/RepoWhisper
+site_description: AI-powered Python repository analysis and documentation
+  
+theme:
+  name: readthedocs
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: ["."]
+          options:
+            docstring_style: google
+            members_order: source
+            show_root_heading: false
+            show_root_toc_entry: false
+            show_source: false
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: installation.md
+      - Quick Start: quickstart.md
+      - Configuration: configuration.md
+  - User Guide:
+      - Input Sources: input-sources.md
+      - Output Format: output.md
+      - Web Interface: web-interface.md
+  - Architecture:
+      - System Overview: architecture.md
+      - Agents and Workflow: agents.md
+      - Ingestion and Search: ingestion.md
+  - API Reference: api.md
+  - Development:
+      - Extending RepoWhisper: development.md
+      - Limitations and Troubleshooting: limitations.md
