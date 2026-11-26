@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "RepoWhisper"
-version = "0.1.0"
+version = "0.5.0b"
 description = "An enterprise multi-agent AI pipeline to document and analyze Python repositories."
 readme = "README.md"
 authors = [
