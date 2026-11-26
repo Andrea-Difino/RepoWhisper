@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://andrea-difino.github.io/RepoWhisper/docs/configuration/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Configuration - RepoWhisper Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Configuration";
+        var mkdocs_page_input_path = "configuration.md";
+        var mkdocs_page_url = "/RepoWhisper/docs/configuration/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> RepoWhisper Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quickstart/">Quick Start</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Configuration</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#llm-configuration">LLM configuration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#optional-integrations">Optional integrations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#context-budget">Context budget</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#laya-reviewer">Laya Reviewer</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#source-paths">Source paths</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-sources/">Input Sources</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../output/">Output Format</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../web-interface/">Web Interface</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../architecture/">System Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../agents/">Agents and Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ingestion/">Ingestion and Search</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../api/">API Reference</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Development</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../development/">Extending RepoWhisper</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations and Troubleshooting</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">RepoWhisper Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Getting Started</li>
+      <li class="breadcrumb-item active">Configuration</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Andrea-Difino/RepoWhisper/edit/master/docs/configuration.md">Edit on Andrea-Difino/RepoWhisper</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="configuration">Configuration</h1>
+<h2 id="llm-configuration">LLM configuration</h2>
+<p>The facade accepts any LangChain <code>BaseChatModel</code>, so provider configuration is
+kept outside RepoWhisper:</p>
+<pre><code class="language-python">import os
+
+from dotenv import load_dotenv
+from langchain_groq import ChatGroq
+
+load_dotenv()
+
+llm = ChatGroq(
+    api_key=os.environ[&quot;GROQ_API_KEY&quot;],
+    model=&quot;openai/gpt-oss-120b&quot;,
+    max_tokens=6000,
+)
+</code></pre>
+<p>The example application loads environment variables with <code>python-dotenv</code>.
+Use the provider's LangChain integration and pass the resulting model to
+<code>RepoWhisper</code>.</p>
+<h2 id="optional-integrations">Optional integrations</h2>
+<p>Provider integrations are optional dependencies. Install only the one needed
+by the application:</p>
+<ul>
+<li><code>RepoWhisper[groq]</code></li>
+<li><code>RepoWhisper[ollama]</code></li>
+<li><code>RepoWhisper[openai]</code></li>
+<li><code>RepoWhisper[anthropic]</code></li>
+</ul>
+<p>The generated frontend data is written to
+<code>repowhisper/ui_dist/data.json</code> when <code>analyze()</code> is used.</p>
+<h2 id="context-budget">Context budget</h2>
+<pre><code class="language-python">engine = RepoWhisper(source_target, llm, UserLevel.MID, context_budget=4000)
+</code></pre>
+<p><code>context_budget</code> (default <code>6000</code>) is the maximum estimated number of tokens of
+evidence given to the Architect and the Storyteller. Lower it for models with a
+small context window or strict per-minute token limits: the per-file notes are
+compressed to fit. The model still needs room for its own instructions and output on
+top of the budget. Token counts are estimated (about 3.5 characters per token), so
+they are intentionally conservative rather than tokenizer-exact.</p>
+<h2 id="laya-reviewer">Laya Reviewer</h2>
+<p>The Reviewer is local and is not configured through LangChain. On first use,
+RepoWhisper downloads and caches the Vega reader, its backbone model, and the
+RepoWhisper calibration files. The review step requires no provider API key and
+does not consume tokens.</p>
+<h2 id="source-paths">Source paths</h2>
+<pre><code class="language-python">engine = RepoWhisper(
+    source_target=&quot;https://github.com/...&quot;,
+    llm=llm,
+    user_level=UserLevel.JUNIOR,
+)
+</code></pre>
+<p><code>source_target</code> is an <code>http://github.com/</code> or <code>https://github.com/</code> repository
+URL. The source manager does not accept local filesystem paths.</p>
+<p>Repositories are cloned into a temporary directory and removed during
+cleanup after analysis.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../quickstart/" class="btn btn-neutral float-left" title="Quick Start"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../input-sources/" class="btn btn-neutral float-right" title="Input Sources">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Andrea-Difino/RepoWhisper" class="fa fa-code-fork" style="color: #fcfcfc"> Andrea-Difino/RepoWhisper</a>
+        </span>
+    
+    
+      <span><a href="../quickstart/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../input-sources/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

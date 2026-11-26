@@ -1,0 +1,4176 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://andrea-difino.github.io/RepoWhisper/docs/api/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>API Reference - RepoWhisper Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "API Reference";
+        var mkdocs_page_input_path = "api.md";
+        var mkdocs_page_url = "/RepoWhisper/docs/api/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> RepoWhisper Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quickstart/">Quick Start</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-sources/">Input Sources</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../output/">Output Format</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../web-interface/">Web Interface</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../architecture/">System Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../agents/">Agents and Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ingestion/">Ingestion and Search</a>
+                  </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">API Reference</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#public-facade">Public facade</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.RepoWhisper">RepoWhisper</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.RepoWhisper.__init__">__init__</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.RepoWhisper.generate_documentation">generate_documentation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.RepoWhisper.analyze">analyze</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.UserLevel">UserLevel</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.RepoWhisperError">RepoWhisperError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.SourceError">SourceError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.InvalidSourceError">InvalidSourceError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.RepositoryCloneError">RepositoryCloneError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.ProviderError">ProviderError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.ReportError">ReportError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.ReportFileError">ReportFileError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.InterfaceError">InterfaceError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#userlevel">UserLevel</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#custom-exceptions">Custom Exceptions</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#exceptions">Exceptions</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.utils.exceptions.RepoWhisperError">RepoWhisperError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.utils.exceptions.SourceError">SourceError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.utils.exceptions.InvalidSourceError">InvalidSourceError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.utils.exceptions.RepositoryCloneError">RepositoryCloneError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.utils.exceptions.ProviderError">ProviderError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.utils.exceptions.ReportError">ReportError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.utils.exceptions.ReportFileError">ReportFileError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.utils.exceptions.InterfaceError">InterfaceError</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#internal-components">Internal components</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#source-management">Source management</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.ingestion.source_manager.SourceManager">SourceManager</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.ingestion.source_manager.SourceManager.get_path">get_path</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.ingestion.source_manager.SourceManager.cleanup">cleanup</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#json-validation">JSON validation</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.schemas.analysis_schema.AnalysisJsonValidator">AnalysisJsonValidator</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.schemas.analysis_schema.AnalysisJsonValidator.validate_string">validate_string</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.schemas.analysis_schema.AnalysisJsonValidator.validate_file">validate_file</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#agents">Agents</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.agents.base_agent.BaseAgent">BaseAgent</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.agents.base_agent.BaseAgent.analyze">analyze</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.agents.architect.Architect">Architect</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.agents.architect.Architect.__init__">__init__</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.agents.navigator.CodeNavigator">CodeNavigator</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.agents.navigator.CodeNavigator.__init__">__init__</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.agents.navigator.CodeNavigator.analyze">analyze</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.agents.reviewer.LayaReviewer">LayaReviewer</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.agents.reviewer.LayaReviewer.evaluate">evaluate</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.agents.reviewer.LayaReviewer.review">review</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.agents.storyteller.Storyteller">Storyteller</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.agents.storyteller.Storyteller.__init__">__init__</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#orchestration">Orchestration</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.orchestration.state.ProjectState">ProjectState</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.orchestration.workflow.AgentsWorkflow">AgentsWorkflow</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#analysis">Analysis</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.analysis.dependency_tracer.DependencyTracer">DependencyTracer</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.analysis.dependency_tracer.DependencyTracer.get_ordered_processing_list">get_ordered_processing_list</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.analysis.tree_generator.ProjectTreeGenerator">ProjectTreeGenerator</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.analysis.tree_generator.ProjectTreeGenerator.generate">generate</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.analysis.tree_generator.ProjectTreeGenerator.generate_within_budget">generate_within_budget</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.analysis.facts_extractor.FileFacts">FileFacts</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.analysis.facts_extractor.RepoFacts">RepoFacts</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.analysis.facts_extractor.FactsExtractor">FactsExtractor</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.analysis.facts_extractor.FactsExtractor.extract">extract</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.analysis.facts_extractor.pagerank">pagerank</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#grounding">Grounding</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.grounding.evidence_packer.FileCard">FileCard</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.grounding.evidence_packer.EvidencePacker">EvidencePacker</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.grounding.evidence_packer.EvidencePacker.pack">pack</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.grounding.grounding_verifier.GroundingReport">GroundingReport</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.grounding.grounding_verifier.GroundingReport.feedback">feedback</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.grounding.grounding_verifier.GroundingVerifier">GroundingVerifier</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.grounding.grounding_verifier.GroundingVerifier.__init__">__init__</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.grounding.grounding_verifier.GroundingVerifier.verify">verify</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#utilities">Utilities</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.utils.token_budget.TokenUtilities">TokenUtilities</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.utils.token_budget.TokenUtilities.estimate_tokens">estimate_tokens</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.utils.token_budget.arrange_edges_first">arrange_edges_first</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer">BaseLanguageTracer</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer.extension">extension</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer.is_useless">is_useless</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer.extract_dependencies">extract_dependencies</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer.build_module_index">build_module_index</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer.resolve_module_to_file">resolve_module_to_file</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#repowhisper.analysis.tracers.python_tracer.PythonTracer">PythonTracer</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Development</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../development/">Extending RepoWhisper</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations and Troubleshooting</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">RepoWhisper Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">API Reference</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Andrea-Difino/RepoWhisper/edit/master/docs/api.md">Edit on Andrea-Difino/RepoWhisper</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="api-reference">API Reference</h1>
+<h2 id="public-facade">Public facade</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.RepoWhisper" class="doc doc-heading">
+            <code>RepoWhisper</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>The main Facade for the Excode library.
+This class orchestrates the entire process from fetching the repository
+to answering complex questions using AI agents.</p>
+<p>It follows the Dependency Inversion Principle by accepting any language
+model that adheres to the BaseChatModel interface.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.RepoWhisper.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">source_target</span><span class="p">,</span> <span class="n">llm</span><span class="p">,</span> <span class="n">user_level</span><span class="o">=</span><span class="n">UserLevel</span><span class="o">.</span><span class="n">JUNIOR</span><span class="p">,</span> <span class="n">context_budget</span><span class="o">=</span><span class="n">TokenUtilities</span><span class="o">.</span><span class="n">DEFAULT_CONTEXT_BUDGET</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Initializes the Excode engine.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>source_target</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>A public GitHub HTTP(S) repository URL.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>llm</code></b>
+                  (<code><span title="langchain_core.language_models.chat_models.BaseChatModel">BaseChatModel</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The initialized LangChain chat model.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>user_level</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="UserLevel (repowhisper.utils.config.UserLevel)" href="#repowhisper.UserLevel">UserLevel</a></code>, default:
+                      <code><span title="repowhisper.utils.config.UserLevel.JUNIOR">JUNIOR</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Default JUNIOR. The user level used to tell the llm how the explanation should be</p>
+<p>JUNIOR: large explanation
+MID: mid level explanation
+SENIOR: very short explanation</p>
+              </div>
+            </li>
+            <li>
+              <b><code>context_budget</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code><span title="repowhisper.utils.token_budget.TokenUtilities.DEFAULT_CONTEXT_BUDGET">DEFAULT_CONTEXT_BUDGET</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Maximum estimated tokens of evidence (static facts, module
+notes, directory tree) handed to the Architect and the Storyteller.
+Lower it for small context windows or strict rate limits; the pipeline
+compresses the notes to fit.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.RepoWhisper.generate_documentation" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">generate_documentation</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The main public method. Orchestrates source retrieval and automated
+LangGraph analysis.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="str">str</span> | None</code>
+              –
+              <div class="doc-md-description">
+                <p>A formatted JSON string ready for a frontend UI if there is no error, else it returns None</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.RepoWhisper.analyze" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">analyze</span><span class="p">(</span><span class="n">json_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8543</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Execute full analysis if json_path is None, save data and launch react interface locally. If json_path is passed the analysis is not executed and the interface starts immediately</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>json_path</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>JSON file path of a previous analysis.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>port</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>8543</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>port value for the web interface.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.UserLevel" class="doc doc-heading">
+            <code>UserLevel</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="enum.Enum">Enum</span></code></p>
+
+
+
+        <p>Enum used to identify the user level</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.RepoWhisperError" class="doc doc-heading">
+            <code>RepoWhisperError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="Exception">Exception</span></code></p>
+
+
+
+        <p>Base exception for errors that can be presented to a RepoWhisper user.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.SourceError" class="doc doc-heading">
+            <code>SourceError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="RepoWhisperError (repowhisper.utils.exceptions.RepoWhisperError)" href="#repowhisper.utils.exceptions.RepoWhisperError">RepoWhisperError</a></code></p>
+
+
+
+        <p>Base exception for repository source errors.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.InvalidSourceError" class="doc doc-heading">
+            <code>InvalidSourceError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="SourceError (repowhisper.utils.exceptions.SourceError)" href="#repowhisper.utils.exceptions.SourceError">SourceError</a></code>, <code><span title="ValueError">ValueError</span></code></p>
+
+
+
+        <p>Raised when the repository target is not a supported GitHub URL.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.RepositoryCloneError" class="doc doc-heading">
+            <code>RepositoryCloneError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="SourceError (repowhisper.utils.exceptions.SourceError)" href="#repowhisper.utils.exceptions.SourceError">SourceError</a></code>, <code><span title="RuntimeError">RuntimeError</span></code></p>
+
+
+
+        <p>Raised when a GitHub repository cannot be cloned.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.ProviderError" class="doc doc-heading">
+            <code>ProviderError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="RepoWhisperError (repowhisper.utils.exceptions.RepoWhisperError)" href="#repowhisper.utils.exceptions.RepoWhisperError">RepoWhisperError</a></code>, <code><span title="RuntimeError">RuntimeError</span></code></p>
+
+
+
+        <p>Raised when the configured LLM provider rejects or cannot complete a request.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.ReportError" class="doc doc-heading">
+            <code>ReportError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="RepoWhisperError (repowhisper.utils.exceptions.RepoWhisperError)" href="#repowhisper.utils.exceptions.RepoWhisperError">RepoWhisperError</a></code>, <code><span title="ValueError">ValueError</span></code></p>
+
+
+
+        <p>Raised when generated or loaded JSON does not match the report schema.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.ReportFileError" class="doc doc-heading">
+            <code>ReportFileError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ReportError (repowhisper.utils.exceptions.ReportError)" href="#repowhisper.utils.exceptions.ReportError">ReportError</a></code>, <code><span title="FileNotFoundError">FileNotFoundError</span></code></p>
+
+
+
+        <p>Raised when a report file cannot be found or read.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.InterfaceError" class="doc doc-heading">
+            <code>InterfaceError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="RepoWhisperError (repowhisper.utils.exceptions.RepoWhisperError)" href="#repowhisper.utils.exceptions.RepoWhisperError">RepoWhisperError</a></code></p>
+
+
+
+        <p>Raised when the local study interface cannot be started.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="userlevel">UserLevel</h2>
+<p>The available levels are:</p>
+<ul>
+<li><code>UserLevel.JUNIOR</code>: detailed explanations.</li>
+<li><code>UserLevel.MID</code>: medium-depth explanations.</li>
+<li><code>UserLevel.SENIOR</code>: concise explanations.</li>
+</ul>
+<h2 id="custom-exceptions">Custom Exceptions</h2>
+<p>Below are listed all the custom exceptions that the user can encounter during the use of the library.</p>
+<h3 id="exceptions">Exceptions</h3>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.utils.exceptions.RepoWhisperError" class="doc doc-heading">
+            <code>RepoWhisperError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="Exception">Exception</span></code></p>
+
+
+
+        <p>Base exception for errors that can be presented to a RepoWhisper user.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.utils.exceptions.SourceError" class="doc doc-heading">
+            <code>SourceError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="RepoWhisperError (repowhisper.utils.exceptions.RepoWhisperError)" href="#repowhisper.utils.exceptions.RepoWhisperError">RepoWhisperError</a></code></p>
+
+
+
+        <p>Base exception for repository source errors.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.utils.exceptions.InvalidSourceError" class="doc doc-heading">
+            <code>InvalidSourceError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="SourceError (repowhisper.utils.exceptions.SourceError)" href="#repowhisper.utils.exceptions.SourceError">SourceError</a></code>, <code><span title="ValueError">ValueError</span></code></p>
+
+
+
+        <p>Raised when the repository target is not a supported GitHub URL.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.utils.exceptions.RepositoryCloneError" class="doc doc-heading">
+            <code>RepositoryCloneError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="SourceError (repowhisper.utils.exceptions.SourceError)" href="#repowhisper.utils.exceptions.SourceError">SourceError</a></code>, <code><span title="RuntimeError">RuntimeError</span></code></p>
+
+
+
+        <p>Raised when a GitHub repository cannot be cloned.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.utils.exceptions.ProviderError" class="doc doc-heading">
+            <code>ProviderError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="RepoWhisperError (repowhisper.utils.exceptions.RepoWhisperError)" href="#repowhisper.utils.exceptions.RepoWhisperError">RepoWhisperError</a></code>, <code><span title="RuntimeError">RuntimeError</span></code></p>
+
+
+
+        <p>Raised when the configured LLM provider rejects or cannot complete a request.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.utils.exceptions.ReportError" class="doc doc-heading">
+            <code>ReportError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="RepoWhisperError (repowhisper.utils.exceptions.RepoWhisperError)" href="#repowhisper.utils.exceptions.RepoWhisperError">RepoWhisperError</a></code>, <code><span title="ValueError">ValueError</span></code></p>
+
+
+
+        <p>Raised when generated or loaded JSON does not match the report schema.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.utils.exceptions.ReportFileError" class="doc doc-heading">
+            <code>ReportFileError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="ReportError (repowhisper.utils.exceptions.ReportError)" href="#repowhisper.utils.exceptions.ReportError">ReportError</a></code>, <code><span title="FileNotFoundError">FileNotFoundError</span></code></p>
+
+
+
+        <p>Raised when a report file cannot be found or read.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.utils.exceptions.InterfaceError" class="doc doc-heading">
+            <code>InterfaceError</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="RepoWhisperError (repowhisper.utils.exceptions.RepoWhisperError)" href="#repowhisper.utils.exceptions.RepoWhisperError">RepoWhisperError</a></code></p>
+
+
+
+        <p>Raised when the local study interface cannot be started.</p>
+
+
+
+
+
+
+
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="internal-components">Internal components</h2>
+<p>The following sections expose implementation contracts for contributors.</p>
+<h3 id="source-management">Source management</h3>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.ingestion.source_manager.SourceManager" class="doc doc-heading">
+            <code>SourceManager</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Handles the retrieval and preparation of the source code.
+Responsible for cloning remote repositories.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.ingestion.source_manager.SourceManager.get_path" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_path</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Clones the repository and return the absolute path to the temp folder.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="str">str</span></code>
+              –
+              <div class="doc-md-description">
+                <p>The absolute path to the ready-to-use source code.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Raises:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="ValueError">ValueError</span></code>
+              –
+              <div class="doc-md-description">
+                <p>If URL is not a valid github URL.</p>
+              </div>
+            </li>
+            <li>
+                  <code><span title="RuntimeError">RuntimeError</span></code>
+              –
+              <div class="doc-md-description">
+                <p>If the git cloning process fails.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.ingestion.source_manager.SourceManager.cleanup" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">cleanup</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Removes temporary directories to free up disk space.
+Should be called in a finally block.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h3 id="json-validation">JSON validation</h3>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.schemas.analysis_schema.AnalysisJsonValidator" class="doc doc-heading">
+            <code>AnalysisJsonValidator</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Deterministic validator for the JSON output generated or loaded in RepoWhisper.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.schemas.analysis_schema.AnalysisJsonValidator.validate_string" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">validate_string</span><span class="p">(</span><span class="n">raw_json</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Validate a raw JSON string.
+Raise ValueError it the structure don't correspond to the schema.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>raw_json</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>string of the json to be validated</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.schemas.analysis_schema.AnalysisJsonValidator.validate_file" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">validate_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read and validate a JSON file before being passed to React interface.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>file_path</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path of the JSON file to validate.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h3 id="agents">Agents</h3>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.agents.base_agent.BaseAgent" class="doc doc-heading">
+            <code>BaseAgent</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="abc.ABC">ABC</span></code></p>
+
+
+
+        <p>Abstract base class for all AI agents within the Excode ecosystem.
+Enforces a strict contract for agent implementation following the
+Open/Closed Principle (OCP).</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.agents.base_agent.BaseAgent.analyze" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">analyze</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Executes the agent's core logic based on the user query and provided context.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>query</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The specific question or task requested by the user.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>context</code></b>
+                  (<code><span title="typing.Any">Any</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The contextual data required for the analysis
+           (e.g., retrieved code snippets, file tree).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>str</code></b>(                  <code><span title="typing.Any">Any</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>The synthesized response generated by the LLM.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.agents.architect.Architect" class="doc doc-heading">
+            <code>Architect</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BaseAgent (repowhisper.agents.base_agent.BaseAgent)" href="#repowhisper.agents.base_agent.BaseAgent">BaseAgent</a></code></p>
+
+
+
+        <p>Specialized agent that takes grounded evidence about the project (directory tree,
+statically extracted facts and short per-module notes) and outputs a clean,
+architectural overview tailored to the user's level.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.agents.architect.Architect.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">llm</span><span class="p">,</span> <span class="n">user_level</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Initializes the Architect agent.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>llm</code></b>
+                  (<code><span title="langchain_core.language_models.chat_models.BaseChatModel">BaseChatModel</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The language model to be used.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>user_level</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Target developer seniority ('junior', 'mid', 'senior').</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.agents.navigator.CodeNavigator" class="doc doc-heading">
+            <code>CodeNavigator</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BaseAgent (repowhisper.agents.base_agent.BaseAgent)" href="#repowhisper.agents.base_agent.BaseAgent">BaseAgent</a></code></p>
+
+
+
+        <p>Specialized agent responsible for interpreting and explaining specific
+code fragments read from the repository.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.agents.navigator.CodeNavigator.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">llm</span><span class="p">,</span> <span class="n">user_level</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Initializes the CodeNavigator agent.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>llm</code></b>
+                  (<code><span title="langchain_core.language_models.chat_models.BaseChatModel">BaseChatModel</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The language model to be used.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>user_level</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>User level decided by the user ('junior', 'mid', 'senior').</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.agents.navigator.CodeNavigator.analyze" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">analyze</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Processes the query against the code context using the injected LLM.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.agents.reviewer.LayaReviewer" class="doc doc-heading">
+            <code>LayaReviewer</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Deterministic System-1 Reviewer powered by a locally calibrated Laya/Vega classifier.
+Handles one-time caching of both the Vega reader and its underlying backbone with a
+unified progress bar, instant Ctrl+C exit, offline fast-boot, and zero-token inference.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.agents.reviewer.LayaReviewer.evaluate" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">evaluate</span><span class="p">(</span><span class="n">draft</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Returns the raw predicted class label for a module explanation draft.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.agents.reviewer.LayaReviewer.review" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">review</span><span class="p">(</span><span class="n">draft</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reviews a CodeNavigator draft.
+Returns None if the draft is a valid explanation, or corrective feedback if it drifted into debugging.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.agents.storyteller.Storyteller" class="doc doc-heading">
+            <code>Storyteller</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BaseAgent (repowhisper.agents.base_agent.BaseAgent)" href="#repowhisper.agents.base_agent.BaseAgent">BaseAgent</a></code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.agents.storyteller.Storyteller.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">llm</span><span class="p">,</span> <span class="n">user_level</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Initializes the StorytellerAgent.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>llm</code></b>
+                  (<code><span title="langchain_core.language_models.BaseChatModel">BaseChatModel</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The language model to be used.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>user_level</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>User level decided by the user</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h3 id="orchestration">Orchestration</h3>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.orchestration.state.ProjectState" class="doc doc-heading">
+            <code>ProjectState</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="typing.TypedDict">TypedDict</span></code></p>
+
+
+
+        <p>The global shared state for the RepoWhisper LangGraph orchestration.
+Acts as the central communication blackboard for all agents, ensuring 
+type safety and predictable data flow.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.orchestration.workflow.AgentsWorkflow" class="doc doc-heading">
+            <code>AgentsWorkflow</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Constructs and executes the LangGraph state machine for analyzing repositories.</p>
+<p>Pipeline: Tracer -&gt; (Navigator &lt;-&gt; local Laya/Vega Reviewer) per file -&gt; static Facts
+and budgeted evidence -&gt; Architect -&gt; Storyteller. The Architect and the Storyteller
+run AFTER the per-file analysis so they work on grounded evidence instead of on the
+bare directory tree.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h3 id="analysis">Analysis</h3>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.analysis.dependency_tracer.DependencyTracer" class="doc doc-heading">
+            <code>DependencyTracer</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Build a dependencies graph module. Language agnostic</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.analysis.dependency_tracer.DependencyTracer.get_ordered_processing_list" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_ordered_processing_list</span><span class="p">(</span><span class="n">graph</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Advanced DFS with states WHITE (0), GRAY (1), BLACK (2) 
+to safely detect circular dependencies.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.analysis.tree_generator.ProjectTreeGenerator" class="doc doc-heading">
+            <code>ProjectTreeGenerator</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Generates a textual representation of the project's directory structure.
+Ignores common build, virtual environment, and hidden directories to 
+save LLM context window tokens.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.analysis.tree_generator.ProjectTreeGenerator.generate" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">generate</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">''</span><span class="p">,</span> <span class="n">ignore_dirs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_depth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Recursively builds a tree-like string of the directory.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>dir_path</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The root directory to scan.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>prefix</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Used internally for formatting the tree branches.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>ignore_dirs</code></b>
+                  (<code><span title="set">set</span>[<span title="str">str</span>] | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Directories to skip.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_depth</code></b>
+                  (<code><span title="int">int</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>If set, directories nested deeper than this are not
+expanded and are shown with an item count instead.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_depth</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>1</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Used internally to track the current depth.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>str</code></b>(                  <code><span title="str">str</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>The visual tree representation of the folder structure.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.analysis.tree_generator.ProjectTreeGenerator.generate_within_budget" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">generate_within_budget</span><span class="p">(</span><span class="n">dir_path</span><span class="p">,</span> <span class="n">max_tokens</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Builds the deepest tree that fits in <code>max_tokens</code>.</p>
+<p>The full tree is returned when it fits. Otherwise the tree is generated with a
+decreasing maximum depth, so every top-level area stays visible and only the
+deepest levels are collapsed into item counts.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>dir_path</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>The root directory to scan.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>max_tokens</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Token budget for the tree.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>str</code></b>(                  <code><span title="str">str</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>A tree whose estimated size is within the budget (depth 1 is the floor).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.analysis.facts_extractor.FileFacts" class="doc doc-heading">
+            <code>FileFacts</code>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Facts extracted from one source file with a single AST pass.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.analysis.facts_extractor.RepoFacts" class="doc doc-heading">
+            <code>RepoFacts</code>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Everything RepoWhisper can state about a repository without calling an LLM.</p>
+<p><code>sheet</code> is a short human/LLM readable rendering; the <code>known_*</code> sets are the full,
+untruncated vocabulary of the repository used to verify generated text.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.analysis.facts_extractor.FactsExtractor" class="doc doc-heading">
+            <code>FactsExtractor</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Extracts verifiable facts from a Python repository using only static analysis.</p>
+<p>The output grounds the LLM agents (what really exists in the project) and feeds the
+deterministic verifier that checks the generated documentation.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.analysis.facts_extractor.FactsExtractor.extract" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">extract</span><span class="p">(</span><span class="n">files</span><span class="p">,</span> <span class="n">graph</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>files</code></b>
+                  (<code><span title="list">list</span>[<span title="str">str</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>analysed source files (paths relative to the root).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>graph</code></b>
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="list">list</span>[<span title="str">str</span>]]</code>)
+              –
+              <div class="doc-md-description">
+                <p>resolved internal dependency graph.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>RepoFacts</code></b>(                  <code><a class="autorefs autorefs-internal" title="RepoFacts
+
+
+  
+      dataclass
+   (repowhisper.analysis.facts_extractor.RepoFacts)" href="#repowhisper.analysis.facts_extractor.RepoFacts">RepoFacts</a></code>
+)              –
+              <div class="doc-md-description">
+                <p>the facts sheet plus the vocabulary used for verification.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="repowhisper.analysis.facts_extractor.pagerank" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">pagerank</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">damping</span><span class="o">=</span><span class="mf">0.85</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">tolerance</span><span class="o">=</span><span class="mf">1e-09</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Plain power-iteration PageRank (no external dependency).</p>
+<p>An edge A -&gt; B means "A imports B", so rank flows towards the modules that many
+other modules depend on: the structural core of the project.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>graph</code></b>
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="list">list</span>[<span title="str">str</span>]]</code>)
+              –
+              <div class="doc-md-description">
+                <p>adjacency list (file -&gt; files it imports).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>damping</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>0.85</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>classic PageRank damping factor.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>iterations</code></b>
+                  (<code><span title="int">int</span></code>, default:
+                      <code>50</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>maximum number of iterations.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>tolerance</code></b>
+                  (<code><span title="float">float</span></code>, default:
+                      <code>1e-09</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>early-stop threshold on the L1 change between iterations.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="float">float</span>]</code>
+              –
+              <div class="doc-md-description">
+                <p>dict[str, float]: rank per node, summing to ~1.0.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h3 id="grounding">Grounding</h3>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.grounding.evidence_packer.FileCard" class="doc doc-heading">
+            <code>FileCard</code>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>A compact, one-line description of a file used as prompt evidence.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.grounding.evidence_packer.EvidencePacker" class="doc doc-heading">
+            <code>EvidencePacker</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Packs per-file cards into a text that is guaranteed to fit a token budget.</p>
+<p>Strategy (a budget-aware, bottom-up "collapse", like a map-reduce summarization
+that follows the directory structure instead of arbitrary chunks):</p>
+<ol>
+<li>Group cards by directory. If everything fits the budget, nothing else happens
+     and zero LLM calls are made.</li>
+<li>Otherwise collapse directories into short summaries, LEAST important first
+     (importance = PageRank of the files they contain), and stop as soon as the
+     text fits. The most central modules therefore keep their full detail.</li>
+<li>If every directory is already collapsed and it is still too big, lift the
+     blocks one directory level up and repeat (recursive collapse).</li>
+<li>A final deterministic trim guarantees the budget is respected.</li>
+</ol>
+<p>The collapse is done with the injected <code>summarizer</code> (an LLM call per block, each
+call bounded by <code>chunk_budget</code>). Without a summarizer, or if it fails, a
+deterministic summary (key files + file names) is used, so packing never crashes
+the pipeline.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.grounding.evidence_packer.EvidencePacker.pack" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">pack</span><span class="p">(</span><span class="n">cards</span><span class="p">,</span> <span class="n">budget</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>cards</code></b>
+                  (<code><span title="list">list</span>[<a class="autorefs autorefs-internal" title="FileCard
+
+
+  
+      dataclass
+   (repowhisper.grounding.evidence_packer.FileCard)" href="#repowhisper.grounding.evidence_packer.FileCard">FileCard</a>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>one card per analysed file.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>budget</code></b>
+                  (<code><span title="int">int</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>maximum estimated tokens of the returned text.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>str</code></b>(                  <code><span title="str">str</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>grouped module notes, important areas placed at the start and at the end.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.grounding.grounding_verifier.GroundingReport" class="doc doc-heading">
+            <code>GroundingReport</code>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Outcome of verifying a generated text against the repository vocabulary.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.grounding.grounding_verifier.GroundingReport.feedback" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">feedback</span><span class="p">()</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A correction note to append to the query when regenerating the text.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.grounding.grounding_verifier.GroundingVerifier" class="doc doc-heading">
+            <code>GroundingVerifier</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Checks that every code reference (text in <code>backticks</code>) in a generated document
+really exists in the repository.</p>
+<p>It is a pure-Python existence check, like the "existence ratio" used to evaluate
+documentation generators: it catches invented file names, classes, functions,
+libraries, flags and environment variables. It does NOT judge whether a
+description of behaviour is correct.</p>
+<p>Complexity: O(L) in the length of the text, each lookup is O(1) on hash sets.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.grounding.grounding_verifier.GroundingVerifier.__init__" class="doc doc-heading">
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">facts</span><span class="p">,</span> <span class="n">evidence_text</span><span class="o">=</span><span class="s1">''</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>facts</code></b>
+                  (<code><a class="autorefs autorefs-internal" title="RepoFacts
+
+
+  
+      dataclass
+   (repowhisper.analysis.facts_extractor.RepoFacts)" href="#repowhisper.analysis.facts_extractor.RepoFacts">RepoFacts</a></code>)
+              –
+              <div class="doc-md-description">
+                <p>full vocabulary extracted from the repository.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>evidence_text</code></b>
+                  (<code><span title="str">str</span></code>, default:
+                      <code>&#39;&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>the evidence shown to the LLM; any word appearing in it
+is also accepted (e.g. names coming from the module notes).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.grounding.grounding_verifier.GroundingVerifier.verify" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">verify</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>text</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>generated markdown.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>GroundingReport</code></b>(                  <code><a class="autorefs autorefs-internal" title="GroundingReport
+
+
+  
+      dataclass
+   (repowhisper.grounding.grounding_verifier.GroundingReport)" href="#repowhisper.grounding.grounding_verifier.GroundingReport">GroundingReport</a></code>
+)              –
+              <div class="doc-md-description">
+                <p>how many references were checked and which are unknown.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h3 id="utilities">Utilities</h3>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.utils.token_budget.TokenUtilities" class="doc doc-heading">
+            <code>TokenUtilities</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.utils.token_budget.TokenUtilities.estimate_tokens" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">estimate_tokens</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Cheap, dependency-free, model-agnostic token estimate.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>text</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>text to measure.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>int</code></b>(                  <code><span title="int">int</span></code>
+)              –
+              <div class="doc-md-description">
+                <p>estimated number of tokens (0 for an empty string).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="repowhisper.utils.token_budget.arrange_edges_first" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">arrange_edges_first</span><span class="p">(</span><span class="n">items</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reorder items so the most important ones sit at the START and at the END of the
+list while the least important end up in the middle. (prevent "lost in the middle" effect)</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>items</code></b>
+                  (<code><span title="list">list</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>items to reorder.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>key</code></b>
+                  (<code><span title="repowhisper.utils.token_budget.ImportanceScorer">ImportanceScorer</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Function returning the importance of an item (higher = more important).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+<b><code>list</code></b>(                  <code><span title="list">list</span>[<span title="repowhisper.utils.token_budget.arrange_edges_first[T]">T</span>]</code>
+)              –
+              <div class="doc-md-description">
+                <p>the reordered list (a new list, the input is not modified).</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer" class="doc doc-heading">
+            <code>BaseLanguageTracer</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="abc.ABC">ABC</span></code></p>
+
+
+
+        <p>Base interface for the extraction of the dependencies</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer.extension" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">extension</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the file extension handled by the specific tracer</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer.is_useless" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">is_useless</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Define if a file must be ignored</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer.extract_dependencies" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">extract_dependencies</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Extract modules names imported inside the file</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer.build_module_index" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">build_module_index</span><span class="p">(</span><span class="n">valid_files</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Create an O(1) index which maps logic modules names to phisical files.
+Es: 'util.console' -&gt; 'src/utils/console.py'</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer.resolve_module_to_file" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">resolve_module_to_file</span><span class="p">(</span><span class="n">module_name</span><span class="p">,</span> <span class="n">module_index</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Use the index to retrieve the actual module path</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+
+    <div class="doc doc-contents first">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="repowhisper.analysis.tracers.python_tracer.PythonTracer" class="doc doc-heading">
+            <code>PythonTracer</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="BaseLanguageTracer (repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer)" href="#repowhisper.analysis.tracers.base_tracer.BaseLanguageTracer">BaseLanguageTracer</a></code></p>
+
+
+
+        <p>Specific implementation for python, based on AST</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../ingestion/" class="btn btn-neutral float-left" title="Ingestion and Search"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../development/" class="btn btn-neutral float-right" title="Extending RepoWhisper">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Andrea-Difino/RepoWhisper" class="fa fa-code-fork" style="color: #fcfcfc"> Andrea-Difino/RepoWhisper</a>
+        </span>
+    
+    
+      <span><a href="../ingestion/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../development/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

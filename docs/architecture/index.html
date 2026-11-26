@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://andrea-difino.github.io/RepoWhisper/docs/architecture/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>System Overview - RepoWhisper Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "System Overview";
+        var mkdocs_page_input_path = "architecture.md";
+        var mkdocs_page_url = "/RepoWhisper/docs/architecture/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> RepoWhisper Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quickstart/">Quick Start</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-sources/">Input Sources</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../output/">Output Format</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../web-interface/">Web Interface</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">System Overview</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#execution-phases">Execution phases</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#grounding-and-token-budget">Grounding and token budget</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../agents/">Agents and Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ingestion/">Ingestion and Search</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../api/">API Reference</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Development</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../development/">Extending RepoWhisper</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../limitations/">Limitations and Troubleshooting</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">RepoWhisper Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Architecture</li>
+      <li class="breadcrumb-item active">System Overview</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Andrea-Difino/RepoWhisper/edit/master/docs/architecture.md">Edit on Andrea-Difino/RepoWhisper</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="system-overview">System Overview</h1>
+<p>RepoWhisper is organized as a facade, source management layer, agent layer,
+and orchestration layer.</p>
+<h2 id="execution-phases">Execution phases</h2>
+<ol>
+<li><code>SourceManager</code> clones a GitHub HTTP(S) repository URL into a temporary local
+   directory.</li>
+<li><code>DependencyTracer</code> builds a dependency graph and processing order.</li>
+<li><code>CodeNavigator</code> explains each file and returns line-level notes plus a one-line
+   summary. It also receives the one-line summaries of the already analysed modules
+   that the file imports.</li>
+<li>The local <code>LayaReviewer</code> classifies the draft as <code>EXPLANATION</code> or <code>DEBUG</code>; a
+   <code>DEBUG</code> draft is sent back to the Navigator.</li>
+<li><code>FactsExtractor</code> (no LLM) computes verifiable facts from the code: symbols,
+   third-party imports, entry points, import graph, PageRank, <code>pyproject.toml</code>
+   metadata, README excerpt and CI workflows. <code>EvidencePacker</code> packs the per-file
+   notes into the configured token budget.</li>
+<li><code>Architect</code> writes the architectural overview from that grounded evidence
+   (not from the bare directory tree).</li>
+<li><code>Storyteller</code> combines the facts, the module notes and the architect draft.</li>
+<li><code>GroundingVerifier</code> (no LLM) checks every <code>code reference</code> in the Architect and
+   Storyteller output against the repository. If invented names are found, the
+   agent is asked to regenerate once.</li>
+<li>The final state is serialized to the documented JSON format.</li>
+</ol>
+<h2 id="grounding-and-token-budget">Grounding and token budget</h2>
+<p>The evidence handed to the Architect and the Storyteller is limited by
+<code>context_budget</code> (estimated tokens, default <code>6000</code>), so every call has a bounded
+size regardless of the repository size.</p>
+<ul>
+<li>If the per-file notes fit the budget, no extra LLM call is made.</li>
+<li>Otherwise the notes are collapsed directory by directory, least central first,
+  using the small <code>PackageSummarizer</code> agent (one bounded call per directory).
+  If it fails, a deterministic summary is used.</li>
+<li>Important modules are placed at the start and at the end of the prompt.</li>
+</ul>
+<p>The state contract is defined in
+<a href="https://github.com/Andrea-Difino/RepoWhisper/blob/main/repowhisper/orchestration/state.py">orchestration/state.py</a>.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../web-interface/" class="btn btn-neutral float-left" title="Web Interface"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../agents/" class="btn btn-neutral float-right" title="Agents and Workflow">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Andrea-Difino/RepoWhisper" class="fa fa-code-fork" style="color: #fcfcfc"> Andrea-Difino/RepoWhisper</a>
+        </span>
+    
+    
+      <span><a href="../web-interface/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../agents/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

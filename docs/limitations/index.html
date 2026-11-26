@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://andrea-difino.github.io/RepoWhisper/docs/limitations/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Limitations and Troubleshooting - RepoWhisper Documentation</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Limitations and Troubleshooting";
+        var mkdocs_page_input_path = "limitations.md";
+        var mkdocs_page_url = "/RepoWhisper/docs/limitations/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> RepoWhisper Documentation
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Getting Started</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../installation/">Installation</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../quickstart/">Quick Start</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../configuration/">Configuration</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">User Guide</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../input-sources/">Input Sources</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../output/">Output Format</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../web-interface/">Web Interface</a>
+                  </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Architecture</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../architecture/">System Overview</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../agents/">Agents and Workflow</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ingestion/">Ingestion and Search</a>
+                  </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../api/">API Reference</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Development</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../development/">Extending RepoWhisper</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Limitations and Troubleshooting</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#current-limitations">Current limitations</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#common-issues">Common issues</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#no-parsable-code-found">No parsable code found</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#git-clone-failure">Git clone failure</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#missing-provider-package">Missing provider package</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#missing-provider-key">Missing provider key</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#documentation-import-errors">Documentation import errors</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">RepoWhisper Documentation</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Development</li>
+      <li class="breadcrumb-item active">Limitations and Troubleshooting</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/Andrea-Difino/RepoWhisper/edit/master/docs/limitations.md">Edit on Andrea-Difino/RepoWhisper</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="limitations-and-troubleshooting">Limitations and Troubleshooting</h1>
+<h2 id="current-limitations">Current limitations</h2>
+<ul>
+<li>RepoWhisper currently supports <strong>Python code analysis only</strong>. It is not a
+  general-purpose analyzer for JavaScript, TypeScript, Java, Go, Rust, or other
+  languages.</li>
+<li>The dependency tracer currently analyzes Python imports and final file processing
+  excludes <code>__init__.py</code>, test directories, virtual environments, build output,
+  and source-control directories.</li>
+<li>The quality of generated explanations depends on the selected LLM.</li>
+<li>The grounding verifier detects invented names (files, classes, functions, libraries, flags), not incorrect descriptions of behaviour.</li>
+<li>Static facts (symbols, imports, entry points) are extracted from Python only.</li>
+<li>The local Laya Reviewer requires an initial model download and Hugging Face cache space.</li>
+<li>Large repositories can require substantial time, memory, and model tokens.</li>
+<li>The bundled HTTP server is intended for local use, not production hosting.</li>
+<li><code>analyze()</code> writes generated source data into the bundled UI directory.</li>
+</ul>
+<h2 id="common-issues">Common issues</h2>
+<h3 id="no-parsable-code-found">No parsable code found</h3>
+<p>Confirm that the target contains <code>.py</code> files and that the path or Git URL is
+correct.</p>
+<h3 id="git-clone-failure">Git clone failure</h3>
+<p>Check that Git is installed and that credentials are available for private
+repositories.</p>
+<h3 id="missing-provider-package">Missing provider package</h3>
+<p>Install the matching optional extra, for example:</p>
+<pre><code class="language-powershell">uv sync --extra groq
+</code></pre>
+<h3 id="missing-provider-key">Missing provider key</h3>
+<p>Set the provider key in the environment before creating the chat model. Never
+hard-code or commit the key.</p>
+<h3 id="documentation-import-errors">Documentation import errors</h3>
+<p>Run MkDocs from the repository root and use the project environment:</p>
+<pre><code class="language-powershell">.\.venv\Scripts\mkdocs.exe build --strict
+</code></pre>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../development/" class="btn btn-neutral float-left" title="Extending RepoWhisper"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/Andrea-Difino/RepoWhisper" class="fa fa-code-fork" style="color: #fcfcfc"> Andrea-Difino/RepoWhisper</a>
+        </span>
+    
+    
+      <span><a href="../development/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
