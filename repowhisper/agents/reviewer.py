@@ -12,7 +12,6 @@ from typing import ClassVar, Literal
 
 import huggingface_hub.constants as hf_constants
 import laya
-import torch
 from huggingface_hub import HfApi, hf_hub_download, snapshot_download
 from huggingface_hub.utils import validate_repo_id
 from tqdm import tqdm
@@ -362,8 +361,9 @@ class LayaReviewer:
             except Exception:  # noqa: BLE001, S110
                 pass
 
-            has_cuda = torch.cuda.is_available()
-            device_name = torch.cuda.get_device_name(0) if has_cuda else "CPU"
+            from torch import cuda, set_num_threads
+            has_cuda = cuda.is_available()
+            device_name = cuda.get_device_name(0) if has_cuda else "CPU"
             t_start = time.perf_counter()
 
             with (
@@ -387,7 +387,7 @@ class LayaReviewer:
                 agent.load_calibration(str(self.calibration_dir))
 
                 if not has_cuda:
-                    torch.set_num_threads(1)
+                    set_num_threads(1)
 
                 status.set_description(f"Warming up Laya Reviewer ({device_name})...", refresh=True)
                 agent.predict("warm up", self.REVIEW_QUESTIONS)
