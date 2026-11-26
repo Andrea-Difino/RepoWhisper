@@ -438,9 +438,9 @@ class FactsExtractor:
             )
         readme = self._read_readme()
         if readme:
-            lines.append(f"- README excerpt: {readme}")
-        if project.get("requires-python"):
-            lines.append(f"- Requires Python: {project['requires-python']}")
+            lines.append(f"- README extract: {readme}")
+        if python_v := project.get("requires-python"):
+            lines.append(f"- Requires Python: {python_v}")
 
         directories = sorted({posixpath.dirname(p) or "." for p in files})
         lines.append(
