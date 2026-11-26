@@ -1,8 +1,9 @@
 from typing import Any
 
-from agents.base_agent import BaseAgent
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.prompts import ChatPromptTemplate
+
+from .base_agent import BaseAgent
 
 
 class Architect(BaseAgent):

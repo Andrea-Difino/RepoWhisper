@@ -8,6 +8,7 @@ on:
       - 'docs/**'
       - 'mkdocs.yaml'
       - 'repowhisper/**'
+      - 'pyproject.toml'
 
 permissions:
   contents: write

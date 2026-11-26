@@ -18,7 +18,7 @@ Below are listed all the custom exceptions that the user can encounter during th
   
 ### Exceptions
 
-::: utils.exceptions
+::: repowhisper.utils.exceptions
 
 
 ## Internal components
@@ -28,44 +28,48 @@ The following sections expose implementation contracts for contributors.
 
 ### Source management
 
-::: ingestion.source_manager
+::: repowhisper.ingestion.source_manager
 
 ### JSON validation
 
-::: schemas.analysis_schema
+::: repowhisper.schemas.analysis_schema
 
 ### Agents
 
-::: agents.base_agent
+::: repowhisper.agents.base_agent
 
-::: agents.architect
+::: repowhisper.agents.architect
 
-::: agents.navigator
+::: repowhisper.agents.navigator
 
-::: agents.reviewer
+::: repowhisper.agents.reviewer
 
-::: agents.storyteller
+::: repowhisper.agents.storyteller
 
 ### Orchestration
 
-::: orchestration.state
+::: repowhisper.orchestration.state
 
-::: orchestration.workflow
+::: repowhisper.orchestration.workflow
+
+### Analysis
+
+::: repowhisper.analysis.dependency_tracer
+
+::: repowhisper.analysis.tree_generator
+
+::: repowhisper.analysis.facts_extractor
+
+### Grounding
+
+::: repowhisper.grounding.evidence_packer
+
+::: repowhisper.grounding.grounding_verifier
 
 ### Utilities
 
-::: utils.dependency_tracer
+::: repowhisper.utils.token_budget
 
-::: utils.tree_generator
+::: repowhisper.analysis.tracers.base_tracer
 
-::: utils.facts_extractor
-
-::: utils.evidence_packer
-
-::: utils.grounding_verifier
-
-::: utils.token_budget
-
-::: utils.tracers.base_tracer
-
-::: utils.tracers.python_tracer
+::: repowhisper.analysis.tracers.python_tracer

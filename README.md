@@ -1,8 +1,6 @@
 <div align="center">
   <img src="imgs/badge_2.png" alt="RepoWhisper" width="700">
 
-  # RepoWhisper
-
   ### Turn an unfamiliar Python repository into an interactive, AI-guided study journey.
 
   <p>
@@ -128,9 +126,9 @@ engine = RepoWhisper(
     user_level=UserLevel.MID,
 )
 
-# Generates the validated report and opens http://localhost:8543
+# Generates the validated report and opens http://127.0.0.1:8543
 try:
-  engine.serve_ui()
+  engine.analyze()
 except RepoWhisperError as e:
   print(f"An error occured during the analysis: {e}")
 ```
@@ -142,7 +140,7 @@ except RepoWhisperError as e:
 report_json = engine.generate_documentation()
 
 # Or reopen a previously generated JSON report without re-running the LLM
-engine.serve_ui(json_path="path/to/report.json")
+engine.analyze(json_path="path/to/report.json")
 ```
 
 For full setup guides, see the [Quick Start Documentation](https://andrea-difino.github.io/RepoWhisper/docs/).

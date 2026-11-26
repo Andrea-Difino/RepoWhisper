@@ -1,0 +1,2 @@
+prune repowhisper-ui/node_modules
+exclude repowhisper/main.py

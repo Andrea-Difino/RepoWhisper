@@ -1,44 +1,45 @@
 # Web Interface
 
-`RepoWhisper.serve_ui()` serves the bundled frontend locally.
+`RepoWhisper.analyze()` serves the bundled frontend locally.
 
 ```python
-engine.serve_ui()
+engine.analyze()
 ```
 
 The method:
 
 1. runs the analysis when JSON data path is not supplied;
-2. writes the JSON to `repowhisper/ui_dist/data.json`;
-3. writes the report into the bundled UI data file;
-4. starts a local HTTP server;
-5. opens the default browser.
+2. serves the report at `/data.json` without modifying the bundled UI files;
+3. starts an HTTP server bound to the local machine;
+4. opens the default browser.
 
 The default address is:
 
 ```text
-http://localhost:8543
+http://127.0.0.1:8543
 ```
 
 Use a custom port with:
 
 ```python
-engine.serve_ui(port=9000)
+engine.analyze(port=9000)
 ```
 
-You can also load an existing `data.json` file passing the file path. `serve_ui()` serializes it before writing the file used by the UI:
+You can also load an existing `data.json` file by passing its path.
+`analyze()` validates and serializes the report before serving it to the UI:
 
 ```python
-engine.serve_ui(json_path="data.json")
+engine.analyze(json_path="data.json")
 ```
 
-The server runs until interrupted with `Ctrl+C`.
+The server runs until interrupted with `Ctrl+C` and only accepts connections
+from the local machine.
 
-In an application entry point, handle failures around `serve_ui()`:
+In an application entry point, handle failures around `analyze()`:
 
 ```python
 try:
-    engine.serve_ui()
+    engine.analyze()
 except RepoWhisperError as e:
     print(f"RepoWhisperError failed: {e}")
 ```
@@ -54,7 +55,8 @@ line-level annotations for the code viewer.
 
 ## Operational notes
 
-- Only use this server on trusted local networks.
-- The generated `data.json` contains source code from the analyzed
+- The report served at `/data.json` contains source code from the analyzed
   repository.
+- The server is bound to loopback and is not exposed to other devices on the
+  network.
 - Stop the server with `Ctrl+C`.

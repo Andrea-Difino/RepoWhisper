@@ -1,9 +1,10 @@
 from typing import Any
 
-from agents.base_agent import BaseAgent
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.prompts import ChatPromptTemplate
 from pydantic import BaseModel, Field
+
+from .base_agent import BaseAgent
 
 
 class LineWhisper(BaseModel):

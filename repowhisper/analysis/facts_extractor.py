@@ -163,14 +163,14 @@ class FactsExtractor:
         workflows = self._list_workflows()
         known_paths = self._walk_paths()
 
-        identifiers |= self._project_vocabulary(project, files, workflows)
+        identifiers |= self._project_vocabulary(project, workflows)
         for path in known_paths:
             for part in path.split("/"):
                 identifiers.add(part)
                 identifiers.add(posixpath.splitext(part)[0])
 
         sheet = self._render_sheet(
-            file_facts, restricted, rank, fan_in, project, workflows, flags
+            file_facts, rank, fan_in, project, workflows, flags
         )
 
         return RepoFacts(
@@ -363,25 +363,25 @@ class FactsExtractor:
         return names
 
     def _project_vocabulary(
-        self, project: dict, files: list[str], workflows: list[str]
+        self, project: dict, workflows: list[str]
     ) -> set[str]:
         vocab: set[str] = set()
         name = str(project.get("name", ""))
         if name:
-            vocab |= {name, name.lower(), name.replace("-", "_").lower()}
+            vocab.add(name)
         for dep in self._dependency_names(project.get("dependencies", [])):
-            vocab |= {dep, dep.replace("-", "_"), dep.lower()}
+            vocab.add(dep)
         for extra, entries in (project.get("optional-dependencies") or {}).items():
             vocab.add(extra)
             for dep in self._dependency_names(entries):
-                vocab |= {dep, dep.replace("-", "_"), dep.lower()}
+                vocab.add(dep)
         for script, target in (project.get("scripts") or {}).items():
             vocab.add(script)
             vocab.update(re.split(r"[.:]", str(target)))
         vocab.update(workflows)
         return vocab
 
-    def _read_readme_excerpt(self) -> str:
+    def _read_readme(self) -> str:
         for name in ("README.md", "README.rst", "README.txt", "README"):
             path = os.path.join(self.root_dir, name)
             if not os.path.isfile(path):
@@ -419,7 +419,6 @@ class FactsExtractor:
     def _render_sheet(
         self,
         files: dict[str, FileFacts],
-        graph: dict[str, list[str]],
         rank: dict[str, float],
         fan_in: dict[str, int],
         project: dict,
@@ -437,11 +436,11 @@ class FactsExtractor:
             lines.append(
                 f"- Project: {name or ''}{' - ' if name and description else ''}{description or ''}"
             )
-        readme = self._read_readme_excerpt()
+        readme = self._read_readme()
         if readme:
-            lines.append(f"- README excerpt: {readme}")
-        if project.get("requires-python"):
-            lines.append(f"- Requires Python: {project['requires-python']}")
+            lines.append(f"- README extract: {readme}")
+        if python_v := project.get("requires-python"):
+            lines.append(f"- Requires Python: {python_v}")
 
         directories = sorted({posixpath.dirname(p) or "." for p in files})
         lines.append(

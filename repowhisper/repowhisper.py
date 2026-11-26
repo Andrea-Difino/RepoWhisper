@@ -3,20 +3,22 @@ import os
 import webbrowser
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from urllib.parse import urlsplit
 
-from agents.architect import Architect
-from agents.navigator import CodeNavigator
-from agents.package_summarizer import PackageSummarizer
-from agents.reviewer import LayaReviewer
-from agents.storyteller import Storyteller
-from ingestion.source_manager import SourceManager
 from langchain_core.language_models.chat_models import BaseChatModel
-from orchestration.state import ProjectState
-from orchestration.workflow import AgentsWorkflow
-from schemas.analysis_schema import AnalysisJsonValidator
-from utils.config import UserLevel
-from utils.exceptions import InterfaceError, RepoWhisperError
-from utils.token_budget import TokenUtilities
+
+from .agents.architect import Architect
+from .agents.navigator import CodeNavigator
+from .agents.package_summarizer import PackageSummarizer
+from .agents.reviewer import LayaReviewer
+from .agents.storyteller import Storyteller
+from .ingestion.source_manager import SourceManager
+from .orchestration.state import ProjectState
+from .orchestration.workflow import AgentsWorkflow
+from .schemas.analysis_schema import AnalysisJsonValidator
+from .utils.config import UserLevel
+from .utils.exceptions import InterfaceError, RepoWhisperError
+from .utils.token_budget import TokenUtilities
 
 
 class RepoWhisper:
@@ -60,12 +62,6 @@ class RepoWhisper:
 
         self._source_manager = SourceManager(self.source_target)
         self._repo_path: str | None = None
-
-        self._navigator = CodeNavigator(self.llm, self.user_level.value)
-        self._architect = Architect(self.llm, self.user_level.value)
-        self._reviewer = LayaReviewer()
-        self._storyteller = Storyteller(self.llm, self.user_level.value)
-        self._package_summarizer = PackageSummarizer(self.llm)
         
 
     def _print_ascii_art(self):
@@ -95,13 +91,19 @@ class RepoWhisper:
             print(f"Cloning repo from {self.source_target}")
             self._repo_path = self._source_manager.get_path()
 
+            navigator = CodeNavigator(self.llm, self.user_level.value)
+            architect = Architect(self.llm, self.user_level.value)
+            reviewer = LayaReviewer()
+            storyteller = Storyteller(self.llm, self.user_level.value)
+            package_summarizer = PackageSummarizer(self.llm)
+
             workflow = AgentsWorkflow(
                 root_dir=self._repo_path,
-                architect=self._architect,
-                navigator=self._navigator,
-                storyteller=self._storyteller,
-                reviewer_agent=self._reviewer,
-                package_summarizer=self._package_summarizer,
+                architect=architect,
+                navigator=navigator,
+                storyteller=storyteller,
+                reviewer_agent=reviewer,
+                package_summarizer=package_summarizer,
                 context_budget=self.context_budget,
             )
 
@@ -146,7 +148,7 @@ class RepoWhisper:
         finally:
             self._source_manager.cleanup()
 
-    def serve_ui(
+    def analyze(
         self,
         json_path: str | Path | None = None,
         port: int = 8543,
@@ -179,30 +181,33 @@ class RepoWhisper:
                 "Reinstall RepoWhisper or verify the package installation."
             )
 
-        output_json_path = os.path.join(ui_dir, "data.json")
-        try:
-            with open(output_json_path, "w", encoding="utf-8") as f:
-                f.write(json_content)
-        except OSError as e:
-            raise InterfaceError(
-                f"Failed to write analysis data to {output_json_path}: {e}"
-            ) from e
-
         class QuietHandler(SimpleHTTPRequestHandler):
+            def do_GET(self):
+                if urlsplit(self.path).path == "/data.json":
+                    payload = json_content.encode("utf-8")
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json; charset=utf-8")
+                    self.send_header("Content-Length", str(len(payload)))
+                    self.end_headers()
+                    self.wfile.write(payload)
+                    return
+
+                super().do_GET()
+
             def log_message(self, format, *args):
                 pass
 
         handler = functools.partial(QuietHandler, directory=ui_dir)
 
         try:
-            httpd = ThreadingHTTPServer(("", port), handler)
+            httpd = ThreadingHTTPServer(("127.0.0.1", port), handler)
         except OSError as e:
             raise InterfaceError(
                 f"Could not start web interface on port {port} (already in use?): {e}"
             ) from e
 
         with httpd:
-            url = f"http://localhost:{port}"
+            url = f"http://127.0.0.1:{port}"
             print(f"\nStudy interface available at: {url}")
             print("Press Ctrl+C to stop server and close the app")
 

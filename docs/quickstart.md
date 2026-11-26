@@ -39,7 +39,7 @@ LLM tokens.
 To generate the documentation and open the bundled interface in a browser:
 
 ```python
-engine.serve_ui()
+engine.analyze()
 ```
 
 For an application entry point, wrap the call in `try/except` to handle
@@ -47,7 +47,7 @@ provider, repository, and server errors without an unhandled traceback:
 
 ```python
 try:
-    engine.serve_ui()
+    engine.analyze()
 except RepoWhisperError as e:
     print(f"RepoWhisper failed: {e}")
 ```
@@ -59,11 +59,13 @@ message.
 The default server port is `8543`. Pass a different port when needed:
 
 ```python
-engine.serve_ui(port=9000)
+engine.analyze(port=9000)
 ```
 
-For a complete runnable example, see
-[repowhisper/main.py](https://github.com/Andrea-Difino/RepoWhisper/blob/main/repowhisper/main.py).
+Place this code in your application entry point. If the entry point is a
+module inside the `repowhisper` package, run it from the repository root in
+module mode (for example, `python -m repowhisper.<module>`), rather than
+running its file directly from inside the package directory.
 
 ## Explanation levels
 

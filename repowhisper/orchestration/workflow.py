@@ -3,20 +3,21 @@ import os
 import re
 from typing import Any, Literal
 
-from agents.architect import Architect
-from agents.navigator import CodeNavigator
-from agents.package_summarizer import PackageSummarizer
-from agents.reviewer import LayaReviewer
-from agents.storyteller import Storyteller
 from langgraph.graph import END, START, StateGraph
-from orchestration.state import LineWhisperData, ProjectState
 from tqdm import tqdm
-from utils.dependency_tracer import DependencyTracer
-from utils.evidence_packer import EvidencePacker, FileCard
-from utils.facts_extractor import FactsExtractor
-from utils.grounding_verifier import GroundingVerifier
-from utils.token_budget import TokenUtilities
-from utils.tree_generator import ProjectTreeGenerator
+
+from ..agents.architect import Architect
+from ..agents.navigator import CodeNavigator
+from ..agents.package_summarizer import PackageSummarizer
+from ..agents.reviewer import LayaReviewer
+from ..agents.storyteller import Storyteller
+from ..analysis.dependency_tracer import DependencyTracer
+from ..analysis.facts_extractor import FactsExtractor
+from ..analysis.tree_generator import ProjectTreeGenerator
+from ..grounding.evidence_packer import EvidencePacker, FileCard
+from ..grounding.grounding_verifier import GroundingVerifier
+from ..utils.token_budget import TokenUtilities
+from .state import LineWhisperData, ProjectState
 
 
 class AgentsWorkflow:
@@ -37,7 +38,7 @@ class AgentsWorkflow:
             navigator: CodeNavigator,
             storyteller: Storyteller,
             reviewer_agent: LayaReviewer,
-            package_summarizer: PackageSummarizer,
+            package_summarizer: PackageSummarizer | None = None,
             context_budget: int = TokenUtilities.DEFAULT_CONTEXT_BUDGET,
         ):
         self.root_dir = root_dir
@@ -101,91 +102,6 @@ class AgentsWorkflow:
         workflow.add_edge("storyteller_node", END)
 
         return workflow.compile()
-
-
-    def _node_facts(self, state: ProjectState) -> dict:
-        """
-        Zero-token node: extracts verifiable facts from the code and packs the per-file
-        notes into a text that fits the token budget (collapsing directories with a few
-        small LLM calls only if the notes do not fit).
-        """
-        if self.pbar:
-            self.pbar.set_description("Codebase analyzed")
-            self.pbar.close()
-
-        explanations = state.get("explanations", {})
-        files = list(explanations)
-        one_liners = state.get("one_liners", {})
-
-        facts = FactsExtractor(self.root_dir).extract(files, state.get("dependency_graph", {}))
-
-        cards = []
-        for path in files:
-            file_facts = facts.files[path]
-            summary = (
-                one_liners.get(path)
-                or file_facts.docstring
-                or self._fallback_one_liner(explanations[path])
-            )
-            cards.append(
-                FileCard(
-                    path=path,
-                    summary=summary,
-                    symbols=tuple(file_facts.symbols),
-                    deps=tuple(facts.graph.get(path, [])),
-                    rank=facts.rank.get(path, 0.0),
-                )
-            )
-
-        tree_structure = ProjectTreeGenerator.generate(self.root_dir)
-        tree_limit = max(self.context_budget // 4, 1)
-        tree_prompt = (
-            tree_structure
-            if TokenUtilities.estimate_tokens(tree_structure) <= tree_limit
-            else ProjectTreeGenerator.generate_within_budget(self.root_dir, tree_limit)
-        )
-
-        pack_budget = max(
-            self.context_budget - TokenUtilities.estimate_tokens(facts.sheet) - TokenUtilities.estimate_tokens(tree_prompt),
-            self.context_budget // 3,
-        )
-        summarizer = self.package_summarizer.analyze if self.package_summarizer else None
-        evidence_pack = EvidencePacker(summarizer=summarizer).pack(cards, pack_budget)
-
-        return {
-            "tree_structure": tree_structure,
-            "tree_prompt": tree_prompt,
-            "repo_facts": facts,
-            "facts_sheet": facts.sheet,
-            "evidence_pack": evidence_pack,
-        }
-
-    def _node_architect(self, state: ProjectState) -> dict:
-        tree = state.get("tree_prompt") or state.get("tree_structure")
-        if tree is None:
-            tree = ProjectTreeGenerator.generate(self.root_dir)
-
-        sections = []
-        if state.get("facts_sheet"):
-            sections.append(state["facts_sheet"])
-        if tree.strip():
-            sections.append(f"DIRECTORY TREE:\n{tree}")
-        if state.get("evidence_pack"):
-            sections.append(
-                "MODULE NOTES (grouped by directory; each note is derived from the file's code):\n"
-                + state["evidence_pack"]
-            )
-        context = "\n\n".join(sections)
-
-        query = "Analyze the project evidence and provide an executive architectural summary."
-        summary = self._generate_grounded(
-            self.architect, query, context, state, evidence_text=context, label="Architect"
-        )
-
-        update: dict[str, Any] = {"architecture_summary": summary}
-        if "tree_structure" not in state:
-            update["tree_structure"] = tree
-        return update
 
     def _node_tracer(self, state: ProjectState) -> dict:
         deps = self.tracer.build_graph()
@@ -329,6 +245,90 @@ class AgentsWorkflow:
             },
             "reviewer_feedback": None,
         }
+
+    def _node_facts(self, state: ProjectState) -> dict:
+            """
+            Zero-token node: extracts verifiable facts from the code and packs the per-file
+            notes into a text that fits the token budget (collapsing directories with a few
+            small LLM calls only if the notes do not fit).
+            """
+            if self.pbar:
+                self.pbar.set_description("Codebase analyzed")
+                self.pbar.close()
+    
+            explanations = state.get("explanations", {})
+            files = list(explanations)
+            one_liners = state.get("one_liners", {})
+    
+            facts = FactsExtractor(self.root_dir).extract(files, state.get("dependency_graph", {}))
+    
+            cards = []
+            for path in files:
+                file_facts = facts.files[path]
+                summary = (
+                    one_liners.get(path)
+                    or file_facts.docstring
+                    or self._fallback_one_liner(explanations[path])
+                )
+                cards.append(
+                    FileCard(
+                        path=path,
+                        summary=summary,
+                        symbols=tuple(file_facts.symbols),
+                        deps=tuple(facts.graph.get(path, [])),
+                        rank=facts.rank.get(path, 0.0),
+                    )
+                )
+    
+            tree_structure = ProjectTreeGenerator.generate(self.root_dir)
+            tree_limit = max(self.context_budget // 4, 1)
+            tree_prompt = (
+                tree_structure
+                if TokenUtilities.estimate_tokens(tree_structure) <= tree_limit
+                else ProjectTreeGenerator.generate_within_budget(self.root_dir, tree_limit)
+            )
+    
+            pack_budget = max(
+                self.context_budget - TokenUtilities.estimate_tokens(facts.sheet) - TokenUtilities.estimate_tokens(tree_prompt),
+                self.context_budget // 3,
+            )
+            summarizer = self.package_summarizer.analyze if self.package_summarizer else None
+            evidence_pack = EvidencePacker(summarizer=summarizer).pack(cards, pack_budget)
+    
+            return {
+                "tree_structure": tree_structure,
+                "tree_prompt": tree_prompt,
+                "repo_facts": facts,
+                "facts_sheet": facts.sheet,
+                "evidence_pack": evidence_pack,
+            }
+    
+    def _node_architect(self, state: ProjectState) -> dict:
+        tree = state.get("tree_prompt") or state.get("tree_structure")
+        if tree is None:
+            tree = ProjectTreeGenerator.generate(self.root_dir)
+
+        sections = []
+        if state.get("facts_sheet"):
+            sections.append(state["facts_sheet"])
+        if tree.strip():
+            sections.append(f"DIRECTORY TREE:\n{tree}")
+        if state.get("evidence_pack"):
+            sections.append(
+                "MODULE NOTES (grouped by directory; each note is derived from the file's code):\n"
+                + state["evidence_pack"]
+            )
+        context = "\n\n".join(sections)
+
+        query = "Analyze the project evidence and provide an executive architectural summary."
+        summary = self._generate_grounded(
+            self.architect, query, context, state, evidence_text=context, label="Architect"
+        )
+
+        update: dict[str, Any] = {"architecture_summary": summary}
+        if "tree_structure" not in state:
+            update["tree_structure"] = tree
+        return update
     
     def _node_storyteller(self, state: ProjectState) -> dict:
         sections = []
@@ -345,7 +345,6 @@ class AgentsWorkflow:
         )
         raw_context = "\n\n".join(sections)
 
-        # The draft overview is NOT accepted as evidence: only the facts, the notes and the tree are.
         evidence_text = "\n".join(
             [state.get("tree_prompt", ""), state.get("facts_sheet", ""), state.get("evidence_pack", "")]
         )

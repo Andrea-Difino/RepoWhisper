@@ -4,7 +4,8 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 
 from tqdm import tqdm
-from utils.token_budget import TokenUtilities, arrange_edges_first
+
+from ..utils.token_budget import TokenUtilities, arrange_edges_first
 
 # A summarizer takes (label, text) and returns a short factual summary of `text`.
 Summarizer = Callable[[str, str], str]
