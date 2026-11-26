@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="imgs/badge_2.png" alt="RepoWhisper" width="700">
+  <img src="https://raw.githubusercontent.com/Andrea-Difino/RepoWhisper/refs/heads/main/imgs/badge_2.png" alt="RepoWhisper" width="700">
 
   ### Turn an unfamiliar Python repository into an interactive, AI-guided study journey.
 
