@@ -1,6 +1,7 @@
 site_name: RepoWhisper Documentation
 site_url: https://andrea-difino.github.io/RepoWhisper/docs/
 repo_url: https://github.com/Andrea-Difino/RepoWhisper
+edit_uri: ""
 repo_name: Andrea-Difino/RepoWhisper
 site_description: AI-powered Python repository analysis and documentation
   
