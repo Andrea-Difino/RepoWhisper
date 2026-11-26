@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useRepoData } from './hooks/useRepoData';
 import { motion, AnimatePresence } from 'framer-motion';
-import type { ModuleData } from './types';
+import type { ModuleData, ModuleNavItem } from './types';
 
 import TopBar from './components/TopBar';
-import NavigationPeeks from './components/NavigationPeeks';
 import ExplanationPanel from './components/ExplanationPanel';
 import CodeViewer from './components/CodeViewer';
 import CompletionPage from './components/CompletionPage';
@@ -55,21 +54,40 @@ export default function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
   const [studiedFiles, setStudiedFiles] = useState<Set<string>>(new Set());
-  const [lastStudiedIndex, setLastStudiedIndex] = useState<number | null>(null);
 
   const rawModules = data?.raw_modules || [];
   const totalFiles = rawModules.length;
+  const studiedCount = rawModules.filter((_, index) => studiedFiles.has(String(index))).length;
+  const firstUnstudiedIndex = rawModules.findIndex((_, index) => !studiedFiles.has(String(index)));
+  const modules: ModuleNavItem[] = [
+    {
+      index: 0,
+      title: 'Panoramica progetto',
+      path: 'Introduzione al repository',
+      studied: studiedFiles.has('root')
+    },
+    ...rawModules.map((module, index) => ({
+      index: index + 1,
+      title: module.file.split('/').pop() || module.file,
+      path: module.file,
+      studied: studiedFiles.has(String(index))
+    }))
+  ];
 
   const canGoPrev = currentIndex > 0;
-  const canGoNext = Boolean(
-    data &&
-    studiedFiles.has(currentIndex === 0 ? "root" : String(currentIndex - 1)) &&
-    currentIndex <= totalFiles
-  );
+  const canGoNext = Boolean(data && currentIndex <= totalFiles);
   const isCompletionPage = currentIndex > totalFiles;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable || target.closest('input, textarea, select, [contenteditable="true"]'))
+      ) {
+        return;
+      }
+
       if (e.key === 'ArrowRight' && canGoNext) {
         setDirection(1);
         setCurrentIndex((prev) => prev + 1);
@@ -84,28 +102,11 @@ export default function App() {
 
   const handleToggleStudy = (pathOrId: string) => {
     const updated = new Set(studiedFiles);
-    const targetIndex = pathOrId === "root" ? 0 : Number(pathOrId) + 1;
 
     if (updated.has(pathOrId)) {
       updated.delete(pathOrId);
     } else {
       updated.add(pathOrId);
-      setLastStudiedIndex(targetIndex);
-    }
-
-    if (!updated.has(pathOrId) && lastStudiedIndex === targetIndex) {
-      const remainingIndexes: number[] = [];
-      if (updated.has("root")) {
-        remainingIndexes.push(0);
-      }
-      updated.forEach((value) => {
-        if (value !== "root") {
-          remainingIndexes.push(Number(value) + 1);
-        }
-      });
-      setLastStudiedIndex(
-        remainingIndexes.length > 0 ? Math.max(...remainingIndexes) : null
-      );
     }
 
     setStudiedFiles(updated);
@@ -125,18 +126,15 @@ export default function App() {
     }
   };
 
-  const goToFirst = () => {
-    if (currentIndex !== 0) {
-      setDirection(-1);
-      setCurrentIndex(0);
+  const goToModule = (index: number) => {
+    if (index !== currentIndex) {
+      setDirection(index > currentIndex ? 1 : -1);
+      setCurrentIndex(index);
     }
   };
 
-  const goToLastStudied = () => {
-    if (lastStudiedIndex !== null && currentIndex !== lastStudiedIndex) {
-      setDirection(lastStudiedIndex > currentIndex ? 1 : -1);
-      setCurrentIndex(lastStudiedIndex);
-    }
+  const resumeUnstudied = () => {
+    goToModule(firstUnstudiedIndex === -1 ? 0 : firstUnstudiedIndex + 1);
   };
 
   if (loading) {
@@ -191,46 +189,33 @@ export default function App() {
     lines = (fileData?.code_snippet || "").split('\n');
   }
 
-  // 5. ANIMAZIONI FRAMER MOTION
   const slideVariants = {
     enter: (dir: number) => ({ x: dir > 0 ? 80 : -80, opacity: 0 }),
     center: { x: 0, opacity: 1 },
     exit: (dir: number) => ({ x: dir > 0 ? -80 : 80, opacity: 0 })
   };
 
-  // 6. RENDER DEI COMPONENTI
   return (
-    <div className="h-screen w-screen overflow-x-hidden bg-[#F7F7F7] flex flex-col relative select-none ">
-      <div className="fixed top-0 left-0  overflow-hidden pointer-events-none w-[100px] h-[65px] ml-4 mt-4 z-10 rounded-[20px]">
-        <img src="/logo_sfondo_blu.png" className="w-full" alt="Logo" />
-      </div>
-
+    <div className="min-h-screen w-full overflow-x-hidden bg-slate-50 flex flex-col relative select-none xl:h-screen xl:overflow-y-hidden">
       <TopBar
+        repositoryTitle={data.title}
         currentIndex={currentIndex}
         totalFiles={totalFiles}
+        studiedCount={studiedCount}
+        modules={modules}
         canGoPrev={canGoPrev}
         canGoNext={canGoNext}
-        lastStudiedIndex={lastStudiedIndex}
         onPrev={goPrev}
         onNext={goNext}
-        onGoToFirst={goToFirst}
-        onGoToLastStudied={goToLastStudied}
+        onSelectModule={goToModule}
         isStudied={isCurrentStudied}
         isFirstSlide={currentIndex === 0}
         showStudyButton={!isCompletionPage}
         onToggleStudy={() => handleToggleStudy(currentIndex === 0 ? "root" : String(currentIndex - 1))}
       />
 
-      <div className="flex-1 flex items-center justify-center relative w-full overflow-x-hidden z-10 my-2">
-        <NavigationPeeks
-          canGoPrev={canGoPrev}
-          canGoNext={canGoNext}
-          onPrev={goPrev}
-          onNext={goNext}
-          isLastSlide={isCompletionPage}
-        />
-
-        <div className="w-full max-w-[1700px] mx-auto px-16 xl:px-20 h-[50vh] overflow-hidden flex flex-col justify-center">
+      <main className="flex-1 flex items-center justify-center relative w-full overflow-x-hidden z-10 px-2 py-4 sm:px-4 xl:min-h-0">
+        <div className="w-full max-w-[1700px] mx-auto px-2 sm:px-3 xl:px-10 py-2 xl:h-full xl:min-h-0 flex flex-col justify-center">
           <AnimatePresence mode="wait" custom={direction}>
             {isCompletionPage ? (
               <motion.div
@@ -244,8 +229,9 @@ export default function App() {
               >
                 <CompletionPage
                   repositoryTitle={data.title}
-                  studiedFiles={rawModules.filter((_, index) => studiedFiles.has(String(index))).length}
+                  studiedFiles={studiedCount}
                   totalFiles={totalFiles}
+                  onResumeIncomplete={resumeUnstudied}
                 />
               </motion.div>
             ) : (
@@ -257,13 +243,13 @@ export default function App() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.35, ease: "easeOut" }}
-                className="grid grid-cols-12 gap-8 h-full"
+                className="grid grid-cols-1 xl:grid-cols-12 gap-4 xl:gap-6 xl:h-full xl:min-h-0"
               >
-                <div className="col-span-5 flex flex-col h-full min-h-0 justify-between">
+                <div className="xl:col-span-5 flex flex-col xl:h-full xl:min-h-0 justify-between">
                   <ExplanationPanel module={currentModule} isOverview={currentIndex === 0} />
                 </div>
 
-                <div className="col-span-7 h-full min-h-0 flex flex-col">
+                <div className="xl:col-span-7 xl:h-full xl:min-h-0 flex flex-col">
                   <CodeViewer
                     lines={lines}
                     notes={currentModule.notes}
@@ -276,10 +262,10 @@ export default function App() {
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </main>
 
-      <footer className="w-full px-12 pb-5 flex justify-end text-xs text-black/40 z-20 shrink-0">
-        <div>Usa le frecce in alto a destra o la tastiera (← →) per navigare</div>
+      <footer className="w-full px-4 sm:px-6 pb-3 flex justify-center text-center text-xs text-slate-400 z-20 shrink-0">
+        <div>Usa le frecce ← → oppure l’indice per esplorare e ritrovare le schede</div>
       </footer>
     </div>
   );

@@ -20,3 +20,10 @@ export interface ModuleData {
     code_snippet?: string;
     notes?: Record<number, string>;
 }
+
+export interface ModuleNavItem {
+    index: number;
+    title: string;
+    path: string;
+    studied: boolean;
+}
