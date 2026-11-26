@@ -387,6 +387,10 @@ class LayaReviewer:
                 agent.load_calibration(str(self.calibration_dir))
 
                 if not has_cuda:
+                    tqdm.write(
+                        "ℹ️ Running Laya Reviewer on CPU. For NVIDIA GPU acceleration run: "
+                        "uv pip install --reinstall torch --torch-backend=auto"
+                    )
                     set_num_threads(1)
 
                 status.set_description(f"Warming up Laya Reviewer ({device_name})...", refresh=True)
