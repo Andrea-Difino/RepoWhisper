@@ -163,7 +163,7 @@ class FactsExtractor:
         workflows = self._list_workflows()
         known_paths = self._walk_paths()
 
-        identifiers |= self._project_vocabulary(project, files, workflows)
+        identifiers |= self._project_vocabulary(project, workflows)
         for path in known_paths:
             for part in path.split("/"):
                 identifiers.add(part)
@@ -363,18 +363,18 @@ class FactsExtractor:
         return names
 
     def _project_vocabulary(
-        self, project: dict, files: list[str], workflows: list[str]
+        self, project: dict, workflows: list[str]
     ) -> set[str]:
         vocab: set[str] = set()
         name = str(project.get("name", ""))
         if name:
-            vocab |= {name, name.lower(), name.replace("-", "_").lower()}
+            vocab.add(name)
         for dep in self._dependency_names(project.get("dependencies", [])):
-            vocab |= {dep, dep.replace("-", "_"), dep.lower()}
+            vocab.add(dep)
         for extra, entries in (project.get("optional-dependencies") or {}).items():
             vocab.add(extra)
             for dep in self._dependency_names(entries):
-                vocab |= {dep, dep.replace("-", "_"), dep.lower()}
+                vocab.add(dep)
         for script, target in (project.get("scripts") or {}).items():
             vocab.add(script)
             vocab.update(re.split(r"[.:]", str(target)))
