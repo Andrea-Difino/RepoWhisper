@@ -19,7 +19,7 @@ export default function NavigationPeeks({
     <>
       <div
         onClick={onPrev}
-        className={`fixed left-0 top-1/2 -translate-y-1/2 w-11.5 xl:w-16.25 h-[45vh] bg-[#787C82] rounded-r-[36px] transition-all duration-500 z-20 ${
+        className={`hidden xl:block fixed left-0 top-1/2 -translate-y-1/2 w-11.5 xl:w-16.25 h-[45vh] bg-[#787C82] rounded-r-[36px] transition-all duration-500 z-20 ${
           canGoPrev
             ? 'opacity-90 hover:w-17.5 cursor-pointer'
             : 'opacity-0 pointer-events-none -translate-x-full'
@@ -29,7 +29,7 @@ export default function NavigationPeeks({
 
       <div
         onClick={onNext}
-        className={`fixed right-0 top-1/2 -translate-y-1/2 w-11.5 xl:w-16.25 h-[45vh] bg-[#EFEFEF] rounded-l-[36px] transition-all duration-500 z-20 flex items-center justify-center ${
+        className={`hidden xl:flex fixed right-0 top-1/2 -translate-y-1/2 w-11.5 xl:w-16.25 h-[45vh] bg-[#EFEFEF] rounded-l-[36px] transition-all duration-500 z-20 items-center justify-center ${
           !isLastSlide 
             ? canGoNext 
               ? 'opacity-100 hover:w-17.5 cursor-pointer shadow-md' 

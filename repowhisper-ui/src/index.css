@@ -15,3 +15,22 @@ body {
   margin: 0;
   padding: 0;
 }
+
+#root {
+  min-height: 100vh;
+}
+
+.custom-scrollbar {
+  scrollbar-color: rgb(100 116 139 / 0.45) transparent;
+  scrollbar-width: thin;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background-color: rgb(100 116 139 / 0.35);
+}

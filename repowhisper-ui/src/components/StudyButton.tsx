@@ -1,4 +1,4 @@
-import { Check } from 'lucide-react';
+import { Check, Circle } from 'lucide-react';
 
 interface StudyButtonProps {
   isStudied: boolean;
@@ -10,14 +10,18 @@ export default function StudyButton({ isStudied, isFirstSlide, onClick }: StudyB
   return (
     <button
       onClick={onClick}
-      className={`px-8 py-1.5 rounded-full border text-sm font-medium tracking-wide transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+      type="button"
+      aria-pressed={isStudied}
+      className={`inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600 ${
         isStudied 
-          ? 'bg-[#4E7D34] border-[#4E7D34] text-white shadow-sm' 
-          : 'bg-transparent border-[#4E7D34] text-[#4E7D34] hover:bg-[#4E7D34]/10'
+          ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+          : 'border-emerald-600 bg-white text-emerald-700 hover:bg-emerald-50'
       }`}
     >
-      {isStudied && <Check className="w-3.5 h-3.5" strokeWidth={3} />}
-      {isFirstSlide ? 'start study' : 'studied'}
+      {isStudied
+        ? <Check className="h-4 w-4" strokeWidth={2.5} />
+        : <Circle className="h-4 w-4" strokeWidth={1.8} />}
+      <span>{isStudied ? 'Completata' : isFirstSlide ? 'Segna panoramica' : 'Segna completata'}</span>
     </button>
   );
 }

@@ -10,21 +10,21 @@ interface ExplanationPanelProps {
 
 export default function ExplanationPanel({ module, isOverview = false }: ExplanationPanelProps) {
   return (
-    <div className="w-full h-full bg-[#F4F4F4] rounded-[36px] p-2 lg:p-4 overflow-hidden">
+    <section className="w-full rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm shadow-slate-900/[0.03] sm:rounded-3xl sm:p-6 xl:h-full xl:overflow-hidden">
       
-      <div className="w-full max-h-[calc(100%-5px)] rounded-[26px] p-5 lg:p-7 flex flex-col overflow-y-auto select-text bg-[#F4F4F4] custom-scrollbar">
+      <div className="flex w-full flex-col select-text xl:max-h-full xl:overflow-y-auto custom-scrollbar">
         
         <div className="flex items-center justify-between gap-2 mb-2 shrink-0">
-          <span className="font-mono text-xs text-black/50">
+          <span className="max-w-full truncate rounded-md bg-slate-100 px-2 py-1 font-mono text-[11px] text-slate-500">
             {module.path}
           </span>
         </div>
 
-        <h2 className={`${isOverview ? 'text-3xl lg:text-5xl' : 'text-2xl lg:text-[28px]'} font-bold tracking-tight text-[#11151C] mb-5 uppercase leading-tight shrink-0`}>
+        <h2 className={`${isOverview ? 'text-3xl sm:text-4xl' : 'text-2xl'} mb-4 break-words font-bold leading-tight tracking-tight text-slate-900 sm:mb-5`}>
           {module.title}
         </h2>
 
-        <div className={`${isOverview ? 'prose-base lg:prose-lg' : 'prose-sm lg:prose-base'} prose prose-slate max-w-none text-[#222] prose-headings:text-xs prose-headings:uppercase prose-headings:tracking-widest prose-headings:text-black/50 prose-headings:mt-5 prose-headings:mb-2 prose-p:leading-relaxed prose-li:my-0.5`}>
+        <div className="prose prose-slate max-w-none text-sm leading-relaxed text-slate-600 prose-headings:mt-5 prose-headings:mb-2 prose-headings:text-xs prose-headings:font-semibold prose-headings:uppercase prose-headings:tracking-widest prose-headings:text-slate-500 prose-p:mb-4 prose-p:leading-relaxed prose-li:my-1 prose-strong:text-slate-800">
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{
@@ -42,10 +42,13 @@ export default function ExplanationPanel({ module, isOverview = false }: Explana
               tr: ({ node, ...props }) => <tr className="border-b border-black/5 last:border-0 hover:bg-black/2 transition-colors" {...props} />,
               th: ({ node, ...props }) => <th className="py-3 px-4 font-semibold text-black/70 whitespace-nowrap" {...props} />,
               td: ({ node, ...props }) => <td className="py-3 px-4 text-black/80 align-top" {...props} />,
+              pre: ({ node, ...props }) => (
+                <pre className="max-w-full overflow-x-auto rounded-xl bg-slate-950 p-4 text-xs leading-6 text-slate-100" {...props} />
+              ),
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               code: ({ node, inline, ...props }: any) => 
                 inline 
-                  ? <code className="bg-black/5 text-pink-600 px-1.5 py-0.5 rounded-md font-mono text-[0.85em]" {...props} />
+                  ? <code className="rounded bg-indigo-50 px-1.5 py-0.5 font-mono text-[0.85em] text-indigo-700" {...props} />
                   : <code {...props} />
             }}
           >
@@ -53,6 +56,6 @@ export default function ExplanationPanel({ module, isOverview = false }: Explana
           </ReactMarkdown>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
