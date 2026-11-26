@@ -170,7 +170,7 @@ class FactsExtractor:
                 identifiers.add(posixpath.splitext(part)[0])
 
         sheet = self._render_sheet(
-            file_facts, restricted, rank, fan_in, project, workflows, flags
+            file_facts, rank, fan_in, project, workflows, flags
         )
 
         return RepoFacts(
@@ -381,7 +381,7 @@ class FactsExtractor:
         vocab.update(workflows)
         return vocab
 
-    def _read_readme_excerpt(self) -> str:
+    def _read_readme(self) -> str:
         for name in ("README.md", "README.rst", "README.txt", "README"):
             path = os.path.join(self.root_dir, name)
             if not os.path.isfile(path):
@@ -419,7 +419,6 @@ class FactsExtractor:
     def _render_sheet(
         self,
         files: dict[str, FileFacts],
-        graph: dict[str, list[str]],
         rank: dict[str, float],
         fan_in: dict[str, int],
         project: dict,
@@ -437,7 +436,7 @@ class FactsExtractor:
             lines.append(
                 f"- Project: {name or ''}{' - ' if name and description else ''}{description or ''}"
             )
-        readme = self._read_readme_excerpt()
+        readme = self._read_readme()
         if readme:
             lines.append(f"- README excerpt: {readme}")
         if project.get("requires-python"):
