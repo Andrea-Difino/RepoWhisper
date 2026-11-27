@@ -1435,7 +1435,7 @@ wheels = [
 
 [[package]]
 name = "repowhisper"
-version = "0.5.0b2"
+version = "0.5.0b3"
 source = { editable = "." }
 dependencies = [
     { name = "chardet" },
