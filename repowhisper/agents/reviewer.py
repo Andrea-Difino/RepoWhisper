@@ -5,7 +5,6 @@ import os
 import signal
 import sys
 import threading
-import time
 import warnings
 from pathlib import Path
 from typing import ClassVar, Literal
@@ -65,6 +64,11 @@ class LayaReviewer:
 
         warnings.filterwarnings("ignore", message=".*cache-system uses symlinks.*")
         warnings.filterwarnings("ignore", message=".*unauthenticated requests.*")
+        warnings.filterwarnings(
+            "ignore",
+            message=".*past_key_values.*is deprecated.*",
+            category=FutureWarning,
+        )
 
         logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
         logging.getLogger("transformers").setLevel(logging.ERROR)
@@ -123,7 +127,9 @@ class LayaReviewer:
         return None
 
     @classmethod
-    def _discover_backbone_repo_id(cls, vega_local_dir: str | None = None) -> str | None:
+    def _discover_backbone_repo_id(
+        cls, vega_local_dir: str | None = None
+    ) -> str | None:
         """
         Finds the backbone HF repo ID either from the cached Vega folder or by
         fetching only the tiny config JSON (~2 KB) before starting large downloads.
@@ -261,7 +267,11 @@ class LayaReviewer:
                 )  # type: ignore
             download_completed = True
         finally:
-            if download_completed and master_bar.total and master_bar.n < master_bar.total:
+            if (
+                download_completed
+                and master_bar.total
+                and master_bar.n < master_bar.total
+            ):
                 master_bar.update(master_bar.total - master_bar.n)
             master_bar.close()
 
@@ -278,7 +288,9 @@ class LayaReviewer:
         vega_local_dir: str | None = None
 
         try:
-            vega_local_dir = snapshot_download(VEGA_READER_REPO_ID, local_files_only=True)
+            vega_local_dir = snapshot_download(
+                VEGA_READER_REPO_ID, local_files_only=True
+            )
         except Exception:
             missing_repos.append(VEGA_READER_REPO_ID)
 
@@ -350,21 +362,23 @@ class LayaReviewer:
 
             try:
                 from huggingface_hub.utils import disable_progress_bars
+
                 disable_progress_bars()
             except Warning:
                 pass
 
             try:
                 from transformers.utils import logging as hf_logging
+
                 hf_logging.set_verbosity_error()
                 hf_logging.disable_progress_bar()
             except Exception:  # noqa: BLE001, S110
                 pass
 
             from torch import cuda, set_num_threads
+
             has_cuda = cuda.is_available()
             device_name = cuda.get_device_name(0) if has_cuda else "CPU"
-            t_start = time.perf_counter()
 
             with (
                 open(os.devnull, "w", encoding="utf-8") as devnull,
@@ -383,21 +397,25 @@ class LayaReviewer:
                 except OSError:
                     agent = self._instantiate_vega_agent(use_offline_mode=False)
 
-                status.set_description("Attaching RepoWhisper calibration head...", refresh=True)
+                status.set_description(
+                    "Attaching RepoWhisper calibration head...", refresh=True
+                )
                 agent.load_calibration(str(self.calibration_dir))
 
                 if not has_cuda:
-                    status.write(
-                        "ℹ️ Running Laya Reviewer on CPU. For NVIDIA GPU acceleration run: "
-                        "uv pip install --reinstall torch --torch-backend=auto"
-                    )
                     set_num_threads(1)
 
-                status.set_description(f"Warming up Laya Reviewer ({device_name})...", refresh=True)
+                status.set_description(
+                    f"Warming up Laya Reviewer ({device_name})...", refresh=True
+                )
                 agent.predict("warm up", self.REVIEW_QUESTIONS)
 
-            elapsed = time.perf_counter() - t_start
-            tqdm.write(f"✓ Laya Reviewer ready on {device_name} ({elapsed:.1f}s)")
+            tqdm.write(f"✓ Laya Reviewer ready on {device_name}")
+            if not has_cuda and sys.platform in ("win32", "linux"):
+                tqdm.write(
+                    "ℹ️ Running Laya Reviewer on CPU. For NVIDIA GPU acceleration run: "
+                    "uv pip install --reinstall torch --torch-backend=auto"
+                )
 
             return agent
         finally:
